@@ -1,0 +1,16 @@
+#! /bin/sh
+
+PROJECT_NAME=$(./bin/util/read-config name | sed 's/ //g')
+
+#copy in any icons 
+./bin/build/blackberry-copy-icons
+
+# add blackberry specfic config.xml and ext directory
+cp ./bin/create/templates/blackberry/config.xml ./tmp/blackberry/www/
+cp -r ./bin/create/templates/blackberry/ext ./tmp/blackberry/www/
+cp -r ./bin/create/templates/blackberry/javascript/phonegap-0.9.4.js ./tmp/blackberry/www/
+
+# change project name in config.xml
+sed -i "" "s/__PROJECTNAME__/$PROJECT_NAME/g" ./tmp/blackberry/www/config.xml
+
+echo "INFO: run \`ant load-simulator\` on Windows to launch Blackberry simulator"

@@ -1,0 +1,3 @@
+#! /usr/sh
+
+palm-log $(./bin/util/w3c-config-reader id)

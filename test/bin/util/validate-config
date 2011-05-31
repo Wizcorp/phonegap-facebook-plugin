@@ -1,0 +1,42 @@
+#! /usr/bin/env python
+import os, sys
+from xml.dom.minidom import parse
+
+class ConfigValidator():
+    def __init__(self):
+        self.exists()
+        self.well_formed()
+        self.has_name()
+        self.has_id()
+        self.has_version()
+
+    def exists(self):
+        self.config = os.path.join(os.curdir, 'www', 'config.xml')
+        if os.path.exists(self.config) == False:
+            raise IOError('not found')
+
+    def well_formed(self):
+        try:
+            self.parsed = parse(self.config)
+        except:
+            raise RuntimeError('config.xml not well formed')
+
+    def has_name(self):
+        package = self.parsed.firstChild.attributes.get('id')
+        if package is None:
+            raise RuntimeError('config.xml is missing id')
+
+    def has_id(self):
+        name = self.parsed.getElementsByTagName('name').length
+        if name is 0:
+            raise RuntimeError('config.xml is missing name')
+
+    def has_version(self):
+        version = self.parsed.firstChild.attributes.get('version')
+        if version is None:
+            raise RuntimeError('config.xml is missing version')
+
+
+# if worse is better then we can't get much better than this!
+if __name__ == "__main__":
+    ConfigValidator()

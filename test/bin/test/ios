@@ -1,0 +1,6 @@
+#! /bin/sh
+
+rm -rf ./tmp/ios/www
+cp -r ./test ./tmp/ios/www/
+
+./bin/build/ios

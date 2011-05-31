@@ -1,0 +1,1 @@
+Native source gets generated here for each target platform from `./www/config.xml` by running `make create` from the root of the project. Careful, `make create` is destructive so any native modifications will be lost! Put native code extensions in the plugins directory.

@@ -1,0 +1,44 @@
+#! /usr/bin/env python
+import sys, json, urllib, os
+
+
+class PluginPackageValidator():
+    def __init__(self):
+        plugins_json = urllib.urlopen('http://phonegap-plugins.appspot.com/_je/plugin').read()
+        self.plugins = json.loads(plugins_json)
+        self.json_path = os.path.join('lib', 'plugin', sys.argv[1], 'package.json')
+        # validate
+        self.package_json_exists()
+        self.name_is_unique()
+        self.package_json_readable()
+        self.has_github_url()
+        self.www_exists()
+
+    def package_json_exists(self):
+        if not os.path.exists(self.json_path):
+            raise IOError('package.json missing for plugin ' + sys.argv[1])
+
+    def name_is_unique(self):
+        for index, item in enumerate(self.plugins):
+            if 'name' in item and item['name'] == sys.argv[1]:
+                raise RuntimeError('name is not unique')
+
+    def package_json_readable(self):
+        f = open(self.json_path, 'r')
+        json_str = f.read()
+        self.package = json.loads(json_str)
+        f.close()
+
+    def has_github_url(self):
+        if 'repository' not in self.package:
+            raise RuntimeError('a github repo url required for the time being')
+
+    def www_exists(self):
+        www = os.path.join('lib', 'plugin', sys.argv[1], 'www')
+        if not os.path.exists(www):
+            raise RuntimeError('plugin missing www')
+
+
+# if worse is better then we can't get much better than this!
+if __name__ == "__main__":
+    PluginPackageValidator()

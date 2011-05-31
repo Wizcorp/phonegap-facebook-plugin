@@ -1,0 +1,30 @@
+#! /usr/bin/env python
+
+import subprocess, re
+"""
+This utility  writes <div id="version">VERSION</div> into ./www/index.html at
+the bottom of the body. 
+
+The VERSION variable comes from the ./wwww/config.xml file.
+
+If no version div exists in the index.html then one is created.
+"""
+
+version = subprocess.Popen(["bin/util/read-config", "version"], stdout=subprocess.PIPE).communicate()[0] 
+expr = '<div id="version">.*?</div>'
+new_version = '<div id="version">' + version + '</div>'
+
+reader = open('./www/index.html','r')
+index = reader.read()
+match = re.search(expr, index)
+
+if match:
+	tmp = re.sub(expr, new_version, index)
+else:
+	tmp = index.replace('</body>', new_version + '</body>')
+
+reader.close()
+
+writer = open('./www/index.html', 'w')
+writer.write(tmp)
+writer.close()

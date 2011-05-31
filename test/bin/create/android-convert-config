@@ -1,0 +1,15 @@
+#! /usr/bin/env python
+import os, sys
+from xml.dom.minidom import parse
+
+intents = parse(os.path.join(os.curdir, 'bin/create/templates/android/intents.xml'))
+manifest_path = os.path.join(os.curdir, 'tmp/android/AndroidManifest.xml')
+manifest_xml = parse(manifest_path)
+manifest_xml.getElementsByTagName("application")[0].attributes['android:icon'] = '@drawable/icon'
+manifest_xml.getElementsByTagName("activity")[0].attributes['android:configChanges'] = 'orientation|keyboardHidden'
+app_element = manifest_xml.firstChild
+for feature in intents.getElementsByTagName('uses-permission'):
+	app_element.appendChild(feature)
+f = open(manifest_path, 'w')
+manifest_xml.writexml(f) #toprettyxml?
+f.close()

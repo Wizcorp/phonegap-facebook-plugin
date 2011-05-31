@@ -1,0 +1,3 @@
+#! /bin/sh
+
+cp ./bin/create/templates/blackberry/img/* ./tmp/blackberry/www/img/

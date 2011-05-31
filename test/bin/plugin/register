@@ -1,0 +1,5 @@
+#! /bin/sh
+
+JSON=$(cat ./lib/plugin/$1/package.json | tr -d '\n')
+
+curl -d _doc="$JSON" http://phonegap-plugins.appspot.com/_je/plugin

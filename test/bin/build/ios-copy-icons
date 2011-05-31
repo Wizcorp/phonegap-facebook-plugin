@@ -1,0 +1,12 @@
+#! /bin/sh
+
+# copies icons in config.xml to ios folder
+# FIXME need to find better solution for icons in general
+
+small=$(./bin/util/read-config small-icon)
+medium=$(./bin/util/read-config medium-icon)
+largest=$(./bin/util/read-config large-icon)
+
+cp $small ./tmp/ios/icon.png
+cp $medium ./tmp/ios/icon-72.png
+cp $largest ./tmp/ios/icon@2x.png

@@ -1,0 +1,5 @@
+#! /bin/sh
+
+# just use the clobber from create...its fast enough
+./bin/create/webos
+./bin/build/webos

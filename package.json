@@ -1,0 +1,15 @@
+{
+  "author": "Jesse MacFadyen, Brian LeRoux",
+  "name": "com.facebook.phonegap",
+  "description": "Facebook Connect PhoneGap Plugin",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/brianleroux/FacebookConnectPhoneGapPlug.git"
+  },
+  "engines": {
+    "phonegap": "0.9.5"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

@@ -1,0 +1,21 @@
+#! /bin/sh
+
+# copy in the icons
+./bin/build/ios-copy-icons
+
+# copy ./lib/tmp/plugin/* into native and www in ./tmp
+./bin/plugin/shotgun/ios
+
+# update the xcode proj.pbxproj file
+./bin/build/ios-add-plugins
+
+# finally run the actual build
+NAME=$(./bin/util/read-config name | sed 's/ //g')
+PRJ="$NAME.xcodeproj"
+APP="build/Release-iphonesimulator/$NAME.app"
+
+cd ./tmp/ios
+xcodebuild -project $PRJ -sdk iphonesimulator4.2
+
+# kick up the simulator
+ios-sim launch $APP --stderr ./../ios.log --stdout ./../ios.log &

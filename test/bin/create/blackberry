@@ -1,0 +1,21 @@
+#! /bin/sh
+
+TEMPLATE_PATH=./bin/create/templates/blackberry
+PROJECT_PATH=./tmp/blackberry
+PROJECT_NAME=$(./bin/util/read-config name | sed 's/ //g')
+
+# recreate build path
+rm -rf $PROJECT_PATH
+mkdir $PROJECT_PATH
+
+# copy in the template files
+cp -r $TEMPLATE_PATH/lib $PROJECT_PATH
+cp -r $TEMPLATE_PATH/build.xml $PROJECT_PATH
+cp -r $TEMPLATE_PATH/project.properties  $PROJECT_PATH
+
+# change project name in build.xml and config.xml
+sed -i "" "s/__PROJECTNAME__/$PROJECT_NAME/g" $PROJECT_PATH/build.xml
+
+# copy in www
+cp -r ./www $PROJECT_PATH
+

@@ -1,0 +1,3 @@
+#! /bin/sh
+
+open /Developer/Platforms/iPhoneSimulator.platform/Developer/Applications/iPhone\ Simulator.app

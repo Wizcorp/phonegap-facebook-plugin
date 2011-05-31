@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+	<!-- Change this if you want to allow scaling -->
+    <meta name="viewport" content="width=default-width; user-scalable=no" />
+
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+    <title>GapFacebookConnect</title>
+	
+	<!-- iPad/iPhone specific css below, add after your main css >
+	<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />		
+	<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />		
+	-->
+	<!-- If you application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www directory and include it here -->
+	<script type="text/javascript" charset="utf-8" src="phonegap.0.9.4.min.js"></script>
+	<script type="text/javascript" charset="utf-8" src="FacebookConnectPlugin.js"></script>
+	
+	<style>
+	
+* {
+	-webkit-touch-callout: none; /* prevent callout to copy image, etc when tap to hold */
+	/*-webkit-text-size-adjust: none; *//* prevent webkit from resizing text to fit */
+	-webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
+	-webkit-user-select: none; /* prevent copy paste, to allow, change 'none' to 'text' */
+
+	margin:0;
+	padding:0;
+} 
+
+	body
+	{
+		background-color:#3B5998;
+		color:#FFF;
+		font-family: Helvetica, Verdana;
+		margin-bottom:20px;
+	}
+
+	#loading
+	{
+		z-index:1;
+		width:100%;
+		top:200px;
+		position:absolute;
+		text-align:center;
+	}
+
+	#gbWrap
+	{
+		overflow:hidden;
+		position:absolute;
+		top:60px;
+		bottom:0px;
+	}
+
+	.view
+	{
+		width:320px;
+		float:left;
+		clear:none;
+
+	}
+	
+	#buttonBar
+	{
+		width:100%;
+		top:0px;
+		min-height:32px;
+		background-color:#333;
+		text-align:center;
+	}
+	
+	#buttonBar img
+	{
+		margin:4px auto;
+	}
+	
+	#btnLogin
+	{
+	
+	}
+	
+	#btnLogOut
+	{
+		display:none;
+	}
+	
+	#fbFriends li
+	{
+		list-style:none;
+
+		height:56px;
+		width:320px;
+		float:left;
+		clear:none;
+		border-top:dashed 1px rgba(255,255,255,0.1);
+	}
+
+	#fbFriends li:active
+	{
+		background-color:rgba(255,255,255,0.5);	
+	}
+
+	#fbFriends li img
+	{
+		margin:2px 12px;
+		min-height:48px;
+		min-width:48px;s
+	}
+
+	#fbFriends li span
+	{
+		position:relative;
+		top:-12px;
+	}
+
+	#details
+	{
+		position:absolute;
+		left:320px;
+		height:100%;
+	}
+
+
+	</style>
+
+    <script type="text/javascript" charset="utf-8">
+
+	// If you want to prevent dragging, uncomment this section
+	/*
+	function preventBehavior(e) 
+	{ 
+      e.preventDefault(); 
+    };
+	document.addEventListener("touchmove", preventBehavior, false);
+	*/
+	
+	var facebook = FB; // Facebook plugin object ( we create it )
+	var friendsMap = {}; // map to store friend info
+	var APP_ID = "126462174095513"; // replace this with your own APP_ID, this is the PhoneGap-Facebook app
+	
+	function onBodyLoad()
+	{
+		document.addEventListener("deviceready",onDeviceReady,false);
+	}
+	
+	/* When this function is called, PhoneGap has been initialized and is ready to roll */
+	function onDeviceReady()
+	{
+		// do your thing!
+		showHideLoadingScreen(false);
+	}
+	
+	function loginToFacebook()
+	{
+		facebook.initWithAppId(APP_ID);
+		facebook.authorize("email","read_stream","publish_stream","offline_access");
+		facebook.onLogin = onFBLogin;
+		facebook.onDidNotLogin = onFBDidNotLogin;
+		facebook.onLogout = onFBLogout;
+		showHideLoadingScreen(true);
+	}
+	
+	function logOutOfFacebook()
+	{
+		facebook.logout();
+	}
+	
+	function showHideLoadingScreen(bShow)
+	{
+		document.getElementById("loading").style.display = bShow ? "block" : "none";
+	}
+	
+	function handleOpenUrl(url)
+	{
+		// handleOpenUrl MUST return immediately, so we cannot do any blocking methods in here -jm
+		setTimeout( 
+			function()
+			{ 
+				facebook.handleOpenUrl(url);
+			},
+		0);
+		return true;
+	}
+	
+	function onFBLogin()
+	{
+		
+		document.getElementById("btnLogOut").style.display = "block";
+		document.getElementById("btnLogin").style.display = "none";
+				
+		var req = facebook.getFriends();
+			req.onload = onGotFriends; // should handle errors as well
+	}
+	
+	function onFBDidNotLogin(result)
+	{
+		alert("onFBDidNotLogin :: " + result.error_description);
+	}
+	
+	function onFBLogout()
+	{
+		document.getElementById("btnLogOut").style.display = "none";
+		document.getElementById("btnLogin").style.display = "block";
+		document.getElementById("fbFriends").innerHTML = "";
+	}
+	
+	function onGotMyInfo(evt)
+	{
+		var json = JSON.parse(evt.target.responseText);
+
+		if(json.error)
+		{
+			facebook.initWithAppId(APP_ID,true);
+			
+		}
+		else
+		{
+			var req = facebook.getFriends();
+			req.onload = onGotFriends;
+		}
+	}
+	
+	function onGotFriends(evt)
+	{
+		// example friend rendering code
+		var json = JSON.parse(evt.target.responseText);
+
+		var listItems = [];
+		var template = "<li id='FBID' onclick='showUser(\"FBID\")'><img src='https://graph.facebook.com/FBID/picture'/><span>NAME</span></li>";
+		for(var n = 0, len = json.data.length; n < len; n++)
+		{
+			var friend = json.data[n];
+			friendsMap[friend.id] = friend; // store friend info for later ( right now it will just be id:name pairs
+			listItems.push(template.replace(/FBID/g,friend.id).replace(/NAME/g,friend.name));
+		}
+		document.getElementById("fbFriends").innerHTML = listItems.join("");
+					
+		showHideLoadingScreen(false);	
+		
+	}
+	
+	function showUser(userId)
+	{
+		var message = prompt("Enter your message to post.");
+		
+		if(message)
+		{
+			// this requires 'publish_stream' permission
+			var req = facebook.getGraphRequest(userId + "/feed",{message:message});
+			req.onload = function(evt)
+			{
+				alert(evt.target.responseText);
+			}
+		}
+	}
+	
+	function onGotFriendInfo(evt)
+	{
+		// console.log(evt.target.responseText);
+		// var json = JSON.parse(evt.target.responseText);
+		// TODO: render info on the friend
+		// TODO: update the friendsMap with more info
+		
+	}
+	
+	function onGotNewsFeed(evt)
+	{
+		// alert(evt.target.responseText);
+		// var json = JSON.parse(evt.target.responseText);
+		// TODO: render the news feed
+	}
+    
+    </script>
+  </head>
+  <body onload="onBodyLoad()">
+  
+	<h3 id="loading">Loading ...</h3>
+	
+	<div id="buttonBar">
+		<img id="btnLogin" src="LoginWithFacebookNormal.png" onclick="loginToFacebook()"/>
+		<img id="btnLogOut" src="LogoutNormal.png" onclick="logOutOfFacebook()"/>
+	</div>
+
+	<ul id="fbFriends">
+		<!-- Placeholder for later -->
+	</ul>
+  </body>
+</html>

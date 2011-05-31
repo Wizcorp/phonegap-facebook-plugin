@@ -1,0 +1,184 @@
+#! /usr/bin/env ruby
+require 'ftools'
+#
+# thank you @alunny for suffering this before I had to - @brianleroux
+#
+# a little module for munging pbxproj files
+# with a stupid name
+module PabstProj
+  # struct to contain all of the data for each file
+  if !defined?(PluginFile)
+    PluginFile = Class.new(Struct.new(:name, :type, :identifier, :fileref, :path))
+
+    class PluginFile
+      def group
+        case self.type
+        when :source
+          "Sources"
+        when :resource
+          "Resources"
+        end
+      end
+
+      def last_type
+        case File.extname(self.name)
+        when '.png'
+          'image.png'
+        when '.m'
+          'sourcecode.c.objc'
+        when '.h'
+          'sourcecode.c.h'
+        when '.xib'
+          'file.xib'
+        when '.plist'
+          'text.plist.xml'
+        else
+          'text'
+        end
+      end
+    end
+  end
+
+  XCODE_GUID_MATCH = /[0-9A-F]{24}/
+  DELIMITERS = {
+    :PBXBUILD_END     => "/* End PBXBuildFile section */",
+    :PBXFILEREF_END   => "/* End PBXFileReference section */",
+    :PBXGROUP_END     => "\t\t\t);\n\t\t\tpath = Plugins;",
+    :PBXRESOURCES_END => "\t\t\t);\n\t\t\trunOnlyForDeploymentPostprocessing = 0;\n\t\t};\n/* End PBXResourcesBuildPhase",
+    :PBXSOURCES_END   => "\t\t\t);\n\t\t\trunOnlyForDeploymentPostprocessing = 0;\n\t\t};\n/* End PBXSourcesBuildPhase"
+  }
+
+  attr_reader :guid_list, :source_files, :header_files, :resource_files
+
+
+  def add_plugins plugins_dir, pbxproj
+    read_all_guids pbxproj
+
+    parse_all_filenames plugins_dir
+
+    rewrite_project pbxproj
+  end
+
+  def read_all_guids pbxproj
+    @guid_list = File.read(pbxproj).scan(XCODE_GUID_MATCH).uniq
+  end
+
+  def parse_all_filenames plugins_dir
+    plugin_filepaths = Dir.glob("#{ plugins_dir }/**/*").select { |f| !File.directory? f }
+    plugin_files = []
+
+    plugin_filepaths.each do |filepath|
+      name = File.basename(filepath)
+      type = type_from_extn(File.extname(filepath))
+
+      plugin_files << PluginFile.new(name, type, new_guid, new_guid, filepath)
+    end
+
+    @source_files    = plugin_files.select { |f| f.type == :source }
+    @header_files    = plugin_files.select { |f| f.type == :header }
+    @resource_files  = plugin_files.select { |f| f.type == :resource }
+  end
+
+  def new_guid
+    s4 = lambda { (100 + rand(899)).to_s }
+    new_one = lambda do
+        s4.call + s4.call + s4.call + s4.call + s4.call + s4.call + s4.call + s4.call
+    end
+    #new_one = UUIDTools::UUID.timestamp_create.to_s.gsub('-','').upcase[0,24]
+    guid_list.include?(new_one) ? new_guid : new_one.call
+  end
+
+  def type_from_extn extn
+    case extn
+    when ".m"
+      :source
+    when ".h"
+      :header
+    else
+      :resource
+    end
+  end
+
+  # make it work, then make it good
+  def rewrite_project pbxproj
+    project_data = File.read(pbxproj)
+
+    pbxbuildfile_files      = @source_files + @resource_files
+    pbxfilereference_files  = @source_files + @header_files + @resource_files
+    pbxgroup_files          = @source_files + @header_files + @resource_files
+    pbxresources_files      = @resource_files
+    pbxsources_files        = @source_files
+
+    pbxbuildfile          = pbxbuildfile_files.map      { |f| pbxbuildfile_line(f) }
+    pbxfilereference      = pbxfilereference_files.map  { |f| pbxfilereference_line(f) }
+    pbxgroup              = pbxgroup_files.map          { |f| pbxgroup_line(f) }
+    pbxresources          = pbxresources_files.map      { |f| pbxresourcesbuild_line(f) }
+    pbxsources            = pbxsources_files.map        { |f| pbxsourcesbuildphase_line(f) }
+
+    pbxbuildfile.each do |file_line|
+      index = project_data.index(DELIMITERS[:PBXBUILD_END])
+      project_data.insert(index, file_line)
+    end
+
+    pbxfilereference.each do |file_line|
+      index = project_data.index(DELIMITERS[:PBXFILEREF_END])
+      project_data.insert(index, file_line)
+    end
+
+    pbxgroup.each do |file_line|
+      index = project_data.index(DELIMITERS[:PBXGROUP_END])
+      project_data.insert(index, file_line)
+    end
+
+    pbxresources.each do |file_line|
+      index = project_data.index(DELIMITERS[:PBXRESOURCES_END])
+      project_data.insert(index, file_line)
+    end
+
+    pbxsources.each do |file_line|
+      index = project_data.index(DELIMITERS[:PBXSOURCES_END])
+      project_data.insert(index, file_line)
+    end
+
+    open(pbxproj, 'w') { |f| f.puts(project_data) }
+  end
+
+  def pbxbuildfile_line f
+    "\t\t#{ f.identifier } /* #{ f.name } in #{ f.group } */ = {isa = PBXBuildFile; fileRef = #{ f.fileref } /* #{ f.name } */; };\n"
+  end
+
+  def pbxfilereference_line f
+    "\t\t#{ f.fileref } /* #{ f.name } */ = {isa = PBXFileReference; lastKnownFileType = #{ f.last_type }; name = #{ f.name }; path = #{ f.path }; sourceTree = SOURCE_ROOT; };\n"
+  end
+
+  def pbxgroup_line f
+    "\t\t\t\t#{ f.fileref } /* #{ f.name } */,\n"
+  end
+
+  def pbxresourcesbuild_line f
+    "\t\t\t\t#{ f.identifier } /* #{ f.name } in Resources */,\n"
+  end
+
+  def pbxsourcesbuildphase_line f
+    "\t\t\t\t#{ f.identifier } /* #{ f.name } in Sources */,\n"
+  end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  name = `./bin/util/read-config name`.strip()
+  name = name.gsub(' ', '')
+  name = "./tmp/ios/#{ name }.xcodeproj/project.pbxproj"
+  back = "#{name}.bak"
+  
+  include PabstProj
+  # create a backup of the pbxproj, once
+  FileUtils.cp(name, back) unless File.exists? back 
+  # clobber the old pbxproj:
+  FileUtils.rm name
+  FileUtils.cp back name
+  # add in the plugins
+  add_plugins './tmp/ios/Plugins', name
+  # now remove the ./tmp/ios/ str from the file
+  old = File.read(name).gsub('./tmp/ios/','')
+  open(name, 'w') { |f| f.write old }
+end

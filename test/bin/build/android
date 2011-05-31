@@ -1,0 +1,15 @@
+#! /bin/sh
+
+# copy in any icons
+./bin/build/android-copy-icons
+
+# add any ./lib/plugins/* native and web code to android project
+./bin/plugin/shotgun/android
+
+# since we clobber www every time we need to copy in phonegap.js ...
+cp ./bin/create/templates/android/phonegap-0.9.4.js ./tmp/android/assets/www/phonegap-0.9.4.js
+
+# finally run the actual build
+cd ./tmp/android && ant debug install
+
+# FIXME launch app here with monkeyrunner

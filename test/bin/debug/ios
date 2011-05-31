@@ -1,0 +1,7 @@
+#! /bin/sh
+
+rm -rf ./tmp/ios/www
+cp -r ./www ./tmp/ios/www/
+
+# finally run the build
+./bin/build/ios

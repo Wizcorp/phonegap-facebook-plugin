@@ -1,0 +1,15 @@
+#! /bin/sh
+
+# generate the native src
+cd test
+./bin/create/ios
+cd ../
+
+# copy ios objc into ios proj
+cp -r ./native/ios/* ./tmp/ios/Plugins
+
+# copy js into ios proj
+cp ./www/facebook-connect-0.0.1.js ./test/www/facebook-connect-0.0.1.js
+
+# ...and compile
+cd test && ./bin/debug/ios

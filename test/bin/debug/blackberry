@@ -1,0 +1,6 @@
+#! /bin/sh
+
+rm -rf ./tmp/blackberry/www
+cp -r ./www ./tmp/blackberry/www/
+
+./bin/build/blackberry
