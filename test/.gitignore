@@ -1,0 +1,3 @@
+tmp/**/*
+tmp/cache.lock
+tmp/ios.log
