@@ -1287,6 +1287,29 @@ FB.provide('', {
             FB.log('"method" is a required parameter for FB.ui().');
             return;
         }
+
+        if (FB._phonegap) {
+            if (a.method == 'permissions.request') {
+                // TODO: check wtf b arg is all about...
+                PhoneGap.exec(function(e) { // login
+                    FB.Auth.setSession(e.session, 'connected');
+                    if (b) b(e);
+                }, null, 'com.facebook.phonegap.Connect', 'login', a.perms.split(',') );
+                return;
+            } else if (a.method == 'auth.logout') { //  logout
+                PhoneGap.exec(function(e) {
+                    FB.Auth.setSession(null, 'notConnected');
+                    if (b) b(e);
+                }, null, 'com.facebook.phonegap.Connect', 'logout', []);
+                return;
+            } else if (a.method == 'auth.status') { // getLoginStatus
+                PhoneGap.exec(function(e) {
+                    if (b) b(e);
+                }, null, 'com.facebook.phonegap.Connect', 'getLoginStatus', []);
+                return;
+            }
+        }
+
         if (f.method == 'permissions.request' && (f.display == 'iframe' || f.display == 'dialog')) {
             var h = f.perms.split(',');
             for (var e = 0; e < h.length; e++) {
@@ -1804,6 +1827,10 @@ FB.provide('', {
             status: true
         });
         FB._apiKey = a.appId || a.apiKey;
+        FB._phonegap = a.phonegap;
+        if (FB._phonegap) {
+            FB._phonegap.init(FB._apiKey);
+        }
         if (!a.logging && window.location.toString().indexOf('fb_debug=1') < 0) FB._logging = false;
         FB.XD.init(a.channelUrl);
         FB.TemplateData.init();

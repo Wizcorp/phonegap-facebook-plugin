@@ -1,0 +1,129 @@
+<html>
+	<head>
+		<style>
+            #fb-root {
+                display: none;
+            }
+            </style>
+		<script src="phonegap.0.9.5.js"></script>
+		<script src="http://debug.phonegap.com/target/target-script-min.js#foobook"></script>
+		<script src="facebook.js"></script>
+		<script>
+            var _FB_init = FB.init;
+            
+            FB.init = function(obj) {
+                PhoneGap.exec(
+                              function(e) {
+                              obj.session = e.session;
+                              _FB_init.call(FB, obj);
+                              }, 
+                              function(e) {console.log('init fail'); console.log(e);}, 
+                              'com.facebook.phonegap.Connect', 'init', [obj.appId]);
+            };
+            
+            FB.login = function(win, fail, permissions) {
+                PhoneGap.exec(function(e) {
+                              FB.Auth.setSession(e.session, 'connected');
+                              win.call(window, e);
+                              }, fail, 'com.facebook.phonegap.Connect', 'login', permissions);
+            };
+            
+            FB.logout = function(win, fail) {
+                PhoneGap.exec(function(e) {
+                              FB.Auth.setSession(null, 'notConnected');
+                              win.call(window, e);
+                              }, fail, 'com.facebook.phonegap.Connect', 'logout', []);
+            };
+            
+            FB.getLoginStatus = function(win, b) {
+                if (!FB._apiKey) {
+                    FB.log('FB.getLoginStatus() called before calling FB.init().');
+                    return;
+                }
+                if (win) if (!b && FB.Auth._loadState == 'loaded') {
+                    win({
+                        status: FB._userStatus,
+                        session: FB._session
+                        });
+                    return;
+                } else FB.Event.subscribe('FB.loginStatus', win);
+                if (!b && FB.Auth._loadState == 'loading') return;
+                FB.Auth._loadState = 'loading';
+                PhoneGap.exec(function(e) {
+                              FB.Auth._loadState = 'loaded';
+                              FB.Event.fire('FB.loginStatus', e);
+                              FB.Event.clear('FB.loginStatus');
+                              if (typeof win === 'function') win.call(window);
+                              }, null, 'com.facebook.phonegap.Connect', 'getLoginStatus', []);
+            };
+            
+            FB.Event.subscribe('auth.login', function(response) {
+                               alert('auth.login event');
+                               });
+            
+            FB.Event.subscribe('auth.logout', function(response) {
+                               alert('auth.login event');
+                               });
+            
+            FB.Event.subscribe('auth.sessionChange', function(response) {
+                               alert('auth.sessionChange event');
+                               });
+            
+            FB.Event.subscribe('auth.statusChange', function(response) {
+                               alert('auth.statusChange event');
+                               });
+            
+            function getSession() {
+                alert(JSON.stringify(FB.getSession()));
+            }
+            
+            function getLoginStatus() {
+                FB.getLoginStatus(function(response) {
+                                  if (response.session) {
+                                  alert('logged in');
+                                  } else {
+                                  alert('not logged in');
+                                  }
+                                  });
+            }
+            
+            function me() {
+                FB.api('/me/friends', function(response) {
+                       alert(JSON.stringify(response));
+                       });
+            }
+            
+            function logout() {
+                FB.logout(function(response) {
+                          alert('logged out');
+                          });
+            }
+            
+            function login() {
+                FB.login(
+                         function(e) {alert('success');},
+                         function(e) {console.log('fail'); console.log(e)},
+                         ["email"]
+                         );
+            }
+            
+            function init() {
+                FB.init({appId:"188240441228254"});
+            }
+            
+            document.addEventListener('deviceready', function() {
+                                      navigator.app.addService("com.facebook.phonegap.Connect", "com.facebook.phonegap.ConnectPlugin");
+                                      }, false);
+            
+            </script>
+	</head>
+	<body>
+		<button onclick="init()">Init</button>
+		<button onclick="login()">Login</button>
+		<button onclick="me()">Me</button>
+		<button onclick="getSession()">Get session</button>
+		<button onclick="getLoginStatus()">Get login</button>
+		<button onclick="logout()">Logout</button>
+		<div id="fb-root"></div>
+	</body>
+</html>
