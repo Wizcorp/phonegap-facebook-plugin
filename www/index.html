@@ -1,8 +1,24 @@
 <html>
-	<head>
+	<head></head>
+	<body>
+		<button onclick="init()">Init</button>
+		<button onclick="login()">Login</button>
+		<button onclick="me()">Me</button>
+		<button onclick="getSession()">Get session</button>
+		<button onclick="getLoginStatus()">Get login</button>
+		<button onclick="logout()">Logout</button>
+		
+		<!-- TODO: have this written dynamically in init if phonegap -->
+		<div id="fb-root"></div>
+
+	    <!-- phonegap -->
 		<script src="phonegap.0.9.5.js"></script>
+	    <!-- phonegap facebook plugin -->
+		<script src="facebook-connect-0.0.1.js"></script>
+	    <!-- weinre -->
 		<script src="http://debug.phonegap.com/target/target-script-min.js#foobook"></script>
-		<script src="facebook.js"></script>
+	    <!-- facebook js sdk -->
+		<script src="http://connect.facebook.net/en_US/all.js"></script>
 		<script>
             FB.Event.subscribe('auth.login', function(response) {
                                alert('auth.login event');
@@ -61,18 +77,6 @@
             document.addEventListener('deviceready', function() {
                                       navigator.app.addService("com.facebook.phonegap.Connect", "com.facebook.phonegap.ConnectPlugin");
                                       }, false);
-            
-            </script>
-	</head>
-	<body>
-		<button onclick="init()">Init</button>
-		<button onclick="login()">Login</button>
-		<button onclick="me()">Me</button>
-		<button onclick="getSession()">Get session</button>
-		<button onclick="getLoginStatus()">Get login</button>
-		<button onclick="logout()">Logout</button>
-		
-		<!-- TODO: have this written dynamically in init if phonegap -->
-		<div id="fb-root"></div>
+        </script>
 	</body>
 </html>
