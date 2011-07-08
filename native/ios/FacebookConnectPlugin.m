@@ -15,6 +15,7 @@
     #import "PluginResult.h"
 #endif
 
+#define APP_SECRET  @"b082c4620cdac27e0371f2c674026662"
 
 @implementation FacebookConnectPlugin
 
@@ -45,41 +46,101 @@
 
 - (void) login:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
 {
-    if ([arguments count] < 2) {
+    if ([arguments count] < 2 || !self.facebook) {
+        return;
+    }
+        
+    NSString* callbackId = [arguments objectAtIndex:0];// first item is the callbackId
+    BOOL validSession = [self.facebook isSessionValid];
+
+    PluginResult* result = nil;
+    NSString* jsString = nil;
+    
+    if (validSession) 
+    {
+        result = [PluginResult resultWithStatus:PGCommandStatus_OK];
+        jsString = [result toSuccessCallbackString:callbackId];
+        
+    } else {
+        NSMutableArray* marray = [NSMutableArray arrayWithArray:arguments];
+        [marray removeObjectAtIndex:0]; // first item is the callbackId
+        
+        [facebook authorize:marray delegate:self];
+        
+        result = [PluginResult resultWithStatus:PGCommandStatus_ERROR messageAsString:@"Must call FB.init before FB.login"];
+        jsString = [result toErrorCallbackString:callbackId];
+    }
+    
+    [super writeJavascript:jsString];
+}
+
+- (void) logout:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
+{
+    if (!self.facebook) {
         return;
     }
     
     NSString* callbackId = [arguments objectAtIndex:0];// first item is the callbackId
     
-    NSMutableArray* marray = [NSMutableArray arrayWithArray:arguments];
-    [marray removeObjectAtIndex:0]; // first item is the callbackId
-    
-	[facebook authorize:marray delegate:self];
-
-    PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_NO_RESULT];
-    [super writeJavascript:[result toSuccessCallbackString:callbackId]];
-}
-
-- (void) logout:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
-{
-    NSString* callbackId = [arguments objectAtIndex:0];// first item is the callbackId
-    
 	[facebook logout:self];
     
-    PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_NO_RESULT];
+    PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_OK];
     [super writeJavascript:[result toSuccessCallbackString:callbackId]];
 }
 
 - (void) handleOpenUrl:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
 {
+    if (!self.facebook) {
+        return;
+    }
+
     NSString* callbackId = [arguments objectAtIndex:0];// first item is the callbackId
     
 	NSURL* url = [NSURL URLWithString:[arguments objectAtIndex:1]];
 	BOOL ok = [facebook handleOpenURL:url];
+
+    PluginResult* result = nil;
+    NSString* jsString = nil;
+
+    if (ok) {
+        
+        NSDictionary* session = [NSDictionary 
+                                 dictionaryWithObjects:[NSArray arrayWithObjects:self.facebook.accessToken, [self.facebook.expirationDate description], APP_SECRET, [NSNumber numberWithBool:YES], @"...", @"...", nil] 
+                                 forKeys:[NSArray arrayWithObjects:@"access_token", @"expires", @"secret", @"session_key", @"sig", @"uid", nil]];
+
+        NSString* statusValue = [self.facebook isSessionValid]? @"connected" : @"unknown";
+        NSDictionary* response = [NSDictionary 
+                                 dictionaryWithObjects:[NSArray arrayWithObjects:statusValue, session, nil] 
+                                 forKeys:[NSArray arrayWithObjects:@"status", @"session", nil]];
+        
+        
+//        NSDictionary* response = [NSString stringWithFormat:
+//                              @"{ \
+//                                'status' : '%@', \
+//                                'session' : { \
+//                                    'access_token' : '%@', \
+//                                    'expires' : '%@', \
+//                                    'secret' : '%@', \
+//                                    'session_key' : true, \
+//                                    'sig' : '...', \
+//                                    'uid' : '...' \
+//                                 } \
+//                              }", 
+//                              [self.facebook isSessionValid]? @"connected" : @"unknown",
+//                              self.facebook.accessToken,
+//                              self.facebook.expirationDate,
+//                              APP_SECRET
+//                              ];
+        
+        result = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsDictionary:response];
+        jsString = [result toSuccessCallbackString:callbackId];
+        
+    } else {
+        result = [PluginResult resultWithStatus:PGCommandStatus_ERROR];
+        jsString = [result toErrorCallbackString:callbackId];
+    }
     
-    
-    PluginResult* result = [PluginResult resultWithStatus:ok ? PGCommandStatus_OK : PGCommandStatus_ERROR];
-    [super writeJavascript:[result toSuccessCallbackString:callbackId]];
+    [super writeJavascript:jsString];
 }
 
 - (void) showFeedPublishDialog:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options

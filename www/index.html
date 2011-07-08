@@ -26,15 +26,17 @@
                                });
             
             FB.Event.subscribe('auth.logout', function(response) {
-                               alert('auth.login event');
+                               alert('auth.logout event');
                                });
             
             FB.Event.subscribe('auth.sessionChange', function(response) {
                                alert('auth.sessionChange event');
+                               console.log("auth.sessionChange: " + JSON.stringify(response));
                                });
             
             FB.Event.subscribe('auth.statusChange', function(response) {
                                alert('auth.statusChange event');
+                               console.log("auth.statusChange: " + JSON.stringify(response));
                                });
             
             function getSession() {

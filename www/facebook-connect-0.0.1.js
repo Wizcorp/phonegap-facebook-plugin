@@ -9,7 +9,7 @@ PG.FB = {
 		try {
 			b = b || { perms: '' };
 			PhoneGap.exec(function(e) { // login
-				FB.Auth.setSession(e.session, 'connected');
+				//FB.Auth.setSession(e.session, 'connected'); // never gets called because the plugin spawns Mobile Safari/Facebook app
 				if (a) a(e);
 			}, null, 'com.facebook.phonegap.Connect', 'login', b.perms.split(',') );
 		} catch (e) {
@@ -38,9 +38,8 @@ PG.FB = {
     },
     handleOpenUrl: function(url) {
         try {
-            console.log('PG.FB:' + url);
             PhoneGap.exec(function(e) {
-                            console.log("handleOpenUrl: " + e);
+                            FB.Auth.setSession(e.session, 'connected');
                           }, null, 'com.facebook.phonegap.Connect', 'handleOpenUrl', [url]);
         } catch (e) {
             alert(e);
