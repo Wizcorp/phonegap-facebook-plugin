@@ -7,7 +7,13 @@
 //
 
 #import "FacebookConnectPlugin.h"
-#import "JSON.h"
+#ifdef PHONEGAP_FRAMEWORK
+    #import <PhoneGap/JSON.h>
+    #import <PhoneGap/PluginResult.h>
+#else
+    #import "JSON.h"
+    #import "PluginResult.h"
+#endif
 
 
 @implementation FacebookConnectPlugin
@@ -15,38 +21,81 @@
 @synthesize facebook;
 
 
-- (void) initWithAppId:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
+- (void) init:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
 {
-	NSString* appId = [arguments objectAtIndex:0];
-	facebook = [[Facebook alloc] initWithAppId:appId];
-	
-// TODO: pass in permissions
-//	NSArray* permissions =  [[NSArray arrayWithObjects:
-//							  @"email", @"read_stream", nil] retain];
-//	
-//	
-//	[facebook authorize:permissions delegate:self];
+    if ([arguments count] < 2) {
+        return;
+    }
+    
+	NSString* callbackId = [arguments objectAtIndex:0];
+	NSString* appId = [arguments objectAtIndex:1];
+	self.facebook = [[Facebook alloc] initWithAppId:appId];
+	    
+    PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_OK];
+    [super writeJavascript:[result toSuccessCallbackString:callbackId]];
 }
 
--(void) authorize:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
+- (void) getLoginStatus:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
 {
-	[facebook authorize:arguments delegate:self];
+    NSString* callbackId = [arguments objectAtIndex:0];// first item is the callbackId
+    
+    PluginResult* result = [PluginResult resultWithStatus:self.facebook? PGCommandStatus_OK : PGCommandStatus_ERROR];
+    [super writeJavascript:[result toSuccessCallbackString:callbackId]];
 }
 
--(void) logout:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
+- (void) login:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
 {
+    if ([arguments count] < 2) {
+        return;
+    }
+    
+    NSString* callbackId = [arguments objectAtIndex:0];// first item is the callbackId
+    
+    NSMutableArray* marray = [NSMutableArray arrayWithArray:arguments];
+    [marray removeObjectAtIndex:0]; // first item is the callbackId
+    
+	[facebook authorize:marray delegate:self];
+
+    PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_NO_RESULT];
+    [super writeJavascript:[result toSuccessCallbackString:callbackId]];
+}
+
+- (void) logout:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
+{
+    NSString* callbackId = [arguments objectAtIndex:0];// first item is the callbackId
+    
 	[facebook logout:self];
+    
+    PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_NO_RESULT];
+    [super writeJavascript:[result toSuccessCallbackString:callbackId]];
 }
 
--(void) handleOpenUrl:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
+- (void) handleOpenUrl:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
 {
-	NSURL* url = [NSURL URLWithString:[arguments objectAtIndex:0]];
-	[facebook handleOpenURL:url];
+    NSString* callbackId = [arguments objectAtIndex:0];// first item is the callbackId
+    
+	NSURL* url = [NSURL URLWithString:[arguments objectAtIndex:1]];
+	BOOL ok = [facebook handleOpenURL:url];
+    
+    
+    PluginResult* result = [PluginResult resultWithStatus:ok ? PGCommandStatus_OK : PGCommandStatus_ERROR];
+    [super writeJavascript:[result toSuccessCallbackString:callbackId]];
 }
 
--(void) showFeedPublishDialog:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
+- (void) showFeedPublishDialog:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
 {
+    NSString* callbackId = [arguments objectAtIndex:0];// first item is the callbackId
+    
 	[facebook dialog:@"feed" andDelegate:self];
+    
+    PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_NO_RESULT];
+    [super writeJavascript:[result toSuccessCallbackString:callbackId]];
+}
+
+- (void) dealloc
+{
+    self.facebook = nil;
+    [super dealloc];
 }
 
 /**

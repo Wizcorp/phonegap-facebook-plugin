@@ -7,13 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "PhoneGapCommand.h"
+#ifdef PHONEGAP_FRAMEWORK
+    #import <PhoneGap/PGPlugin.h>
+#else
+    #import "PGPlugin.h"
+#endif
 #import "FBConnect.h"
 
 
-@interface FacebookConnectPlugin : PhoneGapCommand<FBSessionDelegate,FBRequestDelegate,FBDialogDelegate> {
-
-	Facebook *facebook;
+@interface FacebookConnectPlugin : PGPlugin<FBSessionDelegate,FBRequestDelegate,FBDialogDelegate> {
 }
 
 @property (nonatomic, retain) Facebook *facebook;
