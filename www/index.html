@@ -21,22 +21,62 @@
 		<div id="fb-root"></div>
 
 		<script>
+            
+            ///////////////////////////////////////////////////////////////////////////
+            // We write results to the DOM because of handleOpenURL restrictions
+            
+            var lastTime = null;
+            function writeTimestamp()
+            {
+                var now = new Date().getTime();
+                if (lastTime == null) {
+                    lastTime = new Date(now);
+                }
+                
+                var elapsed = now - lastTime;
+                if (elapsed > 10000 || elapsed == 0) {
+                    write("<hr />");
+                    writeln(new Date(now).toString());
+                    if (elapsed != 0) {
+                        lastTime = new Date(now);
+                    }
+                }
+            }
+            
+            function writeLog(str)
+            {
+                writeTimestamp();
+                writeln(str);
+            }
+            
+            function write(str)
+            {
+                var el = document.getElementById("log");
+                el.innerHTML = el.innerHTML + str;
+                el.scrollTop = el.scrollHeight;
+            }
+            
+            function writeln(str)
+            {
+                write(str + '<br />');
+            }
+
+            ///////////////////////////////////////////////////////////////////////////
+            
             FB.Event.subscribe('auth.login', function(response) {
-                               alert('auth.login event');
+                               writeLog('auth.login event');
                                });
             
             FB.Event.subscribe('auth.logout', function(response) {
-                               alert('auth.logout event');
+                               writeLog('auth.logout event');
                                });
             
             FB.Event.subscribe('auth.sessionChange', function(response) {
-                               alert('auth.sessionChange event');
-                               console.log("auth.sessionChange: " + JSON.stringify(response));
+                               writeLog('auth.sessionChange event');
                                });
             
             FB.Event.subscribe('auth.statusChange', function(response) {
-                               alert('auth.statusChange event');
-                               console.log("auth.statusChange: " + JSON.stringify(response));
+                               writeLog('auth.statusChange event');
                                });
             
             function getSession() {
@@ -46,7 +86,7 @@
             function getLoginStatus() {
                 FB.getLoginStatus(function(response) {
                                       if (response.session) {
-                                          alert('logged in');
+                                        alert('logged in');
                                       } else {
                                           alert('not logged in');
                                       }
@@ -67,7 +107,9 @@
             
             function login() {
                     FB.login(
-                         function(e) {alert(e);},
+                         function(e) {
+                             alert(e);
+                         },
                          { perms: "email" }
                     );
             }
@@ -79,22 +121,11 @@
                     alert(e);
                 }
             }
-            
-            function handleOpenURL(url)
-            {
-                // handleOpenUrl MUST return immediately, so we cannot do any blocking methods in here -jm
-                setTimeout( 
-                    function()
-                    { 
-                        PG.FB.handleOpenUrl(url);
-                    },
-                0);
-                return true;            
-            }
-            
+                        
             document.addEventListener('deviceready', function() {
                                             navigator.app.addService("com.facebook.phonegap.Connect", "com.facebook.phonegap.ConnectPlugin");
                                       }, false);
         </script>
+        <div id="log"></div>
 	</body>
 </html>

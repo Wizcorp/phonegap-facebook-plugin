@@ -21,6 +21,24 @@
 
 @synthesize facebook;
 
+/* This overrides PGPlugin's method, which receives a notification when handleOpenURL is called on the main app delegate */
+- (void) handleOpenURL:(NSNotification*)notification
+{
+	NSURL* url = [notification object];
+	if (![url isKindOfClass:[NSURL class]]) {
+        return;
+	}
+    
+	BOOL ok = [facebook handleOpenURL:url];
+    if (ok) {
+        
+        NSDictionary* session = [NSDictionary 
+                                 dictionaryWithObjects:[NSArray arrayWithObjects:self.facebook.accessToken, [self.facebook.expirationDate description], APP_SECRET, [NSNumber numberWithBool:YES], @"...", @"...", nil] 
+                                 forKeys:[NSArray arrayWithObjects:@"access_token", @"expires", @"secret", @"session_key", @"sig", @"uid", nil]];
+        
+        [super writeJavascript:[NSString stringWithFormat:@"FB.Auth.setSession(%@);", [session JSONRepresentation]]];
+    }
+}
 
 - (void) init:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
 {
@@ -86,61 +104,6 @@
     
     PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_OK];
     [super writeJavascript:[result toSuccessCallbackString:callbackId]];
-}
-
-- (void) handleOpenUrl:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
-{
-    if (!self.facebook) {
-        return;
-    }
-
-    NSString* callbackId = [arguments objectAtIndex:0];// first item is the callbackId
-    
-	NSURL* url = [NSURL URLWithString:[arguments objectAtIndex:1]];
-	BOOL ok = [facebook handleOpenURL:url];
-
-    PluginResult* result = nil;
-    NSString* jsString = nil;
-
-    if (ok) {
-        
-        NSDictionary* session = [NSDictionary 
-                                 dictionaryWithObjects:[NSArray arrayWithObjects:self.facebook.accessToken, [self.facebook.expirationDate description], APP_SECRET, [NSNumber numberWithBool:YES], @"...", @"...", nil] 
-                                 forKeys:[NSArray arrayWithObjects:@"access_token", @"expires", @"secret", @"session_key", @"sig", @"uid", nil]];
-
-        NSString* statusValue = [self.facebook isSessionValid]? @"connected" : @"unknown";
-        NSDictionary* response = [NSDictionary 
-                                 dictionaryWithObjects:[NSArray arrayWithObjects:statusValue, session, nil] 
-                                 forKeys:[NSArray arrayWithObjects:@"status", @"session", nil]];
-        
-        
-//        NSDictionary* response = [NSString stringWithFormat:
-//                              @"{ \
-//                                'status' : '%@', \
-//                                'session' : { \
-//                                    'access_token' : '%@', \
-//                                    'expires' : '%@', \
-//                                    'secret' : '%@', \
-//                                    'session_key' : true, \
-//                                    'sig' : '...', \
-//                                    'uid' : '...' \
-//                                 } \
-//                              }", 
-//                              [self.facebook isSessionValid]? @"connected" : @"unknown",
-//                              self.facebook.accessToken,
-//                              self.facebook.expirationDate,
-//                              APP_SECRET
-//                              ];
-        
-        result = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsDictionary:response];
-        jsString = [result toSuccessCallbackString:callbackId];
-        
-    } else {
-        result = [PluginResult resultWithStatus:PGCommandStatus_ERROR];
-        jsString = [result toErrorCallbackString:callbackId];
-    }
-    
-    [super writeJavascript:jsString];
 }
 
 - (void) showFeedPublishDialog:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options

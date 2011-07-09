@@ -36,15 +36,6 @@ PG.FB = {
 			alert(e);
 		}
     },
-    handleOpenUrl: function(url) {
-        try {
-            PhoneGap.exec(function(e) {
-                            FB.Auth.setSession(e.session, 'connected');
-                          }, null, 'com.facebook.phonegap.Connect', 'handleOpenUrl', [url]);
-        } catch (e) {
-            alert(e);
-        }
-    },
     isAppInstalled: function(cb) {
         
     }
