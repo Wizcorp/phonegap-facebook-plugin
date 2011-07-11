@@ -1,5 +1,14 @@
 <html>
-	<head></head>
+	<head>
+	    <!-- phonegap -->
+		<script src="phonegap-0.9.6.js"></script>
+	    <!-- phonegap facebook plugin -->
+		<script src="facebook-connect-0.0.1.js"></script>
+	    <!-- weinre -->
+		<script src="http://debug.phonegap.com/target/target-script-min.js#foobook"></script>
+	    <!-- facebook js sdk -->
+		<script src="facebook.js"></script>
+    </head>
 	<body>
 		<button onclick="init()">Init</button>
 		<button onclick="login()">Login</button>
@@ -11,29 +20,63 @@
 		<!-- TODO: have this written dynamically in init if phonegap -->
 		<div id="fb-root"></div>
 
-	    <!-- phonegap -->
-		<script src="phonegap.0.9.5.js"></script>
-	    <!-- phonegap facebook plugin -->
-		<script src="facebook-connect-0.0.1.js"></script>
-	    <!-- weinre -->
-		<script src="http://debug.phonegap.com/target/target-script-min.js#foobook"></script>
-	    <!-- facebook js sdk -->
-		<script src="http://connect.facebook.net/en_US/all.js"></script>
 		<script>
+            
+            ///////////////////////////////////////////////////////////////////////////
+            // We write results to the DOM because of handleOpenURL restrictions
+            
+            var lastTime = null;
+            function writeTimestamp()
+            {
+                var now = new Date().getTime();
+                if (lastTime == null) {
+                    lastTime = new Date(now);
+                }
+                
+                var elapsed = now - lastTime;
+                if (elapsed > 10000 || elapsed == 0) {
+                    write("<hr />");
+                    writeln(new Date(now).toString());
+                    if (elapsed != 0) {
+                        lastTime = new Date(now);
+                    }
+                }
+            }
+            
+            function writeLog(str)
+            {
+                writeTimestamp();
+                writeln(str);
+            }
+            
+            function write(str)
+            {
+                var el = document.getElementById("log");
+                el.innerHTML = el.innerHTML + str;
+                el.scrollTop = el.scrollHeight;
+            }
+            
+            function writeln(str)
+            {
+                write(str + '<br />');
+            }
+
+            ///////////////////////////////////////////////////////////////////////////
+            
             FB.Event.subscribe('auth.login', function(response) {
-                               alert('auth.login event');
+                               writeLog('auth.login event');
                                });
             
             FB.Event.subscribe('auth.logout', function(response) {
-                               alert('auth.login event');
+                               writeLog('auth.logout event');
                                });
             
             FB.Event.subscribe('auth.sessionChange', function(response) {
-                               alert('auth.sessionChange event');
+                               writeLog('auth.sessionChange event');
                                });
             
             FB.Event.subscribe('auth.statusChange', function(response) {
-                               alert('auth.statusChange event');
+                               writeLog('auth.statusChange event');
                                });
             
             function getSession() {
@@ -42,41 +85,47 @@
             
             function getLoginStatus() {
                 FB.getLoginStatus(function(response) {
-                                  if (response.session) {
-                                      alert('logged in');
-                                  } else {
-                                      alert('not logged in');
-                                  }
+                                      if (response.session) {
+                                        alert('logged in');
+                                      } else {
+                                          alert('not logged in');
+                                      }
                                   });
             }
             
             function me() {
                 FB.api('/me/friends', function(response) {
-                       alert(JSON.stringify(response));
+                            alert(JSON.stringify(response));
                        });
             }
             
             function logout() {
                 FB.logout(function(response) {
-                          alert('logged out');
+                            alert('logged out');
                           });
             }
             
             function login() {
-                FB.login(
-                         function(e) {alert('success');},
-                         function(e) {console.log('fail'); console.log(e)},
-                         ["email"]
-                         );
+                    FB.login(
+                         function(e) {
+                             alert(e);
+                         },
+                         { perms: "email" }
+                    );
             }
             
             function init() {
-                FB.init({ appId: "188240441228254", phonegap: PG.FB });
+                try {
+                    FB.init({ appId: "188240441228254", phonegap: PG.FB });
+                } catch (e) {
+                    alert(e);
+                }
             }
-            
+                        
             document.addEventListener('deviceready', function() {
-                                      navigator.app.addService("com.facebook.phonegap.Connect", "com.facebook.phonegap.ConnectPlugin");
+                                            navigator.app.addService("com.facebook.phonegap.Connect", "com.facebook.phonegap.ConnectPlugin");
                                       }, false);
         </script>
+        <div id="log"></div>
 	</body>
 </html>
