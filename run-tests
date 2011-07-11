@@ -3,13 +3,17 @@
 # generate the native src
 cd test
 ./bin/create/ios
-cd ../
+./bin/create/android
+cd ..
 
-# copy ios objc into ios proj
+# copy plugin into proj
 cp -r ./native/ios/* ./tmp/ios/Plugins
+cp -r ./native/android/* ./tmp/android
 
-# copy js into ios proj
-cp ./www/facebook-connect-0.0.1.js ./test/www/facebook-connect-0.0.1.js
+# copy js into proj
+cp ./lib/pg-plugin-fb-connect.js ./test/www/pg-plugin-fb-connect.js
 
 # ...and compile
-cd test && ./bin/debug/ios
+cd test
+./bin/debug/ios
+./bin/debug/android
