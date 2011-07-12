@@ -3,16 +3,56 @@ Facebook Connect PhoneGap Plugin
 
 Offical plugin for Facebook Connect.
 
+Android (OS X)
+-----------
 
-Testing
--------
+Get the latest Android source from http://github.com/phonegap/phonegap-android and read the readme there about getting started with Android.
 
-To run the test suite you will need to have ios-sim installed. Then
-simply run:
+From terminal run the following command:
 
-    ./run-tests
+<pre>
+droidgap gen foobar
+</pre>
 
-The tests can be found in `./test/www/facebook-connect-tests.js`.
+In foobar/res/xml/plugins.xml add the following element as a child of the root plugins element:
+
+<pre>
+&lt;plugin name="com.facebook.phonegap.Connect" value="com.facebook.phonegap.Connect" /&gt;
+</pre>
+
+From the PhoneGap Facebook Connect Plugin folder copy the contents of the native/android/ folder into foobar/
+
+From the PhoneGap Facebook Connect Plugin folder copy the app/www folder into foobar/assets/ overwriting the index.html and icon.png files but keeping the phonegap...js file.
+
+From the PhoneGap Facebook Connect Plugin folder copy the www folder into foobar/assets/
+
+From terminal in the foobar folder (with an android device attached to your computer) run the following command:
+
+<pre>
+ant debug install
+</pre>
+
+
+iOS (OS X)
+-----------
+
+Get the latest iOS source from http://github.com/phonegap/phonegap-iphone and read the readme there about getting started with iOS.
+
+Create a new xcode project from the PhoneGap template that you created and installed (you did that if you read the readme on github I hope).
+
+From the PhoneGap Facebook Connect Plugin folder copy the contents of the native/ios folder into you app in xcode.
+
+Open the plugins.plist file in xcode and add an entry for com.facebook.phonegap.Connect ... SHAZ CAN YOU PLS ELABORATE?
+
+From the PhoneGap Facebook Connect Plugin folder copy the app/www folder into the www directory in xcode overwriting the index.html and icon.png files but keeping the phonegap...js file.
+
+From the PhoneGap Facebook Connect Plugin folder copy the www folder into the www directory in xcode.
+
+Run the application in xcode.
+
+
+
+IGNORE THIS STUFF BELOW FOR NOW...
 
 iOS Testing
 -----------

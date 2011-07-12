@@ -3,9 +3,7 @@
 	    <!-- phonegap -->
 		<script src="phonegap-0.9.6.js"></script>
 	    <!-- phonegap facebook plugin -->
-		<script src="facebook-connect-0.0.1.js"></script>
-	    <!-- weinre -->
-		<script src="http://debug.phonegap.com/target/target-script-min.js#foobook"></script>
+		<script src="pg-plugin-facebook-connect.js"></script>
 	    <!-- facebook js sdk -->
 		<script src="facebook.js"></script>
     </head>
@@ -21,48 +19,7 @@
 		<div id="fb-root"></div>
 
 		<script>
-            
-            ///////////////////////////////////////////////////////////////////////////
-            // We write results to the DOM because of handleOpenURL restrictions
-            
-            var lastTime = null;
-            function writeTimestamp()
-            {
-                var now = new Date().getTime();
-                if (lastTime == null) {
-                    lastTime = new Date(now);
-                }
-                
-                var elapsed = now - lastTime;
-                if (elapsed > 10000 || elapsed == 0) {
-                    write("<hr />");
-                    writeln(new Date(now).toString());
-                    if (elapsed != 0) {
-                        lastTime = new Date(now);
-                    }
-                }
-            }
-            
-            function writeLog(str)
-            {
-                writeTimestamp();
-                writeln(str);
-            }
-            
-            function write(str)
-            {
-                var el = document.getElementById("log");
-                el.innerHTML = el.innerHTML + str;
-                el.scrollTop = el.scrollHeight;
-            }
-            
-            function writeln(str)
-            {
-                write(str + '<br />');
-            }
 
-            ///////////////////////////////////////////////////////////////////////////
-            
             FB.Event.subscribe('auth.login', function(response) {
                                writeLog('auth.login event');
                                });
