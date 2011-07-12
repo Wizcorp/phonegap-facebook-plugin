@@ -42,7 +42,9 @@
         
         
         PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsDictionary:status];
-        [super writeJavascript:[result toSuccessCallbackString:self.loginCallbackId]];
+        NSString* callback = [result toSuccessCallbackString:self.loginCallbackId];
+        // we need to wrap the callback in a setTimeout(func, 0) so it doesn't block the UI (handleOpenURL limitation)
+        [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
     }
 }
 
