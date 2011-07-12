@@ -1,3 +1,0 @@
-#! /usr/sh
-
-palm-log $(./bin/util/read-config id)

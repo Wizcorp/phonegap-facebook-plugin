@@ -1,6 +1,0 @@
-#! /bin/sh
-
-rm -rf ./tmp/android/assets/www
-cp -r ./www ./tmp/android/assets/www/
-
-./bin/build/android
