@@ -19,6 +19,6 @@
 }
 
 @property (nonatomic, retain) Facebook *facebook;
-
+@property (nonatomic, copy) NSString* loginCallbackId;
 
 @end
