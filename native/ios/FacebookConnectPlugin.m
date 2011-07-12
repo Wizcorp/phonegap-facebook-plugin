@@ -19,7 +19,7 @@
 
 @implementation FacebookConnectPlugin
 
-@synthesize facebook;
+@synthesize facebook, loginCallbackId;
 
 /* This overrides PGPlugin's method, which receives a notification when handleOpenURL is called on the main app delegate */
 - (void) handleOpenURL:(NSNotification*)notification
@@ -32,11 +32,19 @@
 	BOOL ok = [facebook handleOpenURL:url];
     if (ok) {
         
+        
         NSDictionary* session = [NSDictionary 
                                  dictionaryWithObjects:[NSArray arrayWithObjects:self.facebook.accessToken, [self.facebook.expirationDate description], APP_SECRET, [NSNumber numberWithBool:YES], @"...", @"...", nil] 
                                  forKeys:[NSArray arrayWithObjects:@"access_token", @"expires", @"secret", @"session_key", @"sig", @"uid", nil]];
+        NSDictionary* status = [NSDictionary 
+                                 dictionaryWithObjects:[NSArray arrayWithObjects:@"connected", session, nil] 
+                                 forKeys:[NSArray arrayWithObjects:@"status", @"session", nil]];
         
-        [super writeJavascript:[NSString stringWithFormat:@"FB.Auth.setSession(%@);", [session JSONRepresentation]]];
+        
+        PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsDictionary:status];
+        NSString* callback = [result toSuccessCallbackString:self.loginCallbackId];
+        // we need to wrap the callback in a setTimeout(func, 0) so it doesn't block the UI (handleOpenURL limitation)
+        [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
     }
 }
 
@@ -83,10 +91,11 @@
         NSMutableArray* marray = [NSMutableArray arrayWithArray:arguments];
         [marray removeObjectAtIndex:0]; // first item is the callbackId
         
-        [facebook authorize:marray delegate:self];
+        // save the callbackId for handleOpenURL return (only works if the app is multi-tasked!)
+        self.loginCallbackId = callbackId;
         
-        result = [PluginResult resultWithStatus:PGCommandStatus_ERROR messageAsString:@"Must call FB.init before FB.login"];
-        jsString = [result toErrorCallbackString:callbackId];
+        return [facebook authorize:marray delegate:self];
+        
     }
     
     [super writeJavascript:jsString];
