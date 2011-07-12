@@ -1,0 +1,9 @@
+{
+	"id": "com.phonegap.example",
+	"version": "0.1.0",
+	"vendor": "HP",
+	"type": "web",
+	"main": "index.html",
+	"title": "PhoneGap WebOS",
+	"uiRevision": 2
+}

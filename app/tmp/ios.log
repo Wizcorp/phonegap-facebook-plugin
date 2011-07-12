@@ -1,0 +1,13 @@
+2011-07-11 16:08:08.195 ExampleApp[57158:207] applicationDidBecomeActive
+2011-07-11 16:08:10.110 ExampleApp[57158:207] Device initialization: DeviceInfo = {"name":"iPhone Simulator","uuid":"4D50411B-275A-5B21-BBF6-0432733BD814","platform":"iPhone Simulator","gap":"0.9.5","version":"4.3.2"};
+2011-07-11 16:08:25.420 ExampleApp[57368:207] applicationDidBecomeActive
+2011-07-11 16:08:27.119 ExampleApp[57368:207] Device initialization: DeviceInfo = {"name":"iPhone Simulator","uuid":"4D50411B-275A-5B21-BBF6-0432733BD814","platform":"iPhone Simulator","gap":"0.9.5","version":"4.3.2"};
+2011-07-11 16:16:11.970 ExampleApp[57976:207] applicationDidBecomeActive
+2011-07-11 16:16:15.093 ExampleApp[57976:207] Device initialization: DeviceInfo = {"name":"iPhone Simulator","uuid":"4D50411B-275A-5B21-BBF6-0432733BD814","platform":"iPhone Simulator","gap":"0.9.5","version":"4.3.2"};
+Terminating in response to SpringBoard's termination.
+2011-07-11 16:31:17.403 ExampleApp[58827:207] applicationDidBecomeActive
+2011-07-11 16:31:19.512 ExampleApp[58827:207] Device initialization: DeviceInfo = {"name":"iPhone Simulator","uuid":"4D50411B-275A-5B21-BBF6-0432733BD814","platform":"iPhone Simulator","gap":"0.9.5","version":"4.3.2"};
+Terminating in response to SpringBoard's termination.
+2011-07-11 16:34:13.296 ExampleApp[59278:207] applicationDidBecomeActive
+2011-07-11 16:34:14.854 ExampleApp[59278:207] Device initialization: DeviceInfo = {"name":"iPhone Simulator","uuid":"4D50411B-275A-5B21-BBF6-0432733BD814","platform":"iPhone Simulator","gap":"0.9.5","version":"4.3.2"};
+Terminating in response to SpringBoard's termination.

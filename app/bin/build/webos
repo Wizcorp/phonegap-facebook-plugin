@@ -1,0 +1,5 @@
+#! /bin/sh
+
+palm-package -o ./tmp/webos/ ./tmp/webos/
+palm-install $(find ./tmp/webos -name '*.ipk')
+palm-launch $(./bin/util/read-config id)

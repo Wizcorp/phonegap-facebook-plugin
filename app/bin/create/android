@@ -1,0 +1,50 @@
+#! /bin/sh
+
+PKG=$(./bin/util/read-config id)
+ACT=$(./bin/util/read-config name | sed 's/ //g')
+PTH=$(echo $PKG | sed 's/\./\//g')
+FULL="./tmp/android/src/"$PTH"/"$ACT".java"
+
+# clobber existing build sludge
+rm -rf ./tmp/android
+
+
+
+if [ `uname -o` = "Cygwin" ]; then
+	# Cygwin specific stuff
+	ANDROID="android.bat"
+	SEDARG=""
+elif [ `uname -o` = "GNU/Linux" ]; then
+  # Linux
+  ANDROID="android"
+  SEDARG=""
+else
+	# Other UNIX (Linux, etc.) specific stuff
+	ANDROID="android"
+	SEDARG="''"
+fi
+
+# get the android target
+TARGET=$($ANDROID list targets | grep 'id: ' | sed 's/id: \([0-9]\).*/\1/g' | tail -1)
+
+# create the android project
+$ANDROID create project --target $TARGET --path ./tmp/android --package $PKG --activity $ACT
+
+# copy contents of www
+mkdir -p ./tmp/android/assets
+cp -r ./www ./tmp/android/assets/www/
+
+# copy in phonegap.js
+cp ./bin/create/templates/android/phonegap-0.9.4.js ./tmp/android/assets/www/phonegap-0.9.4.js
+
+# copy in ./libs/phonegap.jar
+mkdir -p ./tmp/android/libs
+cp ./bin/create/templates/android/phonegap-0.9.4.jar ./tmp/android/libs/phonegap-0.9.4.jar
+
+# copy in default activity
+cat ./bin/create/templates/android/Activity.java > $FULL
+find "$FULL" | xargs grep '__ACTIVITY__' -sl | xargs -L1 sed -i ${SEDARG} "s/__ACTIVITY__/${ACT}/g"
+find "$FULL" | xargs grep '__ID__' -sl | xargs -L1 sed -i ${SEDARG} "s/__ID__/${PKG}/g"
+
+# copy in intents
+./bin/create/android-convert-config
