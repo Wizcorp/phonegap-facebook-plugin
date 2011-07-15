@@ -3,6 +3,8 @@ Facebook Connect PhoneGap Plugin
 
 Offical plugin for Facebook Connect.
 
+This is all licensed under MIT except for app/www/facebook.js which is the Facebook JS SDK and is Apache 2.0.
+
 Android (OS X)
 -----------
 

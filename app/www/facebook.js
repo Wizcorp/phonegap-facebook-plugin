@@ -1,4 +1,10 @@
-/*1307080162,169588329,JIT Construction: v386815,en_US*/
+/*
+This is the facebook js sdk and I am putting it here for convenience.
+
+This content is licensed Apache Licence, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html)
+
+The Copyright belongs to whomever wrote this code ... probably Facebook :)
+*/
 if (!window.FB) window.FB = {
     _apiKey: null,
     _session: null,
