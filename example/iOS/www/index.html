@@ -3,11 +3,9 @@
 	    <!-- phonegap -->
 		<script src="phonegap-1.0.0rc1.min.js"></script>
 	    <!-- phonegap facebook plugin -->
-		<script src="facebook-connect-0.0.1.js"></script>
-	    <!-- weinre -->
-		<script src="http://debug.phonegap.com/target/target-script-min.js#foobook"></script>
+		<script src="pg-plugin-fb-connect.js"></script>
 	    <!-- facebook js sdk -->
-		<script src="facebook.js"></script>
+		<script src="facebook_js_sdk.js"></script>
     </head>
 	<body>
 		<button onclick="init()">Init</button>
@@ -21,63 +19,22 @@
 		<div id="fb-root"></div>
 
 		<script>
-            
-            ///////////////////////////////////////////////////////////////////////////
-            // We write results to the DOM because of handleOpenURL restrictions
-            
-            var lastTime = null;
-            function writeTimestamp()
-            {
-                var now = new Date().getTime();
-                if (lastTime == null) {
-                    lastTime = new Date(now);
-                }
-                
-                var elapsed = now - lastTime;
-                if (elapsed > 10000 || elapsed == 0) {
-                    write("<hr />");
-                    writeln(new Date(now).toString());
-                    if (elapsed != 0) {
-                        lastTime = new Date(now);
-                    }
-                }
-            }
-            
-            function writeLog(str)
-            {
-                writeTimestamp();
-                writeln(str);
-            }
-            
-            function write(str)
-            {
-                var el = document.getElementById("log");
-                el.innerHTML = el.innerHTML + str;
-                el.scrollTop = el.scrollHeight;
-            }
-            
-            function writeln(str)
-            {
-                write(str + '<br />');
-            }
 
-            ///////////////////////////////////////////////////////////////////////////
-            
             FB.Event.subscribe('auth.login', function(response) {
-                               writeLog('auth.login event');
-                               });
+                alert('auth.login event');
+            });
             
             FB.Event.subscribe('auth.logout', function(response) {
-                               writeLog('auth.logout event');
-                               });
+                alert('auth.logout event');
+            });
             
             FB.Event.subscribe('auth.sessionChange', function(response) {
-                               writeLog('auth.sessionChange event');
-                               });
+                alert('auth.sessionChange event');
+            });
             
             FB.Event.subscribe('auth.statusChange', function(response) {
-                               writeLog('auth.statusChange event');
-                               });
+                alert('auth.statusChange event');
+            });
             
             function getSession() {
                 alert(JSON.stringify(FB.getSession()));
@@ -85,32 +42,33 @@
             
             function getLoginStatus() {
                 FB.getLoginStatus(function(response) {
-                                      if (response.session) {
-                                        alert('logged in');
-                                      } else {
-                                          alert('not logged in');
-                                      }
-                                  });
+                    if (response.session) {
+                        alert('logged in');
+                    } else {
+                        alert('not logged in');
+                    }
+                });
             }
             
             function me() {
                 FB.api('/me/friends', function(response) {
-                            alert(JSON.stringify(response));
-                       });
+                    alert(JSON.stringify(response));
+                });
             }
             
             function logout() {
                 FB.logout(function(response) {
-                            alert('logged out');
-                          });
+                    alert('logged out');
+                });
             }
             
             function login() {
-                    FB.login(
-                         function(e) {
-                         },
-                         { perms: "email" }
-                    );
+                FB.login(
+                    function(e) {
+                        alert(e);
+                    },
+                    { perms: "email" }
+                );
             }
             
             function init() {
@@ -122,8 +80,8 @@
             }
                         
             document.addEventListener('deviceready', function() {
-                                            navigator.app.addService("com.facebook.phonegap.Connect", "com.facebook.phonegap.ConnectPlugin");
-                                      }, false);
+                navigator.app.addService("com.facebook.phonegap.Connect", "com.facebook.phonegap.ConnectPlugin");
+                }, false);
         </script>
         <div id="log"></div>
 	</body>
