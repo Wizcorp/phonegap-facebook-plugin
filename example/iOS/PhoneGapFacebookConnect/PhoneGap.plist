@@ -14,6 +14,8 @@
 	<array/>
 	<key>Plugins</key>
 	<dict>
+		<key>com.phonegap.facebook.Connect</key>
+		<string>FacebookConnectPlugin</string>
 		<key>com.phonegap.accelerometer</key>
 		<string>PGAccelerometer</string>
 		<key>com.phonegap.camera</key>
@@ -36,8 +38,6 @@
 		<string>PGCapture</string>
 		<key>com.phonegap.notification</key>
 		<string>PGNotification</string>
-		<key>com.facebook.phonegap.Connect</key>
-		<string>FacebookConnectPlugin</string>
 		
 	</dict>
 	<key>TopActivityIndicator</key>

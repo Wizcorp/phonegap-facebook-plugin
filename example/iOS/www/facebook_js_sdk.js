@@ -1288,40 +1288,18 @@ FB.provide('', {
             return;
         }
 
-//        if (FB._phonegap) {
-//            if (a.method == 'permissions.request') {
-//                // TODO: check wtf b arg is all about...
-//                PhoneGap.exec(function(e) { // login
-//                    FB.Auth.setSession(e.session, 'connected');
-//                    if (b) b(e);
-//                }, null, 'com.facebook.phonegap.Connect', 'login', a.perms.split(',') );
-//                return;
-//            } else if (a.method == 'auth.logout') { //  logout
-//                PhoneGap.exec(function(e) {
-//                    FB.Auth.setSession(null, 'notConnected');
-//                    if (b) b(e);
-//                }, null, 'com.facebook.phonegap.Connect', 'logout', []);
-//                return;
-//            } else if (a.method == 'auth.status') { // getLoginStatus
-//                PhoneGap.exec(function(e) {
-//                    if (b) b(e);
-//                }, null, 'com.facebook.phonegap.Connect', 'getLoginStatus', []);
-//                return;
-//            }
-//        }
-           
-        // If the phonegap arg is specified then call out to the phonegap plugin
+        // If the nativeInterface arg is specified then call out to the nativeInterface 
         // which uses the native app rather than using the iframe / popup web
-        if (FB._phonegap) {
+        if (FB._nativeInterface) {
             switch (f.method) {
                 case 'permissions.request':
-                    FB._phonegap.login(b, f);
+                    FB._nativeInterface.login(b, f);
                     break;
                 case 'auth.logout':
-                    FB._phonegap.logout(b);
+                    FB._nativeInterface.logout(b);
                     break;
                 case 'auth.status':
-                    FB._phonegap.getLoginStatus(b);
+                    FB._nativeInterface.getLoginStatus(b);
                     break;
             }
             return;
@@ -1847,9 +1825,9 @@ FB.provide('', {
             status: true
         });
         FB._apiKey = a.appId || a.apiKey;
-        FB._phonegap = a.phonegap;
-        if (FB._phonegap) {
-            FB._phonegap.init(FB._apiKey);
+        FB._nativeInterface = a.nativeInterface;
+        if (FB._nativeInterface) {
+            FB._nativeInterface.init(FB._apiKey);
         }
         if (!a.logging && window.location.toString().indexOf('fb_debug=1') < 0) FB._logging = false;
         FB.XD.init(a.channelUrl);

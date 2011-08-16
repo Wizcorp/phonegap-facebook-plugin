@@ -1,26 +1,40 @@
 Facebook Connect PhoneGap Plugin
 ================================
 
-Offical plugin for Facebook Connect.
+This is the offical plugin for Facebook Connect in PhoneGap!
+
+The Facebook Connect plugin for PhoneGap allows you to use the same JavaScript code in your web application as you 
+use in your native PhoneGap application, but your native PhoneGap application will use the Facebook native app to 
+perform single sign on (SSO) for the user.
 
 This is all licensed under MIT except for app/www/facebook_js_sdk.js which is the Facebook JS SDK and is Apache 2.0.
 
-Android (OS X)
------------
+Getting Started
+---------------
 
-Get the latest Android source from http://github.com/phonegap/phonegap-android and read the readme there about getting started with Android.
+Download the latest version of PhoneGap from www.phonegap.com.
 
-From terminal run the following command:
+Create an Android or iOS PhoneGap project -- those are the only platforms that the Facebook native application 
+currently runs on :(
 
-<pre>
-droidgap gen foobar
-</pre>
-
-In foobar/res/xml/plugins.xml add the following element as a child of the root plugins element:
+On Android you will need to put the following in your phonegap.xml / plugins.xml file:
 
 <pre>
-&lt;plugin name="com.facebook.phonegap.Connect" value="com.facebook.phonegap.Connect" /&gt;
+&lt;plugin name="com.facebook.phonegap.Connect" value="com.phonegap.facebook.Connect" /&gt;
 </pre>
+
+http://wiki.phonegap.com/How%20to%20Install%20a%20PhoneGap%20Plugin%20for%20Android
+
+On iOS you will need to put the following in your PhoneGap.plist file:
+
+
+
+
+http://wiki.phonegap.com/How%20to%20Install%20a%20PhoneGap%20Plugin%20for%20iOS
+
+
+
+
 
 From the PhoneGap Facebook Connect Plugin folder copy the contents of the native/android/ folder into foobar/
 
@@ -41,7 +55,7 @@ iOS (Mac OS X)
 1. Get the latest iOS source from http://github.com/phonegap/phonegap-iphone and read the README there about getting started with iOS.
 2. Create a new Xcode project from the PhoneGap template that you created and installed (you did that if you read the README on github I hope).
 3. From the 'PhoneGap Facebook Connect Plugin' folder copy the contents of the native/ios folder into your app in Xcode (usually in the Plugins folder group).
-4. Find the PhoneGap.plist file in the project navigator, expand the "Plugins" sub-tree, and add a new entry. For the key, add "com.facebook.phonegap.Connect", and its value will be "FacebookConnectPlugin"
+4. Find the PhoneGap.plist file in the project navigator, expand the "Plugins" sub-tree, and add a new entry. For the key, add "com.phonegap.facebook.Connect", and its value will be "FacebookConnectPlugin"
 5. From the' PhoneGap Facebook Connect Plugin' folder copy contents of the app/www folder into the www directory in Xcode overwriting the index.html and icon.png files but keeping the phonegap.*.js file 
 6. for Xcode 4, you will need to build it once, and heed the warning - this is an Xcode 4 template limitation. The warning instructions will tell you to drag copy the www folder into the project in Xcode.
 7. Run the application in Xcode.

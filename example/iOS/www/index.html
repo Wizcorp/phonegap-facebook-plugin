@@ -1,23 +1,25 @@
 <html>
 	<head>
-	    <!-- phonegap -->
-		<script src="phonegap-1.0.0rc1.min.js"></script>
-	    <!-- phonegap facebook plugin -->
-		<script src="pg-plugin-fb-connect.js"></script>
-	    <!-- facebook js sdk -->
-		<script src="facebook_js_sdk.js"></script>
     </head>
 	<body>
-		<button onclick="init()">Init</button>
 		<button onclick="login()">Login</button>
 		<button onclick="me()">Me</button>
 		<button onclick="getSession()">Get session</button>
 		<button onclick="getLoginStatus()">Get login</button>
 		<button onclick="logout()">Logout</button>
-		
+
+        <div id="data"></div>
+        
 		<!-- TODO: have this written dynamically in init if phonegap -->
 		<div id="fb-root"></div>
 
+        <!-- phonegap -->
+		<script src="phonegap-1.0.0rc1.min.js"></script>
+	    <!-- phonegap facebook plugin -->
+		<script src="pg-plugin-fb-connect.js"></script>
+	    <!-- facebook js sdk -->
+		<script src="facebook_js_sdk.js"></script>
+        
 		<script>
 
             FB.Event.subscribe('auth.login', function(response) {
@@ -52,7 +54,12 @@
             
             function me() {
                 FB.api('/me/friends', function(response) {
-                    alert(JSON.stringify(response));
+                    var data = document.getElementById('data');
+                    response.data.forEach(function(item) {
+                        var d = document.createElement('div');
+                        d.innerHTML = item.name;
+                        data.appendChild(d);
+                    });
                 });
             }
             
@@ -71,16 +78,13 @@
                 );
             }
             
-            function init() {
-                try {
-                    FB.init({ appId: "188240441228254", phonegap: PG.FB });
-                } catch (e) {
-                    alert(e);
-                }
-            }
-                        
             document.addEventListener('deviceready', function() {
-                navigator.app.addService("com.facebook.phonegap.Connect", "com.facebook.phonegap.ConnectPlugin");
+                  try {
+                    FB.init({ appId: "188240441228254", nativeInterface: PG.FB });
+                    document.getElementById('data').innerHTML = "";
+                  } catch (e) {
+                    alert(e);
+                  }
                 }, false);
         </script>
         <div id="log"></div>
