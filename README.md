@@ -56,7 +56,7 @@ iOS (Mac OS X)
 2. Get the latest iOS source from [http://github.com/phonegap/phonegap-iphone](http://github.com/phonegap/phonegap-iphone) and read the README there about getting started with iOS.
 3. Create a new Xcode project from the PhoneGap template that you created and installed (you did that if you read the README on github I hope).
 4. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **native/ios** folder into your app in Xcode (usually in the **Plugins** folder group). Make sure it is added as a "group" (yellow folder)
-5. Modify the **APP_SECRET** value in **FacebookConnectPlugin.m** with your Facebook app's **APP__SECRET**
+5. Modify the **APP__SECRET** value in **FacebookConnectPlugin.m** with your Facebook app's **APP__SECRET**
 6. Find the PhoneGap.plist file in the project navigator, expand the "Plugins" sub-tree, and add a new entry. For the key, add **com.phonegap.facebook.Connect**, and its value will be **FacebookConnectPlugin**
 7. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **app/www** folder into the **www** directory in Xcode overwriting the index.html and icon.png files but keeping the phonegap.*.js file 
 8. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **lib** folder into the **www** directory in Xcode 
