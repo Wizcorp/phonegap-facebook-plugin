@@ -61,7 +61,7 @@ iOS (Mac OS X)
 7. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **app/www** folder into the **www** directory in Xcode overwriting the index.html and icon.png files but keeping the phonegap.*.js file 
 8. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **lib** folder into the **www** directory in Xcode 
 9. for Xcode 4, you will need to build it once, and heed the warning - this is an Xcode 4 template limitation. The warning instructions will tell you to drag copy the **www** folder into the project in Xcode (add as a **folder reference** which is a blue folder).
-10. Under the group **Supporting Files**, find you **[PROJECTNAME]-Info.plist**, right-click on the file and select "Open As -> Source Code", add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
+10. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
 11. Download the **Facebook iOS SDK** from [https://github.com/facebook/facebook-ios-sdk](https://github.com/facebook/facebook-ios-sdk) and put it into your project folder
 12. Drag the **facebook-ios-sdk.xcodeproj** file into your project, this will create it as a sub-project
 13. Click on your project's icon (the root element) in Project Navigator, select your **Target**, and the **Build Phases** tab.
