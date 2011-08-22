@@ -1,6 +1,12 @@
 PG = ( typeof PG == 'undefined' ? {} : PG );
 PG.FB = {
     init: function(apiKey) {
+        // create the fb-root element if it doesn't exist
+        if (!document.getElementById('fb-root')) {
+            var elem = document.createElement('div');
+            elem.id = 'fb-root';
+            document.body.appendChild(elem);
+        }
         PhoneGap.exec(null, null, 'com.phonegap.facebook.Connect', 'init', [apiKey]);
     },
     login: function(a, b) {

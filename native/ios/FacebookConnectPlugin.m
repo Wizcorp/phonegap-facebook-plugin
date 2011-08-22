@@ -31,20 +31,8 @@
     
 	BOOL ok = [facebook handleOpenURL:url];
     if (ok) {
-        
-        
-        NSDictionary* session = [NSDictionary 
-                                 dictionaryWithObjects:[NSArray arrayWithObjects:self.facebook.accessToken, [self.facebook.expirationDate description], APP_SECRET, [NSNumber numberWithBool:YES], @"...", @"...", nil] 
-                                 forKeys:[NSArray arrayWithObjects:@"access_token", @"expires", @"secret", @"session_key", @"sig", @"uid", nil]];
-        NSDictionary* status = [NSDictionary 
-                                 dictionaryWithObjects:[NSArray arrayWithObjects:@"connected", session, nil] 
-                                 forKeys:[NSArray arrayWithObjects:@"status", @"session", nil]];
-        
-        
-        PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsDictionary:status];
-        NSString* callback = [result toSuccessCallbackString:self.loginCallbackId];
-        // we need to wrap the callback in a setTimeout(func, 0) so it doesn't block the UI (handleOpenURL limitation)
-        [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
+        //get the UID of the currently logged in user
+        [facebook requestWithGraphPath:@"me" andDelegate:self];
     }
 }
 
@@ -56,8 +44,8 @@
     
 	NSString* callbackId = [arguments objectAtIndex:0];
 	NSString* appId = [arguments objectAtIndex:1];
-	self.facebook = [[Facebook alloc] initWithAppId:appId andDelegate: self];
-
+	self.facebook = [[Facebook alloc] initWithAppId:appId];
+	    
     PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_OK];
     [super writeJavascript:[result toSuccessCallbackString:callbackId]];
 }
@@ -94,7 +82,7 @@
         // save the callbackId for handleOpenURL return (only works if the app is multi-tasked!)
         self.loginCallbackId = callbackId;
         
-        return [facebook authorize:marray];
+        return [facebook authorize:marray delegate:self];
         
     }
     
@@ -131,36 +119,6 @@
     [super dealloc];
 }
 
-/**
- * Called when the user successfully logged in.
- */
-- (void)fbDidLogin
-{
-	 // [facebook dialog:@"feed" andDelegate:self];
-	//[facebook requestWithGraphPath:@"me/friends" andDelegate:self];
-	NSString* jsResult = [NSString stringWithFormat:@"FacebookGap.onLogin();"];
-	[self.webView stringByEvaluatingJavaScriptFromString:jsResult];
-	
-}
-
-/**
- * Called when the user dismissed the dialog without logging in.
- */
-- (void)fbDialogNotLogin:(BOOL)cancelled
-{
-	// this NEVER seems to happen
-	NSString* jsResult = [NSString stringWithFormat:@"FacebookGap.onDidNotLogin(%d);",cancelled];
-	[self.webView stringByEvaluatingJavaScriptFromString:jsResult];
-}
-
-/**
- * Called when the user logged out.
- */
-- (void)fbDidLogout
-{
-	NSString* jsResult = [NSString stringWithFormat:@"FacebookGap.onLogout();"];
-	[self.webView stringByEvaluatingJavaScriptFromString:jsResult];
-}
 
 ////////////////////////////////////////////////////////////////////
 // FBRequestDelegate
@@ -191,15 +149,24 @@
 
 /**
  * Called when a request returns and its response has been parsed into
- * an object.
+ * an object. This is called only by the Graph API call to get the UID
  *
  * The resulting object may be a dictionary, an array, a string, or a number,
  * depending on thee format of the API response.
  */
 - (void)request:(FBRequest *)request didLoad:(id)result
-{
-	NSString* jsResult = [NSString stringWithFormat:@"fbRequestResult(%@);", [result JSONRepresentation]];
-	[self.webView stringByEvaluatingJavaScriptFromString:jsResult];
+{    
+    NSDictionary* session = [NSDictionary 
+                             dictionaryWithObjects:[NSArray arrayWithObjects:self.facebook.accessToken, [self.facebook.expirationDate description], APP_SECRET, [NSNumber numberWithBool:YES], @"...", [result valueForKey:@"id"], nil] 
+                             forKeys:[NSArray arrayWithObjects:@"access_token", @"expires", @"secret", @"session_key", @"sig", @"uid", nil]];
+    NSDictionary* status = [NSDictionary 
+                            dictionaryWithObjects:[NSArray arrayWithObjects:@"connected", session, nil] 
+                            forKeys:[NSArray arrayWithObjects:@"status", @"session", nil]];
+
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsDictionary:status];
+    NSString* callback = [pluginResult toSuccessCallbackString:self.loginCallbackId];
+    // we need to wrap the callback in a setTimeout(func, 0) so it doesn't block the UI (handleOpenURL limitation)
+    [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
 }
 
 ///**
@@ -222,7 +189,7 @@
  */
 - (void)dialogDidComplete:(FBDialog *)dialog
 {
-	
+	// TODO
 }
 
 /**
@@ -230,7 +197,7 @@
  */
 - (void)dialogCompleteWithUrl:(NSURL *)url
 {
-	
+	// TODO	
 }
 
 /**
@@ -238,7 +205,7 @@
  */
 - (void)dialogDidNotCompleteWithUrl:(NSURL *)url
 {
-	
+	// TODO	
 }
 
 /**
@@ -246,7 +213,7 @@
  */
 - (void)dialogDidNotComplete:(FBDialog *)dialog
 {
-	
+	// TODO	
 }
 
 /**
