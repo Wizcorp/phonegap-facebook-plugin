@@ -44,7 +44,7 @@
     
 	NSString* callbackId = [arguments objectAtIndex:0];
 	NSString* appId = [arguments objectAtIndex:1];
-	self.facebook = [[Facebook alloc] initWithAppId:appId];
+	self.facebook = [[Facebook alloc] initWithAppId:appId andDelegate: self];
 	    
     PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_OK];
     [super writeJavascript:[result toSuccessCallbackString:callbackId]];
@@ -82,7 +82,7 @@
         // save the callbackId for handleOpenURL return (only works if the app is multi-tasked!)
         self.loginCallbackId = callbackId;
         
-        return [facebook authorize:marray delegate:self];
+        return [facebook authorize:marray];
         
     }
     
