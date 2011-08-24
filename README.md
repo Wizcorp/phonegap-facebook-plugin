@@ -1,4 +1,4 @@
-Facebook Connect PhoneGap Plugin
+PhoneGap Facebook Connect Plugin
 ================================
 
 This is the offical plugin for Facebook Connect in PhoneGap!
@@ -9,15 +9,44 @@ perform single sign on (SSO) for the user.
 
 This is all licensed under MIT except for app/www/facebook_js_sdk.js which is the Facebook JS SDK and is Apache 2.0.
 
+
 Getting Started
----------------
+===============
 
 Download the latest version of PhoneGap from www.phonegap.com.
 
 Create an Android or iOS PhoneGap project -- those are the only platforms that the Facebook native application 
 currently runs on :(
 
-On Android you will need to put the following in your phonegap.xml / plugins.xml file:
+Check out the /example/www/index.html to see how it works.
+
+<pre>
+|-lib
+|  `-facebook_js_sdk.js
+|-natve
+|  |-android
+|  |-ios
+`-www
+   `-pg-plugin-fb-connect.js
+</pre>
+
+/lib/facebook_js_sdk.js is the modified facebook js sdk, these modifications will be in their repo soon.
+
+/native/android | ios is the native code for the plugin on both android and ios platforms.
+
+/www/pg-plugin-fb-connect.js is the JavaScript code for the plugin, this defines the public JS API.
+
+Currently this plugin does not support dialogs, that is coming soon!
+
+The Facebook SDK (both native and JavaScript) is changing independant of this plugin. The working version of the Facebook Android SDK is distributed with the plugin and as of writing this the supported Facebook iOS SDK commit SHA1 is 91f256424531030a454548693c3a6ca49ca3f35a.
+
+
+Android
+===============
+
+Create a basic PhoneGap Android application. See http://www.phonegap.com/start/#android
+
+In the PhoneGap Andoroid application you will need to put the following in your /res/xml/plugins.xml file:
 
 <pre>
 &lt;plugin name="com.facebook.phonegap.Connect" value="com.phonegap.facebook.Connect" /&gt;
@@ -25,32 +54,17 @@ On Android you will need to put the following in your phonegap.xml / plugins.xml
 
 http://wiki.phonegap.com/How%20to%20Install%20a%20PhoneGap%20Plugin%20for%20Android
 
-On iOS you will need to put the following in your PhoneGap.plist file:
+From the PhoneGap Facebook Connect Plugin folder copy the contents of the /native/android/ folder into the root of your PhoneGap Android application, add the Facebook Android SDK to the build path.
 
+From the PhoneGap Facebook Connect Plugin folder copy the /www/pg-plugin-fb-connect.js and /lib/facebook_js_sdk.js files into your /assets/www/ folder.
 
+Now you are ready to create you application! Check out the example folder for what the HTML, JS etc looks like.
 
-
-http://wiki.phonegap.com/How%20to%20Install%20a%20PhoneGap%20Plugin%20for%20iOS
-
-
-
-
-
-From the PhoneGap Facebook Connect Plugin folder copy the contents of the native/android/ folder into foobar/
-
-From the PhoneGap Facebook Connect Plugin folder copy the app/www folder into foobar/assets/ overwriting the index.html and icon.png files but keeping the phonegap...js file.
-
-From the PhoneGap Facebook Connect Plugin folder copy the www folder into foobar/assets/
-
-From terminal in the foobar folder (with an android device attached to your computer) run the following command:
-
-<pre>
-ant debug install
-</pre>
+Now you can run the application from either the command line (ant debug install) or from Eclipse.
 
 
 iOS (Mac OS X)
---------------
+===============
 
 1. Make sure you've registered your Facebook app with Facebook, and have an **APP__ID** and **APP__SECRET**
 2. Get the latest iOS source from [http://github.com/phonegap/phonegap-iphone](http://github.com/phonegap/phonegap-iphone) and read the README there about getting started with iOS.
@@ -62,7 +76,7 @@ iOS (Mac OS X)
 8. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **lib** folder into the **www** directory in Xcode 
 9. for Xcode 4, you will need to build it once, and heed the warning - this is an Xcode 4 template limitation. The warning instructions will tell you to drag copy the **www** folder into the project in Xcode (add as a **folder reference** which is a blue folder).
 10. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
-11. Download the **Facebook iOS SDK** from [https://github.com/facebook/facebook-ios-sdk](https://github.com/facebook/facebook-ios-sdk) and put it into your project folder
+11. Download the **Facebook iOS SDK** from [https://github.com/facebook/facebook-ios-sdk](https://github.com/facebook/facebook-ios-sdk) and put it into your project folder (currently works with version 91f256424531030a454548693c3a6ca49ca3f35a)
 12. Drag the **facebook-ios-sdk.xcodeproj** file into your project, this will create it as a sub-project
 13. Click on your project's icon (the root element) in Project Navigator, select your **Target**, and the **Build Phases** tab.
 14. From the **Build Phases** tab, expand **Target Dependencies**, then click on the **+** button
