@@ -3,7 +3,8 @@
 //  GapFacebookConnect
 //
 //  Created by Jesse MacFadyen on 11-04-22.
-//  Copyright 2011 Nitobi. All rights reserved.
+//  Updated by Mathijs de Bruin on 11-08-25.
+//  Copyright 2011 Nitobi, Mathijs de Bruin. All rights reserved.
 //
 
 #import "FacebookConnectPlugin.h"
@@ -25,15 +26,13 @@
 - (void) handleOpenURL:(NSNotification*)notification
 {
 	NSURL* url = [notification object];
+
+    // What exactly does this check for?
 	if (![url isKindOfClass:[NSURL class]]) {
         return;
 	}
     
-	BOOL ok = [facebook handleOpenURL:url];
-    if (ok) {
-        //get the UID of the currently logged in user
-        [facebook requestWithGraphPath:@"me" andDelegate:self];
-    }
+	[facebook handleOpenURL:url];
 }
 
 - (void) init:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
@@ -79,7 +78,7 @@
         NSMutableArray* marray = [NSMutableArray arrayWithArray:arguments];
         [marray removeObjectAtIndex:0]; // first item is the callbackId
         
-        // save the callbackId for handleOpenURL return (only works if the app is multi-tasked!)
+        // save the callbackId for the login callback
         self.loginCallbackId = callbackId;
         
         return [facebook authorize:marray];
@@ -117,6 +116,31 @@
 {
     self.facebook = nil;
     [super dealloc];
+}
+
+/**
+ * Called when the user successfully logged in.
+ */
+- (void)fbDidLogin
+{
+    [facebook requestWithGraphPath:@"me" andDelegate:self];
+    // NSString* jsResult = [NSString stringWithFormat:@"FacebookGap.onLogin();"];
+
+    NSDictionary* session = [NSDictionary
+                             dictionaryWithObjects:[NSArray arrayWithObjects:self.facebook.accessToken, [self.facebook.expirationDate description], APP_SECRET, [NSNumber numberWithBool:YES], @"...", @"...", nil] 
+                             forKeys:[NSArray arrayWithObjects:@"access_token", @"expires", @"secret", @"session_key", @"sig", @"uid", nil]];
+    NSDictionary* status = [NSDictionary
+                             dictionaryWithObjects:[NSArray arrayWithObjects:@"connected", session, nil] 
+                             forKeys:[NSArray arrayWithObjects:@"status", @"session", nil]];
+
+
+
+    PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsDictionary:status];
+    NSString* callback = [result toSuccessCallbackString:self.loginCallbackId];
+
+    // we need to wrap the callback in a setTimeout(func, 0) so it doesn't block the UI (handleOpenURL limitation)
+    [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
+
 }
 
 
