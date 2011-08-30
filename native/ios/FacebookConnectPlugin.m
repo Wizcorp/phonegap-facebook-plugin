@@ -240,35 +240,4 @@
 	return NO;
 }
 
-
-
-/*
-NSArray* permissions =  [[NSArray arrayWithObjects:
-						  @"email", @"read_stream", nil] retain];
-
-[facebook authorize:permissions delegate:self];
-*/
-
-/*
-//get information about the currently logged in user
-[facebook requestWithGraphPath:@"me" andDelegate:self];
-
-//get the logged-in user's friends
-[facebook requestWithGraphPath:@"me/friends" andDelegate:self];     
-
-//call a legacy REST API
-NSMutableDictionary* params = [NSMutableDictionary 
-							   dictionaryWithObjectsAndKeys: @"4", @"uids", @"name", @"fields", nil];
-
-[facebook requestWithMethodName: @"users.getInfo" 
-					  andParams: params andHttpMethod: @"GET" andDelegate: self];
- 
- 
-[facebook dialog:@"feed" andDelegate:self]; 
-*/
-
-
-
-
-
 @end
