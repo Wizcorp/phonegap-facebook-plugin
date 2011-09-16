@@ -49,7 +49,7 @@ Create a basic PhoneGap Android application. See http://www.phonegap.com/start/#
 In the PhoneGap Andoroid application you will need to put the following in your /res/xml/plugins.xml file:
 
 <pre>
-&lt;plugin name="com.facebook.phonegap.Connect" value="com.phonegap.facebook.ConnectPlugin" /&gt;
+&lt;plugin name="com.phonegap.facebook.Connect" value="com.phonegap.facebook.ConnectPlugin" /&gt;
 </pre>
 
 http://wiki.phonegap.com/How%20to%20Install%20a%20PhoneGap%20Plugin%20for%20Android
