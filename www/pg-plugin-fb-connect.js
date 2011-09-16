@@ -7,7 +7,12 @@ PG.FB = {
             elem.id = 'fb-root';
             document.body.appendChild(elem);
         }
-        PhoneGap.exec(null, null, 'com.phonegap.facebook.Connect', 'init', [apiKey]);
+        
+        PhoneGap.exec(function(e) {
+        	if(e.session && e.session.uid) {
+	            FB.Auth.setSession(e.session, 'connected');
+        	}
+        }, null, 'com.phonegap.facebook.Connect', 'init', [apiKey]);
     },
     login: function(a, b) {
         b = b || { perms: '' };

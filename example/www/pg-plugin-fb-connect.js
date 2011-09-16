@@ -1,7 +1,18 @@
 PG = ( typeof PG == 'undefined' ? {} : PG );
 PG.FB = {
     init: function(apiKey) {
-        PhoneGap.exec(null, null, 'com.phonegap.facebook.Connect', 'init', [apiKey]);
+        // create the fb-root element if it doesn't exist
+        if (!document.getElementById('fb-root')) {
+            var elem = document.createElement('div');
+            elem.id = 'fb-root';
+            document.body.appendChild(elem);
+        }
+        
+        PhoneGap.exec(function(e) {
+        	if(e.session && e.session.uid) {
+	            FB.Auth.setSession(e.session, 'connected');
+        	}
+        }, null, 'com.phonegap.facebook.Connect', 'init', [apiKey]);
     },
     login: function(a, b) {
         b = b || { perms: '' };
