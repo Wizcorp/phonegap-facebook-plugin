@@ -38,7 +38,7 @@ Check out the /example/www/index.html to see how it works.
 
 Currently this plugin does not support dialogs, that is coming soon!
 
-The Facebook SDK (both native and JavaScript) is changing independant of this plugin. The working version of the Facebook Android SDK is distributed with the plugin and as of writing this the supported Facebook iOS SDK commit SHA1 is 91f256424531030a454548693c3a6ca49ca3f35a.
+The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The working version of the Facebook Android SDK is distributed with the plugin and as of writing this the supported Facebook iOS SDK commit SHA1 is 91f256424531030a454548693c3a6ca49ca3f35a.
 
 
 Android
@@ -49,7 +49,7 @@ Create a basic PhoneGap Android application. See http://www.phonegap.com/start/#
 In the PhoneGap Andoroid application you will need to put the following in your /res/xml/plugins.xml file:
 
 <pre>
-&lt;plugin name="com.facebook.phonegap.Connect" value="com.phonegap.facebook.Connect" /&gt;
+&lt;plugin name="com.facebook.phonegap.Connect" value="com.phonegap.facebook.ConnectPlugin" /&gt;
 </pre>
 
 http://wiki.phonegap.com/How%20to%20Install%20a%20PhoneGap%20Plugin%20for%20Android
