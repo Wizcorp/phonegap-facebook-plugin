@@ -15,8 +15,7 @@ PG.FB = {
             if (a) a(e);
         };
         b = b || { perms: '' };
-        // TODO: also check the session expiration probably
-        if ((session = localStorage.getItem(key))) {
+        if ((session = JSON.parse(localStorage.getItem(key))) && session.expires > new Date().valueOf()) {
             success({'session': session});
         } else {
             PhoneGap.exec(function(e) { // login
