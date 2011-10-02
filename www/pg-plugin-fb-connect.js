@@ -10,11 +10,20 @@ PG.FB = {
         PhoneGap.exec(null, null, 'com.phonegap.facebook.Connect', 'init', [apiKey]);
     },
     login: function(a, b) {
-        b = b || { perms: '' };
-        PhoneGap.exec(function(e) { // login
+        var session=null, key='pg_fb_session', success=function(e) {
             FB.Auth.setSession(e.session, 'connected');
             if (a) a(e);
-        }, null, 'com.phonegap.facebook.Connect', 'login', b.perms.split(',') );
+        };
+        b = b || { perms: '' };
+        // TODO: also check the session expiration probably
+        if ((session = localStorage.getItem(key))) {
+            success({'session': session});
+        } else {
+            PhoneGap.exec(function(e) { // login
+                localStorage.setItem(key, JSON.stringify(e.session));
+                success(e);
+            }, null, 'com.phonegap.facebook.Connect', 'login', b.perms.split(',') );
+        }
     },
     logout: function(cb) {
         PhoneGap.exec(function(e) {

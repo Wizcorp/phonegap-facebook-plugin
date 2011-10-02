@@ -1,4 +1,4 @@
-package com.facebook.phonegap;
+package com.phonegap.facebook;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
