@@ -77,6 +77,15 @@ iOS (Mac OS X)
 9. for Xcode 4, you will need to build it once, and heed the warning - this is an Xcode 4 template limitation. The warning instructions will tell you to drag copy the **www** folder into the project in Xcode (add as a **folder reference** which is a blue folder).
 10. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
 11. Download the **Facebook iOS SDK** from [https://github.com/facebook/facebook-ios-sdk](https://github.com/facebook/facebook-ios-sdk) and put it into your project folder (currently works with version 91f256424531030a454548693c3a6ca49ca3f35a)
+Note: if you are using phonegap 1.1+ modify the FBRequest.m of the Facebook sdk as follow: check for this code SBJSON *jsonParser = [[SBJSON new] autorelease]; it should be located at line 183 and replace it with this code 
+id jsonParser;
+Class SBJSON = NSClassFromString(@"SBJSON");
+jsonParser = [[SBJSON alloc] init];
+if (jsonParser == nil)
+{
+Class PG_SBJSON = NSClassFromString(@"PG_SBJSON");
+jsonParser = [[PG_SBJSON alloc] init];
+}
 12. Drag the **facebook-ios-sdk.xcodeproj** file into your project, this will create it as a sub-project
 13. Click on your project's icon (the root element) in Project Navigator, select your **Target**, and the **Build Phases** tab.
 14. From the **Build Phases** tab, expand **Target Dependencies**, then click on the **+** button
