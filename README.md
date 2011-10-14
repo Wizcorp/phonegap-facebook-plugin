@@ -40,52 +40,44 @@ Currently this plugin does not support dialogs, that is coming soon!
 
 The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The working version of the Facebook Android SDK is distributed with the plugin and as of writing this the supported Facebook iOS SDK commit SHA1 is 91f256424531030a454548693c3a6ca49ca3f35a.
 
+To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an APP_ID and APP_SECRET (https://developers.facebook.com/apps).
+
 
 Android
 ===============
 
-Create a basic PhoneGap Android application. See http://www.phonegap.com/start/#android
-
-In the PhoneGap Andoroid application you will need to put the following in your /res/xml/plugins.xml file:
-
-<pre>
-&lt;plugin name="com.phonegap.facebook.Connect" value="com.phonegap.facebook.ConnectPlugin" /&gt;
-</pre>
-
-http://wiki.phonegap.com/How%20to%20Install%20a%20PhoneGap%20Plugin%20for%20Android
-
-From the PhoneGap Facebook Connect Plugin folder copy the contents of the /native/android/ folder into the root of your PhoneGap Android application, add the Facebook Android SDK to the build path.
-
-From the PhoneGap Facebook Connect Plugin folder copy the /www/pg-plugin-fb-connect.js and /lib/facebook_js_sdk.js files into your /assets/www/ folder.
+1. Create a basic PhoneGap Android application. See http://www.phonegap.com/start/#android
+2. In the PhoneGap Android application you will need to put the following in your /res/xml/plugins.xml file: <pre>&lt;plugin name="com.phonegap.facebook.Connect" value="com.phonegap.facebook.ConnectPlugin" /&gt;</pre>
+3. In the PhoneGap Android application you will need to define your APP_SECRET inside the &lt;activity&gt; element in the /AndroidManifest.xml file like this: <pre>&lt;meta-data android:name="app_secret" android:value="your_app_secret_" /&gt;</pre>
+4. From the PhoneGap Facebook Connect Plugin folder copy the contents of the /native/android/ folder into the root of your PhoneGap Android application, add the Facebook Android SDK to the build path.
+5. From the PhoneGap Facebook Connect Plugin folder copy the /www/pg-plugin-fb-connect.js and /lib/facebook_js_sdk.js files into your /assets/www/ folder.
 
 Now you are ready to create you application! Check out the example folder for what the HTML, JS etc looks like.
 
-Now you can run the application from either the command line (ant debug install) or from Eclipse.
+You can run the application from either the command line (ant debug install) or from Eclipse.
 
 
 iOS (Mac OS X)
 ===============
 
-1. Make sure you've registered your Facebook app with Facebook, and have an **APP__ID** and **APP__SECRET**
-2. Get the latest iOS source from [http://github.com/phonegap/phonegap-iphone](http://github.com/phonegap/phonegap-iphone) and read the README there about getting started with iOS.
-3. Create a new Xcode project from the PhoneGap template that you created and installed (you did that if you read the README on github I hope).
-4. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **native/ios** folder into your app in Xcode (usually in the **Plugins** folder group). Make sure it is added as a "group" (yellow folder)
-5. Modify the **APP__SECRET** value in **FacebookConnectPlugin.m** with your Facebook app's **APP__SECRET**
-6. Find the PhoneGap.plist file in the project navigator, expand the "Plugins" sub-tree, and add a new entry. For the key, add **com.phonegap.facebook.Connect**, and its value will be **FacebookConnectPlugin**
-7. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **www** folder into the **www** directory in Xcode (don't forget to add script tags in your index.html to reference any .js files copied over)
-8. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **lib** folder into the **www** directory in Xcode (don't forget to add script tags in your index.html to reference any .js files copied over)
-9. for Xcode 4, you will need to build it once, and heed the warning - this is an Xcode 4 template limitation. The warning instructions will tell you to drag copy the **www** folder into the project in Xcode (add as a **folder reference** which is a blue folder).
-10. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
-11. Download the **Facebook iOS SDK** from [https://github.com/facebook/facebook-ios-sdk](https://github.com/facebook/facebook-ios-sdk) and put it into your project folder (currently works with version 91f256424531030a454548693c3a6ca49ca3f35a)
-12. Drag the **facebook-ios-sdk.xcodeproj** file into your project, this will create it as a sub-project
-13. Click on your project's icon (the root element) in Project Navigator, select your **Target**, and the **Build Phases** tab.
-14. From the **Build Phases** tab, expand **Target Dependencies**, then click on the **+** button
-15. Add the build product from the **facebook-ios-sdk sub-project**
-16. From the **Build Settings** tab, search for **Header Search Paths**
-17. Add the value **/Users/Shared/PhoneGap/Frameworks/PhoneGap.framework/Headers**
-18. From the **facebook-ios-sdk.xcodeproj** sub-project, drag out the **FBConnect** folder into your project's **Plugins** folder, and add it as a group (yellow folder).
-19. From your **Plugins/FBConnect** folder, remove the **JSON** folder (remove reference only)
-20. Run the application in Xcode.
+1. Create a basic PhoneGap iOS application. See http://www.phonegap.com/start/#ios-x4
+2. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **native/ios** folder into your app in Xcode (usually in the **Plugins** folder group). Make sure it is added as a "group" (yellow folder)
+3. Modify the **APP__SECRET** value in **FacebookConnectPlugin.m** with your Facebook app's **APP__SECRET**
+4. Find the PhoneGap.plist file in the project navigator, expand the "Plugins" sub-tree, and add a new entry. For the key, add **com.phonegap.facebook.Connect**, and its value will be **FacebookConnectPlugin**
+5. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **www** folder into the **www** directory in Xcode (don't forget to add script tags in your index.html to reference any .js files copied over)
+6. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **lib** folder into the **www** directory in Xcode (don't forget to add script tags in your index.html to reference any .js files copied over)
+7. for Xcode 4, you will need to build it once, and heed the warning - this is an Xcode 4 template limitation. The warning instructions will tell you to drag copy the **www** folder into the project in Xcode (add as a **folder reference** which is a blue folder).
+8. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
+9. Download the **Facebook iOS SDK** from [https://github.com/facebook/facebook-ios-sdk](https://github.com/facebook/facebook-ios-sdk) and put it into your project folder (currently works with version 91f256424531030a454548693c3a6ca49ca3f35a)
+10. Drag the **facebook-ios-sdk.xcodeproj** file into your project, this will create it as a sub-project
+11. Click on your project's icon (the root element) in Project Navigator, select your **Target**, and the **Build Phases** tab.
+12. From the **Build Phases** tab, expand **Target Dependencies**, then click on the **+** button
+13. Add the build product from the **facebook-ios-sdk sub-project**
+14. From the **Build Settings** tab, search for **Header Search Paths**
+15. Add the value **/Users/Shared/PhoneGap/Frameworks/PhoneGap.framework/Headers**
+16. From the **facebook-ios-sdk.xcodeproj** sub-project, drag out the **FBConnect** folder into your project's **Plugins** folder, and add it as a group (yellow folder).
+17. From your **Plugins/FBConnect** folder, remove the **JSON** folder (remove reference only)
+18. Run the application in Xcode.
 
 iOS URL Scheme
 -----------

@@ -10,12 +10,13 @@ import org.json.JSONObject;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
-import com.phonegap.DroidGap;
 import com.phonegap.api.Plugin;
 import com.phonegap.api.PluginResult;
 
@@ -23,6 +24,7 @@ public class ConnectPlugin extends Plugin {
 
     Facebook facebook;
     String userId;
+    String appSecret;
 
 	@Override
 	public PluginResult execute(String action, JSONArray args, final String callbackId) {
@@ -31,11 +33,18 @@ public class ConnectPlugin extends Plugin {
 		if (action.equals("init")) {
 			try {
 				facebook = new Facebook(args.getString(0));
+		        appSecret = this.ctx.getPackageManager().getApplicationInfo(this.ctx.getPackageName(), 
+			        	PackageManager.GET_META_DATA).metaData.getString("app_secret"); 
+
 				return new PluginResult(PluginResult.Status.OK);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. expected a string as the first arg.");
+			} catch (NameNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return new PluginResult(PluginResult.Status.ERROR, "You need to define the app_secret in your Android Manifest like this.");
 			}
 		} else if (action.equals("login")) {
 			if (facebook != null) {
@@ -134,7 +143,7 @@ public class ConnectPlugin extends Plugin {
 		"    \"session\": {"+
 		"        \"access_token\": \""+facebook.getAccessToken()+"\","+
 		"        \"expires\": \""+facebook.getAccessExpires()+"\","+
-		"        \"secret\": \"b082c4620cdac27e0371f2c674026662\","+
+		"        \"secret\": \""+appSecret+"\","+
 		"        \"session_key\": true,"+
 		"        \"sig\": \"...\","+
 		"        \"uid\": \""+this.userId+"\""+
