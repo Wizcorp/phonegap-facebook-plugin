@@ -15,7 +15,7 @@ PG.FB = {
             if (a) a(e);
         };
         b = b || { perms: '' };
-        if ((session = JSON.parse(localStorage.getItem(key))) && session.expires > new Date().valueOf()) {
+        if ((session = JSON.parse(localStorage.getItem(key) || '{"expires":0}')) && session.expires > new Date().valueOf()) {
             success({'session': session});
         } else {
             PhoneGap.exec(function(e) { // login
