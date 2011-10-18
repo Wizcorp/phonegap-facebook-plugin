@@ -7,22 +7,20 @@ PG.FB = {
             elem.id = 'fb-root';
             document.body.appendChild(elem);
         }
-        PhoneGap.exec(null, null, 'com.phonegap.facebook.Connect', 'init', [apiKey]);
+        PhoneGap.exec(function() {
+        	var session = JSON.parse(localStorage.getItem('pg_fb_session') || '{"expires":0}');
+        	if (session && session.expires > new Date().valueOf()) {
+        		FB.Auth.setSession(session, 'connected');
+            }
+        }, null, 'com.phonegap.facebook.Connect', 'init', [apiKey]);
     },
     login: function(a, b) {
-        var session=null, key='pg_fb_session', success=function(e) {
+        b = b || { perms: '' };
+        PhoneGap.exec(function(e) { // login
+            localStorage.setItem('pg_fb_session', JSON.stringify(e.session));
             FB.Auth.setSession(e.session, 'connected');
             if (a) a(e);
-        };
-        b = b || { perms: '' };
-        if ((session = JSON.parse(localStorage.getItem(key) || '{"expires":0}')) && session.expires > new Date().valueOf()) {
-            success({'session': session});
-        } else {
-            PhoneGap.exec(function(e) { // login
-                localStorage.setItem(key, JSON.stringify(e.session));
-                success(e);
-            }, null, 'com.phonegap.facebook.Connect', 'login', b.perms.split(',') );
-        }
+        }, null, 'com.phonegap.facebook.Connect', 'login', b.perms.split(',') );
     },
     logout: function(cb) {
         PhoneGap.exec(function(e) {
