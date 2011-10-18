@@ -8,16 +8,20 @@
 		<button onclick="getLoginStatus()">Get login</button>
 		<button onclick="logout()">Logout</button>
 
-        <div id="data"></div>
+        <div id="data">loading ...</div>
 
         <!-- phonegap -->
-		<script src="phonegap-1.0.0.js"></script>
+		<script src="phonegap-1.1.0.js"></script>
 	    <!-- phonegap facebook plugin -->
 		<script src="pg-plugin-fb-connect.js"></script>
 	    <!-- facebook js sdk -->
 		<script src="facebook_js_sdk.js"></script>
         
 		<script>
+
+            if (typeof PhoneGap == 'undefined') alert('PhoneGap variable does not exist. Check that you have included phonegap.js correctly');
+            if (typeof PG == 'undefined') alert('PG variable does not exist. Check that you have included pg-plugin-fb-connect.js correctly');
+            if (typeof FB == 'undefined') alert('FB variable does not exist. Check that you have included the Facebook JS SDK file.');
 
             FB.Event.subscribe('auth.login', function(response) {
                 alert('auth.login event');
@@ -51,12 +55,16 @@
             
             function me() {
                 FB.api('/me/friends', function(response) {
-                    var data = document.getElementById('data');
-                    response.data.forEach(function(item) {
-                        var d = document.createElement('div');
-                        d.innerHTML = item.name;
-                        data.appendChild(d);
-                    });
+                	if (response.error) {
+                    	alert(JSON.stringify(response.error));
+                	} else {
+	                    var data = document.getElementById('data');
+	                    response.data.forEach(function(item) {
+	                        var d = document.createElement('div');
+	                        d.innerHTML = item.name;
+	                        data.appendChild(d);
+	                    });
+                	}
                 });
             }
             
@@ -76,13 +84,14 @@
             }
             
             document.addEventListener('deviceready', function() {
-                  try {
-                    FB.init({ appId: "188240441228254", nativeInterface: PG.FB });
+                try {
+                    alert('Device is ready! Make sure you set your app_id below this alert.');
+                    FB.init({ appId: "app_id", nativeInterface: PG.FB });
                     document.getElementById('data').innerHTML = "";
-                  } catch (e) {
+                } catch (e) {
                     alert(e);
-                  }
-                }, false);
+                }
+            }, false);
         </script>
         <div id="log"></div>
 	</body>

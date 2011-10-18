@@ -48,11 +48,11 @@ Android
 
 1. Create a basic PhoneGap Android application. See http://www.phonegap.com/start/#android
 2. In the PhoneGap Android application you will need to put the following in your /res/xml/plugins.xml file: <pre>&lt;plugin name="com.phonegap.facebook.Connect" value="com.phonegap.facebook.ConnectPlugin" /&gt;</pre>
-3. In the PhoneGap Android application you will need to define your APP_SECRET inside the &lt;activity&gt; element in the /AndroidManifest.xml file like this: <pre>&lt;meta-data android:name="app_secret" android:value="your_app_secret_" /&gt;</pre>
+3. In the PhoneGap Android application you will need to define your APP_SECRET inside the &lt;application&gt; element in the /AndroidManifest.xml file like this: <pre>&lt;meta-data android:name="app_secret" android:value="your_app_secret_" /&gt;</pre>
 4. From the PhoneGap Facebook Connect Plugin folder copy the contents of the /native/android/ folder into the root of your PhoneGap Android application, add the Facebook Android SDK to the build path.
 5. From the PhoneGap Facebook Connect Plugin folder copy the /www/pg-plugin-fb-connect.js and /lib/facebook_js_sdk.js files into your /assets/www/ folder.
 
-Now you are ready to create you application! Check out the example folder for what the HTML, JS etc looks like.
+Now you are ready to create you application! Check out the example folder for what the HTML, JS etc looks like. Note that you will need to replace your appId if you use the example index.html file.
 
 You can run the application from either the command line (ant debug install) or from Eclipse.
 
