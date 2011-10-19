@@ -76,8 +76,12 @@
             
             function login() {
                 FB.login(
-                    function(e) {
-                        alert(e);
+                    function(response) {
+                        if (response.session) {
+                            alert('logged in');
+                        } else {
+                            alert('not logged in');
+                        }
                     },
                     { perms: "email" }
                 );
