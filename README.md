@@ -77,7 +77,21 @@ iOS (Mac OS X)
 15. Add the value **/Users/Shared/PhoneGap/Frameworks/PhoneGap.framework/Headers**
 16. From the **facebook-ios-sdk.xcodeproj** sub-project, drag out the **FBConnect** folder into your project's **Plugins** folder, and add it as a group (yellow folder).
 17. From your **Plugins/FBConnect** folder, remove the **JSON** folder (remove reference only)
+18. Add the Facebook domains to the ExternalHosts lists, as described below.
 18. Run the application in Xcode.
+
+
+iOS URL Whitelist
+-----------
+
+The Facebook SDK will try to access various URLs, and their domains must be whitelisted in your PhoneGap.plist under ExternalHosts.
+You can either add each subdomain separately:
+* m.facebook.com*
+* graph.facebook.com*
+* api.facebook.com*
+
+Or you can allow all Facebook domains with:
+* *.facebook.com*
 
 iOS URL Scheme
 -----------
