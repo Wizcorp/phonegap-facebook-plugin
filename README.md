@@ -60,6 +60,8 @@ You can run the application from either the command line (ant debug install) or 
 iOS (Mac OS X)
 ===============
 
+NOTE: If you are having problems with SBJSON conflicts, download the latest version of git clone the latest callback-ios code, build the installer, and run the installer to get updated!
+
 1. Create a basic PhoneGap iOS application. See http://www.phonegap.com/start/#ios-x4
 2. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **native/ios** folder into your app in Xcode (usually in the **Plugins** folder group). Make sure it is added as a "group" (yellow folder)
 3. Modify the **APP__SECRET** value in **FacebookConnectPlugin.m** with your Facebook app's **APP__SECRET**
