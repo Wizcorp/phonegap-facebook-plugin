@@ -8,13 +8,8 @@
 //
 
 #import "FacebookConnectPlugin.h"
-#ifdef PHONEGAP_FRAMEWORK
-    #import <PhoneGap/JSON.h>
-    #import <PhoneGap/PluginResult.h>
-#else
-    #import "JSON.h"
-    #import "PluginResult.h"
-#endif
+#import "JSON.h"
+#import "PluginResult.h"
 
 #define APP_SECRET  @"b082c4620cdac27e0371f2c674026662"
 
