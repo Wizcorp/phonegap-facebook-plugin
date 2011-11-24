@@ -15,12 +15,12 @@ PG.FB = {
         }, null, 'com.phonegap.facebook.Connect', 'init', [apiKey]);
     },
     login: function(a, b) {
-        b = b || { perms: '' };
+        b = b || { scope: '' };
         PhoneGap.exec(function(e) { // login
             localStorage.setItem('pg_fb_session', JSON.stringify(e.session));
             FB.Auth.setSession(e.session, 'connected');
             if (a) a(e);
-        }, null, 'com.phonegap.facebook.Connect', 'login', b.perms.split(',') );
+        }, null, 'com.phonegap.facebook.Connect', 'login', b.scope.split(',') );
     },
     logout: function(cb) {
         PhoneGap.exec(function(e) {
