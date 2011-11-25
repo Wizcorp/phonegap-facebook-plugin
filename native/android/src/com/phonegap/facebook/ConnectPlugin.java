@@ -137,6 +137,22 @@ public class ConnectPlugin extends Plugin {
         facebook.authorizeCallback(requestCode, resultCode, data);
     }
 
+    /**
+     * Compose JSON representation of a full response object.
+     *
+     * Response object must be similar to the object returned by FB.getLoginStatus()
+     * method from Facebook Javascript SDK.
+     *
+     * @todo Port to <a href="http://developers.facebook.com/docs/oauth2-https-migration/">OAuth 2.0</a>
+     * @todo Add signed_request to authResponse
+     *
+     * @see <a href="http://developers.facebook.com/docs/authentication/signed_request/">
+     *      Facebook's signed_request parameter</a>
+     * @see <a href="http://developers.facebook.com/docs/reference/javascript/FB.getLoginStatus/">
+     *      Section 'Response and Session objects' in 'FB.getLoginStatus' for details about response object</a>
+     * @see <a href="https://github.com/facebook/facebook-android-sdk/blob/master/facebook/src/com/facebook/android/Facebook.java">
+     *      com.facebook.android.Facebook class from Facebook Android SDK</a>
+     */
     public JSONObject getResponse() {
         String response = "{"+
         "    \"status\": \""+(facebook.isSessionValid() ? "connected" : "unknown")+"\","+
@@ -146,6 +162,7 @@ public class ConnectPlugin extends Plugin {
         "        \"userID\": \""+this.userId+"\""+
         "    }"+
         "}";
+
         try {
             return new JSONObject(response);
         } catch (JSONException e) {
