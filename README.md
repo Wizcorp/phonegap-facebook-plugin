@@ -78,8 +78,7 @@ NOTE: If you are having problems with SBJSON conflicts, download the latest vers
 14. From the **Build Settings** tab, search for **Header Search Paths**
 15. Add the value **/Users/Shared/PhoneGap/Frameworks/PhoneGap.framework/Headers**
 16. From the **facebook-ios-sdk.xcodeproj** sub-project, drag out the **FBConnect** folder into your project's **Plugins** folder, and add it as a group (yellow folder).
-17. From your **Plugins/FBConnect** folder, remove the **JSON** folder (remove reference only)
-18. Add the Facebook domains to the ExternalHosts lists, as described below.
+17. Add the Facebook domains to the ExternalHosts lists, as described below.
 18. Run the application in Xcode.
 
 
