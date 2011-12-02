@@ -1,0 +1,151 @@
+﻿<!DOCTYPE HTML>
+<html>
+	<head>
+    <!-- meta name="viewport" content="width=device-width, height=device-height, user-scalable=yes, initial-scale=2.0, maximum-scale=4.0, minimum-scale=1.0" / -->
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"> <!-- ISO-8859-1 -->
+    <title>PhoneGap</title>
+    <link rel="stylesheet" href="master.css" type="text/css" media="screen"/>
+   
+    <script type="text/javascript">
+        // provide our own console if it does not exist, huge dev aid!
+        if (typeof window.console == "undefined") {
+            window.console = { log: function (str) { window.external.Notify(str); } };
+        }
+
+        // output any errors to console log, created above.
+        window.onerror = function (e) {
+            console.log("window.onerror ::" + JSON.stringify(e));
+        };
+
+        console.log("Installed console ! ");
+    </script>
+   
+    <script type="text/javascript" charset="utf-8" src="phonegap-1.1.0.js"></script>   
+	<script type="text/javascript" charset="utf-8" src="pg-plugin-fb-connect.js"></script>
+	<script type="text/javascript" charset="utf-8" src="facebook_js_sdk.js"></script>
+    <script type="text/javascript" charset="utf-8" src="ChildBrowser.js"></script>
+      
+    <script type="text/javascript" charset="utf-8">
+        /**
+        * Function called when page has finished loading.
+        */
+        function init() {
+            document.addEventListener("deviceready", function () {
+                deviceReady = true;
+                console.log("Device=" + device.platform + " " + device.version);
+            }, false);
+            window.setTimeout(function () {
+                if (!deviceReady) {
+                    console.log("Error: PhoneGap did not initialize.  Demo will not run correctly.");
+                }
+            }, 1000);
+        }
+
+    </script>
+
+  </head>
+	<body>
+		<button onclick="login()">Login</button>
+		<button onclick="me()">Me</button>
+		<button onclick="getSession()">Get session</button>
+		<button onclick="getLoginStatus()">Get login</button>
+		<button onclick="logout()">Logout</button>
+
+        <div id="data">loading ...</div>
+        
+		<script>
+
+		    if (typeof PhoneGap == 'undefined') console.log('PhoneGap variable does not exist. Check that you have included phonegap.js correctly');
+		    if (typeof PG == 'undefined') console.log('PG variable does not exist. Check that you have included pg-plugin-fb-connect.js correctly');
+		    if (typeof FB == 'undefined') console.log('FB variable does not exist. Check that you have included the Facebook JS SDK file.');
+
+		    FB.Event.subscribe('auth.login', function (response) {
+		        console.log('auth.login event');
+		    });
+
+		    FB.Event.subscribe('auth.logout', function (response) {
+		        console.log('auth.logout event');
+		    });
+
+		    FB.Event.subscribe('auth.sessionChange', function (response) {
+		        console.log('auth.sessionChange event');
+		    });
+
+		    FB.Event.subscribe('auth.statusChange', function (response) {
+		        console.log('auth.statusChange event');
+		    });
+
+		    function getSession() {
+		        var session = FB.getSession();
+		        if (session == null) {
+		            console.log("session is null");
+		        }
+		        else {
+		            console.log(JSON.stringify(session));
+                }
+		    }
+
+		    function getLoginStatus() {
+		        FB.getLoginStatus(function (response) {
+		            if (response.session) {
+		                console.log('logged in');
+		            } else {
+		                console.log('not logged in');
+		            }
+		        });
+		    }
+
+		    function me() {
+		        FB.api('/me/friends', function (response) {
+		            if (response.error) {
+		                console.log(JSON.stringify(response.error));
+		            } else {
+		                var data = document.getElementById('data');
+		                response.data.forEach(function (item) {
+		                    var d = document.createElement('div');
+		                    d.innerHTML = item.name;
+		                    data.appendChild(d);
+		                });
+		            }
+		        });
+		    }
+
+		    function logout() {
+		        FB.logout(function (response) {
+		            console.log('logged out');
+		        });
+		    }
+
+		    function login() {
+		        FB.login(
+                    function (response) {
+                        if (response.session) {
+                            console.log('logged in');
+                        } else {
+                            console.log('not logged in');
+                        }
+                    },
+                    { scope: 'email, read_stream, read_friendlists' }
+                );
+		    }
+
+		    document.addEventListener('deviceready', function () {
+		        try {
+		            //alert('Device is ready! Make sure you set your app_id below this alert.');
+		            console.log('Device is ready! Make sure you set your app_id below this alert.');
+
+		            FB.Cookie.setEnabled(true); // this seems to be duplicate to 'cookie: true' below, but it is IMPORTANT due to FB implementation logic. 
+
+		            FB.init({ appId: "311961255484993", nativeInterface: PG.FB, cookie: true });
+
+		            document.getElementById('data').innerHTML = "";
+		        } catch (e) {
+		            //alert(e);
+		            console.log("Init error: " + e);
+		        }
+		    }, false);
+        </script>
+        <div id="log"></div>
+	</body>
+</html>
