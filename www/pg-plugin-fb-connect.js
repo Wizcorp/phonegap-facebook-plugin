@@ -24,6 +24,7 @@ PG.FB = {
     },
     logout: function(cb) {
         PhoneGap.exec(function(e) {
+            localStorage.removeItem('pg_fb_session');
             FB.Auth.setSession(null, 'notConnected');
             if (cb) cb(e);
         }, null, 'com.phonegap.facebook.Connect', 'logout', []);
