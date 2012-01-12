@@ -135,12 +135,16 @@ public class ConnectPlugin extends Plugin {
                     pr = new PluginResult(PluginResult.Status.IO_EXCEPTION, "Error logging out.");
                 }
                 pr = new PluginResult(PluginResult.Status.OK, getResponse());
+            } else {
+                pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before logout.");
             }
         }
 
         else if (action.equals("getLoginStatus")) {
             if (facebook != null) {
                 pr = new PluginResult(PluginResult.Status.OK, getResponse());
+            } else {
+                pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before getLoginStatus.");
             }
         }
 
