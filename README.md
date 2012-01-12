@@ -1,64 +1,99 @@
-PhoneGap Facebook Connect Plugin
-================================
+# PhoneGap Facebook Connect Plugin
 
 This is the offical plugin for Facebook Connect in PhoneGap!
 
 The Facebook Connect plugin for PhoneGap allows you to use the same JavaScript code in your web application as you 
 use in your native PhoneGap application, but your native PhoneGap application will use the Facebook native app to 
-perform single sign on (SSO) for the user.
+perform Single Sign On for the user (if possible - if it isn't then it
+will fall back to dialog-based authentication).
 
-This is all licensed under MIT except for app/www/facebook_js_sdk.js which is the Facebook JS SDK and is Apache 2.0.
+This is all licensed under MIT except for `app/www/facebook_js_sdk.js` which is the Facebook JS SDK and is Apache 2.0.
 
+# Requirements
 
-Getting Started
-===============
+* PhoneGap v1.0+
 
-Download the latest version of PhoneGap from www.phonegap.com.
-
-Create an Android or iOS PhoneGap project -- those are the only platforms that the Facebook native application 
-currently runs on :(
-
-Check out the /example/www/index.html to see how it works.
+# Project Structure
 
 <pre>
-|-lib
-|  `-facebook_js_sdk.js
-|-natve
-|  |-android
-|  |-ios
-`-www
-   `-pg-plugin-fb-connect.js
+  |-example
+  |  `-www
+  |    `-index.html
+  |-lib
+  |  |-facebook-js-patch
+  |  |-facebook-js-sdk
+  |  |-facebook-android-sdk
+  |  `-facebook-ios-sdk
+  |-native
+  |  |-android
+  |  `-ios
+  `-www
+     `-pg-plugin-fb-connect.js
 </pre>
 
-/lib/facebook_js_sdk.js is the modified facebook js sdk, these modifications will be in their repo soon.
+`lib/facebook-js-patch` is a diff file between the facebook-js-sdk and
+the modified file to get it working with this plugin. This plugin
+monkey-patches some of the facebook-js-sdk methods to hook in an
+interface into the native Facebook SDKs.
 
-/native/android | ios is the native code for the plugin on both android and ios platforms.
+`native/android` and `native/ios` contain the native code for the plugin for both Android and iOS platforms.
 
-/www/pg-plugin-fb-connect.js is the JavaScript code for the plugin, this defines the public JS API.
+`www/pg-plugin-fb-connect.js` is the JavaScript code for the plugin, this defines the JS API.
 
-Currently this plugin does not support dialogs, that is coming soon!
-
-The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The working version of the Facebook Android SDK is distributed with the plugin and as of writing this the supported Facebook iOS SDK commit SHA1 is 91f256424531030a454548693c3a6ca49ca3f35a.
+The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The working versions of the Facebook Android, JS and iOS SDKs are bundled in this project via git submodules.
 
 To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an APP_ID and APP_SECRET (https://developers.facebook.com/apps).
 
+# Getting Started
 
-Android
-===============
+We've provided a few `install` scripts to get you rolling pretty quick.
 
-1. Create a basic PhoneGap Android application. See http://www.phonegap.com/start/#android
-2. In the PhoneGap Android application you will need to put the following in your /res/xml/plugins.xml file: <pre>&lt;plugin name="com.phonegap.facebook.Connect" value="com.phonegap.facebook.ConnectPlugin" /&gt;</pre>
-3. In the PhoneGap Android application you will need to define your `APP_SECRET` inside the &lt;application&gt; element in the /AndroidManifest.xml file like this: <pre>&lt;meta-data android:name="app_secret" android:value="your_app_secret" /&gt;</pre>
-4. From the PhoneGap Facebook Connect Plugin folder copy the contents of the /native/android/ folder into the root of your PhoneGap Android application, add the Facebook Android SDK to the build path.
-5. From the PhoneGap Facebook Connect Plugin folder copy the /www/pg-plugin-fb-connect.js and /lib/facebook_js_sdk.js files into your /assets/www/ folder.
+1. Download the latest version of PhoneGap from www.phonegap.com.
 
-Now you are ready to create your application! Check out the example folder for what the HTML, JS etc looks like. Note that you will need to replace your appId if you use the example index.html file.
+2. Create an Android or iOS PhoneGap project. Let's assume you have this
+   project under `~/phonegap-facebook`.
 
-You can run the application from either the command line (ant debug install) or from Eclipse.
+3. Depending what you've got handy, you could:
+  * ruby: `./install ~/phonegap-facebook`
+  * node: `node install.js ~/phonegap-facebook`
+  * Windows: `install.bat ~/phonegap-facebook`
 
+If you don't like this script magic, you can always roll up your sleeves
+and get into the nitty-gritty for the platform of your choice:
 
-iOS (Mac OS X)
-===============
+## Android
+
+1. [Create a basic PhoneGap Android application](See http://www.phonegap.com/start/#android).
+
+2. In the PhoneGap Android application you will need to put the following in your `res/xml/plugins.xml` file: <pre>&lt;plugin name="com.phonegap.facebook.Connect" value="com.phonegap.facebook.ConnectPlugin" /&gt;</pre>
+
+3. In the PhoneGap Android application you will need to define your `APP_SECRET` inside the `<application>` element in the /AndroidManifest.xml file like this: <pre>&lt;meta-data android:name="app_secret" android:value="your_app_secret" /&gt;</pre>
+
+4. You'll need to build + include the Facebook Android SDK and build + patch the
+   Facebook JavaScript SDK:
+  * First run `git submodule update --init` to initialize and pull down
+    the versions of the JS and Android Facebook SDKs that work with this plugin; they will end up under `lib/`.
+  * Next, build the JS file. `cd lib/facebook-js-sdk` and run `php
+    all.js.php >> ../facebook_js_sdk.js`. This will create the JS SDK file
+    under `lib/facebook_js_sdk.js`. Please note: the output filename is
+    important as the patch assumes that filename!
+  * `cd ..` and apply the patch file by running `patch <
+    facebook-js-patch`.
+  * `cd facebook-android-sdk/facebook` and run `jar cf
+    facebook-android-sdk.jar src`. This will create a
+    `facebook-android-sdk.jar` file that you need to copy into your
+    generated PhoneGap-Android's `libs` directory (and also add to your
+    build path). 
+
+5. From the PhoneGap Facebook Connect Plugin folder copy the contents of the `native/android/` folder into the root of your PhoneGap Android application.
+
+6. From the PhoneGap Facebook Connect Plugin folder copy the `www/pg-plugin-fb-connect.js` and `lib/facebook_js_sdk.js` files into your application's `assets/www` folder.
+
+Now you are ready to create your application! Check out the `example` folder for what the HTML, JS etc looks like. Note that you will need to replace your appId if you use the example index.html file.
+
+You can run the application from either the command line (`ant clean && ant debug install`) or from Eclipse.
+
+## iOS (Mac OS X)
 
 NOTE: If you are having problems with SBJSON conflicts, download the latest version of git clone the latest callback-ios code, build the installer, and run the installer to get updated!
 
@@ -82,8 +117,7 @@ NOTE: If you are having problems with SBJSON conflicts, download the latest vers
 18. Run the application in Xcode.
 
 
-iOS URL Whitelist
------------
+### iOS URL Whitelist
 
 The Facebook SDK will try to access various URLs, and their domains must be whitelisted in your PhoneGap.plist under ExternalHosts.
 You can either add each subdomain separately:
@@ -95,8 +129,7 @@ You can either add each subdomain separately:
 Or you can allow all Facebook domains with:
 * *.facebook.com
 
-iOS URL Scheme
------------
+### iOS URL Scheme
 
 Make sure you add the scheme to your [PROJECTNAME]-Info.plist (located as one of the files in your Xcode project), substitute [APP_ID] and [SCHEME_ID] below to the appropriate values. This is to handle the re-direct from Mobile Safari or the Facebook app, after permission authorization.
 
@@ -116,3 +149,6 @@ Make sure you add the scheme to your [PROJECTNAME]-Info.plist (located as one of
 	&lt;/dict&gt;
 &lt;/array&gt;
 </pre>
+
+
+
