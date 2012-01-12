@@ -151,8 +151,6 @@ public class ConnectPlugin extends Plugin {
         return pr;
     }
 
-    public static final String SINGLE_SIGN_ON_DISABLED = "service_disabled";
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
