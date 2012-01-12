@@ -41,12 +41,6 @@ if (platform == 'android') {
   pluginsXml = pluginsXml.replace(/<\/plugins>/gi,'<plugin name="com.phonegap.facebook.Connect" value="com.phonegap.facebook.ConnectPlugin" /></plugins>'); 
   fs.writeFileSync(pluginsFile, pluginsXml);
 
-  // Add placeholder element for facebook app secret
-  var manifestFile = appDir + 'AndroidManifest.xml';
-  var manifestXml = fs.readFileSync(manifestFile).toString();
-  manifestXml = manifestXml.replace(/<\/application>/gi, '<meta-data android:name="app_secret" android:value="your_app_secret" /></application>');
-  fs.writeFileSync(manifestFile, manifestXml);
-
   // Generate and patch the facebook-js, then copy it into the
   // application dir.
   shell("rm lib/facebook_js_sdk.js*", function() {
@@ -66,7 +60,7 @@ if (platform == 'android') {
   shell("cp example/www/index.html " + appDir + "assets/www");
 
   // Remind user to edit AndroidManifest.xml with their App Secret.
-  console.log('Remember to update your AndroidManifest.xml with your APP_SECRET, as provided by Facebook. It\'s in a <meta-data> element that we just added to your manifest file! Go do it! Nao!');
+  console.log('In your app please make sure to properly include your Facebook application ID when you call "FB.init"!');
 } else if (platform == 'ios') {
   console.log('Sorry dawg, not yet yo! Follow the manual iOS installation instructions in the README.');
 }

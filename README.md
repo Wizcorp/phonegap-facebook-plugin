@@ -42,7 +42,7 @@ interface into the native Facebook SDKs.
 
 The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The working versions of the Facebook Android, JS and iOS SDKs are bundled in this project via git submodules.
 
-To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an APP_ID and APP_SECRET (https://developers.facebook.com/apps).
+To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an APP_ID (https://developers.facebook.com/apps).
 
 # Getting Started
 
@@ -73,9 +73,7 @@ and get into the nitty-gritty for the platform of your choice:
 
 2. In the PhoneGap Android application you will need to put the following in your `res/xml/plugins.xml` file: <pre>&lt;plugin name="com.phonegap.facebook.Connect" value="com.phonegap.facebook.ConnectPlugin" /&gt;</pre>
 
-3. In the PhoneGap Android application you will need to define your `APP_SECRET` inside the `<application>` element in the /AndroidManifest.xml file like this: <pre>&lt;meta-data android:name="app_secret" android:value="your_app_secret" /&gt;</pre>
-
-4. You'll need to build + include the Facebook Android SDK and build + patch the
+3. You'll need to build + include the Facebook Android SDK and build + patch the
    Facebook JavaScript SDK:
   * First run `git submodule update --init` to initialize and pull down
     the versions of the JS and Android Facebook SDKs that work with this plugin; they will end up under `lib/`.
@@ -85,15 +83,19 @@ and get into the nitty-gritty for the platform of your choice:
     important as the patch assumes that filename!
   * `cd ..` and apply the patch file by running `patch <
     facebook-js-patch`.
-  * `cd facebook-android-sdk/facebook` and run `jar cf
+  * NOTE: I haven't been able to compile the facebook android SDK into a
+    jar with success. So, I just copied the source into my generated
+    PhoneGap application directory and imported the generated PhoneGap
+    Android package as an import at the top of FbDialog.java. TODO: Fix this
+    :P. `cd facebook-android-sdk/facebook` and run `jar cf
     facebook-android-sdk.jar src`. This will create a
     `facebook-android-sdk.jar` file that you need to copy into your
     generated PhoneGap-Android's `libs` directory (and also add to your
     build path). 
 
-5. From the PhoneGap Facebook Connect Plugin folder copy the contents of the `native/android/` folder into the root of your PhoneGap Android application.
+4. From the PhoneGap Facebook Connect Plugin folder copy the contents of the `native/android/` folder into the root of your PhoneGap Android application.
 
-6. From the PhoneGap Facebook Connect Plugin folder copy the `www/pg-plugin-fb-connect.js` and `lib/facebook_js_sdk.js` files into your application's `assets/www` folder.
+5. From the PhoneGap Facebook Connect Plugin folder copy the `www/pg-plugin-fb-connect.js` and `lib/facebook_js_sdk.js` files into your application's `assets/www` folder.
 
 Now you are ready to create your application! Check out the `example` folder for what the HTML, JS etc looks like. Note that you will need to replace your appId if you use the example index.html file.
 

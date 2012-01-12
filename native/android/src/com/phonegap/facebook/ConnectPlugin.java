@@ -33,7 +33,6 @@ public class ConnectPlugin extends Plugin {
     //used for dialog auth
     private String[] permissions = new String[] {};
     private String callbackId;
-    private String secret;
 
     @Override
     public PluginResult execute(String action, JSONArray args, final String callbackId) {
@@ -43,13 +42,6 @@ public class ConnectPlugin extends Plugin {
         if (action.equals("init")) {
             try {
                 String appId = args.getString(0);
-
-                // Save the app secret.
-                try {
-                secret = this.ctx.getPackageManager().getApplicationInfo(this.ctx.getPackageName(), PackageManager.GET_META_DATA).metaData.getString("app_secret");
-                } catch(NameNotFoundException e) {
-                  return new PluginResult(PluginResult.Status.ERROR, "No app-secret <meta-data> element found in Android Manifest! Please read the README");
-                }
 
                 facebook = new Facebook(appId);
 
@@ -170,7 +162,6 @@ public class ConnectPlugin extends Plugin {
             "\"session\": {"+
               "\"access_token\": \""+facebook.getAccessToken()+"\","+
               "\"expires\": \""+facebook.getAccessExpires()+"\","+
-              "\"secret\": \"" + secret + "\","+
               "\"session_key\": true,"+
               "\"sig\": \"...\","+
               "\"uid\": \""+this.userId+"\""+
