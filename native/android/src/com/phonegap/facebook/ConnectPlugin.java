@@ -13,6 +13,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.*;
 
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
@@ -43,7 +45,11 @@ public class ConnectPlugin extends Plugin {
                 String appId = args.getString(0);
 
                 // Save the app secret.
+                try {
                 secret = this.ctx.getPackageManager().getApplicationInfo(this.ctx.getPackageName(), PackageManager.GET_META_DATA).metaData.getString("app_secret");
+                } catch(NameNotFoundException e) {
+                  return new PluginResult(PluginResult.Status.ERROR, "No app-secret <meta-data> element found in Android Manifest! Please read the README");
+                }
 
                 facebook = new Facebook(appId);
 
