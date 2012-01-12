@@ -1,1 +1,1 @@
-cscript install.js
+cscript install.cscript
