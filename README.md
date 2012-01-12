@@ -46,17 +46,23 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 # Getting Started
 
-We've provided a few `install` scripts to get you rolling pretty quick.
+We've provided a few `install` scripts to get you rolling pretty quick. PLEASE NOTE: only Android works for the `install` scripts at this time.
 
 1. Download the latest version of PhoneGap from www.phonegap.com.
 
 2. Create an Android or iOS PhoneGap project. Let's assume you have this
    project under `~/phonegap-facebook`.
 
-3. Depending what you've got handy, you could:
-  * ruby: `./install ~/phonegap-facebook`
-  * node: `node install.js ~/phonegap-facebook`
-  * Windows: `install.bat ~/phonegap-facebook`
+3. Make sure you pull down all of the submodules by running `git
+   submodule update --init`.
+
+4. Depending what you've got handy, you could:
+  * ruby (TODO!): `./install ~/phonegap-facebook <platform>`
+  * node: `node install.js ~/phonegap-facebook <platform>`
+  * Windows (TODO!): `install.bat ~/phonegap-facebook
+    <platform>`
+
+In the above, `<platform>` represents either "android" or "ios".
 
 If you don't like this script magic, you can always roll up your sleeves
 and get into the nitty-gritty for the platform of your choice:
