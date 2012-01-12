@@ -88,12 +88,13 @@ iOS URL Whitelist
 
 The Facebook SDK will try to access various URLs, and their domains must be whitelisted in your PhoneGap.plist under ExternalHosts.
 You can either add each subdomain separately:
-* m.facebook.com*
-* graph.facebook.com*
-* api.facebook.com*
+
+* m.facebook.com
+* graph.facebook.com
+* api.facebook.com
 
 Or you can allow all Facebook domains with:
-* *.facebook.com*
+* *.facebook.com
 
 iOS URL Scheme
 -----------
