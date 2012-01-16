@@ -70,7 +70,7 @@ and get into the nitty-gritty for the platform of your choice:
 
 ## Android
 
-1. [Create a basic PhoneGap Android application](See http://www.phonegap.com/start/#android).
+1. [Create a basic PhoneGap Android application](http://www.phonegap.com/start/#android).
 
 2. In the PhoneGap Android application you will need to put the following in your `res/xml/plugins.xml` file: <pre>&lt;plugin name="com.phonegap.facebook.Connect" value="com.phonegap.facebook.ConnectPlugin" /&gt;</pre>
 
@@ -108,27 +108,40 @@ NOTE: If you are having problems with SBJSON conflicts, download the latest vers
 
 1. Create a basic PhoneGap iOS application. See http://www.phonegap.com/start/#ios-x4
 2. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **native/ios** folder into your app in Xcode (usually in the **Plugins** folder group). Make sure it is added as a "group" (yellow folder)
-3. Modify the **APP__SECRET** value in **FacebookConnectPlugin.m** with your Facebook app's **APP__SECRET**
+3. Modify the **APP\_SECRET** value in **FacebookConnectPlugin.m** with your Facebook app's **APP\_SECRET**
 4. Find the PhoneGap.plist file in the project navigator, expand the "Plugins" sub-tree, and add a new entry. For the key, add **com.phonegap.facebook.Connect**, and its value will be **FacebookConnectPlugin**
 5. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **www** folder into the **www** directory in Xcode (don't forget to add script tags in your index.html to reference any .js files copied over)
 6. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **lib** folder into the **www** directory in Xcode (don't forget to add script tags in your index.html to reference any .js files copied over)
 7. for Xcode 4, you will need to build it once, and heed the warning - this is an Xcode 4 template limitation. The warning instructions will tell you to drag copy the **www** folder into the project in Xcode (add as a **folder reference** which is a blue folder).
 8. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
-9. Download the **Facebook iOS SDK** from [https://github.com/facebook/facebook-ios-sdk](https://github.com/facebook/facebook-ios-sdk) and put it into your project folder (currently works with version 91f256424531030a454548693c3a6ca49ca3f35a)
-10. Drag the **facebook-ios-sdk.xcodeproj** file into your project, this will create it as a sub-project
-11. Click on your project's icon (the root element) in Project Navigator, select your **Target**, and the **Build Phases** tab.
-12. From the **Build Phases** tab, expand **Target Dependencies**, then click on the **+** button
-13. Add the build product from the **facebook-ios-sdk sub-project**
-14. From the **Build Settings** tab, search for **Header Search Paths**
-15. Add the value **/Users/Shared/PhoneGap/Frameworks/PhoneGap.framework/Headers**
-16. From the **facebook-ios-sdk.xcodeproj** sub-project, drag out the **FBConnect** folder into your project's **Plugins** folder, and add it as a group (yellow folder).
-17. Add the Facebook domains to the ExternalHosts lists, as described below.
-18. Run the application in Xcode.
+9. Run **git submodule update --init** to initialize and pull down the versions of the JS and iOS Facebook SDKs that work with this plugin; they will end up under **lib/**.
+10. Next, build the JS file:
+ 
+        1. cd lib/facebook-js-sdk
+        2. run php all.js.php >> ../facebook_js_sdk.js 
+
+11. This will create the JS SDK file under **lib/facebook_js_sdk.js**. Please note: the output filename is important as the patch assumes that filename!
+        
+12. Apply the patch file:
+
+        1. cd ..
+        2. patch < facebook-js-patch
+
+13. From `lib/facebook-ios-sdk/src` Drag the **facebook-ios-sdk.xcodeproj** file into your project, this will create it as a sub-project (change it's Base SDK to 'Latest iOS')
+14. Click on your project's icon (the root element) in Project Navigator, select your **Target**, and the **Build Phases** tab.
+15. From the **Build Phases** tab, expand **Target Dependencies**, then click on the **+** button
+16. Add the build product from the **facebook-ios-sdk sub-project**
+17. From the **Build Settings** tab, search for **Header Search Paths**
+18. Add the value **/Users/Shared/PhoneGap/Frameworks/PhoneGap.framework/Headers**
+19. From the **facebook-ios-sdk.xcodeproj** sub-project, drag out the **FBConnect** folder into your project's **Plugins** folder, and add it as a group (yellow folder).
+20. Add the Facebook domains to the ExternalHosts lists, as described below.
+21. Run the application in Xcode.
 
 
 ### iOS URL Whitelist
 
 The Facebook SDK will try to access various URLs, and their domains must be whitelisted in your PhoneGap.plist under ExternalHosts.
+
 You can either add each subdomain separately:
 
 * m.facebook.com
@@ -136,7 +149,8 @@ You can either add each subdomain separately:
 * api.facebook.com
 
 Or you can allow all Facebook domains with:
-* *.facebook.com
+
+* \*.facebook.com
 
 ### iOS URL Scheme
 
