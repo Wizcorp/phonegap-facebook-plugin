@@ -7,18 +7,23 @@
 //
 
 #import <Foundation/Foundation.h>
-#ifdef PHONEGAP_FRAMEWORK
-    #import <PhoneGap/PGPlugin.h>
-#else
-    #import "PGPlugin.h"
-#endif
 #import "FBConnect.h"
 
+#ifdef PHONEGAP_FRAMEWORK
+    #import <PhoneGap/PGPlugin.h>
+    #import <PhoneGap/PluginResult.h>
+#else
+    #import "PGPlugin.h"
+    #import "PluginResult.h"
+#endif
 
-@interface FacebookConnectPlugin : PGPlugin<FBSessionDelegate,FBRequestDelegate,FBDialogDelegate> {
+
+@interface FacebookConnectPlugin : PGPlugin < FBSessionDelegate, FBRequestDelegate, FBDialogDelegate > {
 }
 
 @property (nonatomic, retain) Facebook *facebook;
 @property (nonatomic, copy) NSString* loginCallbackId;
+
+- (NSDictionary*) responseObject;
 
 @end
