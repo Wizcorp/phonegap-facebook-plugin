@@ -40,12 +40,12 @@
             });
             
             function getSession() {
-                alert(JSON.stringify(FB.getSession()));
+                alert("session: " + JSON.stringify(FB.getSession()));
             }
             
             function getLoginStatus() {
                 FB.getLoginStatus(function(response) {
-                    if (response.session) {
+                    if (response.status == 'connected') {
                         alert('logged in');
                     } else {
                         alert('not logged in');
@@ -77,7 +77,7 @@
             function login() {
                 FB.login(
                     function(response) {
-                        if (response.authResponse) {
+                        if (response.session) {
                             alert('logged in');
                         } else {
                             alert('not logged in');
