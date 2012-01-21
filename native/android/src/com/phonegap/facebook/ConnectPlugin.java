@@ -225,7 +225,7 @@ public class ConnectPlugin extends Plugin {
 
         public void onCancel() {
             Log.d(TAG, "cancel");
-            this.fba.error("Cancelled", this.fba.callbackId);
+            this.fba.success(new JSONObject(), this.fba.callbackId);
         }
     }
 }
