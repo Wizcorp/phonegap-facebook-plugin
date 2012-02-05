@@ -12,6 +12,16 @@
 
 #define APP_SECRET  @"REPLACE_ME"
 
+static NSNumber * ToTimestamp(NSDate * date)
+{
+    return [NSNumber numberWithFloat:[date timeIntervalSince1970] * 1000];
+}
+
+static NSDate * ToNSDate(NSNumber * timestamp)
+{
+    return [NSDate dateWithTimeIntervalSince1970:timestamp.floatValue / 1000];
+}
+
 @implementation FacebookConnectPlugin
 
 @synthesize facebook, loginCallbackId;
@@ -26,6 +36,12 @@
 	}
     
 	[facebook handleOpenURL:url];
+}
+
+- (void) restoreSession:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
+{
+    facebook.accessToken = [arguments objectAtIndex:1];
+    facebook.expirationDate = ToNSDate([arguments objectAtIndex:2]);
 }
 
 - (void) init:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
@@ -121,8 +137,8 @@
         
         status = @"connected";
         sessionDict = [NSDictionary dictionaryWithObjects: [NSArray arrayWithObjects:
-                          self.facebook.accessToken, 
-                          [self.facebook.expirationDate description], 
+                          self.facebook.accessToken,
+                          ToTimestamp(facebook.expirationDate),
                           APP_SECRET, 
                           [NSNumber numberWithBool:YES], 
                           @"...", 
