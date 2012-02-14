@@ -8,9 +8,17 @@ PG.FB = {
       document.body.appendChild(elem);
     }
     PhoneGap.exec(function() {
-      var session = JSON.parse(localStorage.getItem('pg_fb_session') || '{"expires":0}');
-      if (session && session.expires > new Date().valueOf()) {
-        FB.Auth.setSession(session, 'connected');
+      var storage_session = localStorage.getItem('pg_fb_session');
+      if (storage_session) {
+          // If no key is present in localStorage, storage_session will be
+          // empty and JSON.parse would cause an exception
+          var session = JSON.parse(storage_session);
+
+          // When the offline_access permission is used, session.expires = "0"
+          // (Note the implicit typecasting going on)
+          if (session.expires == 0 || session.expires > new Date().valueOf()) {
+              FB.Auth.setSession(session, 'connected');
+          }
       }
       console.log('PhoneGap Facebook Connect plugin initialized successfully.');
     }, (fail?fail:null), 'com.phonegap.facebook.Connect', 'init', [apiKey]);
