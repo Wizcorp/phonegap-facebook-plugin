@@ -575,6 +575,12 @@ index a4d3007..a62fb82 100644
 +            case 'auth.status':
 +                FB._nativeInterface.getLoginStatus(cb, function(e) {alert('PhoneGap Facebook Connect plugin fail on auth.status!');});
 +                break;
++	    case 'feed':
++		FB._nativeInterface.feed(params,cb, function(e) {alert('PhoneGap Facebook Connect plugin fail on feed!');});
++		break;
++	    case 'apprequests':
++	        FB._nativeInterface.apprequests(params,cb, function(e) {alert('PhoneGap Facebook Connect plugin fail on apprequests!');});
++	        break;
 +        }
 +        return;
 +    }

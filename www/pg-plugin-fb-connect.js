@@ -34,5 +34,15 @@ PG.FB = {
     PhoneGap.exec(function(e) {
       if (cb) cb(e);
     }, (fail?fail:null), 'com.phonegap.facebook.Connect', 'getLoginStatus', []);
-  }
+  },
+  feed: function(params, cb, fail) {
+    PhoneGap.exec(function(e) { // feed
+				  if (cb) cb(e);
+				  }, (fail?fail:null), 'com.phonegap.facebook.Connect', 'showFeedPublishDialog', [params] );
+  },
+  apprequests: function(params, cb, fail) {
+    PhoneGap.exec(function(e) { // apprequests
+				  if (cb) cb(e);
+				  }, (fail?fail:null), 'com.phonegap.facebook.Connect', 'apprequests', [params] );
+  }	
 };
