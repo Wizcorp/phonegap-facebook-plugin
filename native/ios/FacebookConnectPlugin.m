@@ -99,7 +99,18 @@
 {
     NSString* callbackId = [arguments objectAtIndex:0]; // first item is the callbackId
     
-	[facebook dialog:@"feed" andDelegate:self];
+	[facebook dialog:@"feed"  andParams:options andDelegate:self];
+    
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_NO_RESULT];
+    NSString* callback = [pluginResult toSuccessCallbackString:callbackId];
+    [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
+}
+
+- (void) apprequests:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
+{
+    NSString* callbackId = [arguments objectAtIndex:0]; // first item is the callbackId
+    
+	[facebook dialog:@"apprequests"  andParams:options andDelegate:self];
     
     PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_NO_RESULT];
     NSString* callback = [pluginResult toSuccessCallbackString:callbackId];

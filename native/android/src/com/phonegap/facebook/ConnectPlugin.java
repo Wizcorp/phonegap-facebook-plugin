@@ -2,6 +2,7 @@ package com.phonegap.facebook;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Iterator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +34,8 @@ public class ConnectPlugin extends Plugin {
     //used for dialog auth
     private String[] permissions = new String[] {};
     private String callbackId;
+    private Bundle paramBundle;
+    private String method;
 
     @Override
     public PluginResult execute(String action, JSONArray args, final String callbackId) {
@@ -145,6 +148,50 @@ public class ConnectPlugin extends Plugin {
                 pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before getLoginStatus.");
             }
         }
+        else 
+        {
+        	String apimethod="";
+        	if ( action.equals("showFeedPublishDialog"))
+        	{
+        		apimethod = "feed";
+        	}
+        	else if( action.equals("apprequests"))
+        	{
+        		apimethod = "apprequests";
+        	}
+        	
+        	Bundle collect = new Bundle();
+        	
+        	JSONObject params = null;
+			try {
+				params = args.getJSONObject(0);
+			} catch (JSONException e) {
+				params = new JSONObject();
+			}
+
+    		Iterator<String> iter = params.keys();
+    		while (iter.hasNext()) {
+    			String key = iter.next();
+    			try {
+    				collect.putString(key, params.getString(key));
+    			} catch (JSONException e) {
+    				Log.w("PhoneGapLog", "Nonstring parameter provided to dialog discarded");
+    			}
+    		}
+
+    		
+    		final ConnectPlugin me = this;
+    		this.paramBundle = new Bundle(collect);
+    		this.method = apimethod;
+    		Runnable runnable = new Runnable() {
+                public void run() {
+                     me.facebook.dialog (me.ctx, me.method , me.paramBundle , new UIDialogListener(me));
+                 };
+             };
+             this.ctx.runOnUiThread(runnable);
+    		
+        }
+       
 
         return pr;
     }
@@ -177,6 +224,36 @@ public class ConnectPlugin extends Plugin {
         return new JSONObject();
     }
 
+    class UIDialogListener implements DialogListener {
+    	 final ConnectPlugin fba;
+
+		public UIDialogListener(ConnectPlugin fba){
+			super();
+			this.fba = fba;
+		}
+
+		public void onComplete(Bundle values) {
+			//  Handle a successful dialog
+			Log.d("PhoneGapLog",values.toString());
+			this.fba.success(new PluginResult(PluginResult.Status.OK), this.fba.callbackId);
+		}
+
+		public void onFacebookError(FacebookError e) {
+            Log.d(TAG, "facebook error");
+            this.fba.error("Facebook error: " + e.getMessage(), callbackId);
+        }
+
+        public void onError(DialogError e) {
+            Log.d(TAG, "other error");
+            this.fba.error("Dialog error: " + e.getMessage(), this.fba.callbackId);
+        }
+
+        public void onCancel() {
+            Log.d(TAG, "cancel");
+            this.fba.error("Cancelled", this.fba.callbackId);
+        }
+	}
+    
     class AuthorizeListener implements DialogListener {
         final ConnectPlugin fba;
 
