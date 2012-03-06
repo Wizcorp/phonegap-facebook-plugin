@@ -10,7 +10,7 @@
 #import "FacebookConnectPlugin.h"
 #import "JSON.h"
 
-#define APP_SECRET  @"REPLACE_ME"
+#define APP_SECRET  @"3fa440c0919afdd20a957c6cce288480"
 
 @implementation FacebookConnectPlugin
 
@@ -98,8 +98,23 @@
 - (void) showFeedPublishDialog:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
 {
     NSString* callbackId = [arguments objectAtIndex:0]; // first item is the callbackId
-    
+
 	[facebook dialog:@"feed" andDelegate:self];
+
+    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_NO_RESULT];
+    NSString* callback = [pluginResult toSuccessCallbackString:callbackId];
+    [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
+}
+
+- (void) showDialog:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
+{
+    NSString* callbackId = [arguments objectAtIndex:0]; // first item is the callbackId
+    NSString* method = [[NSString alloc] initWithString:[options objectForKey:@"method"]];
+    if ([options objectForKey:@"method"]) {
+        [options removeObjectForKey:@"method"];
+    }
+	[facebook dialog:method andParams:options andDelegate:self];
+    [method release];
     
     PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_NO_RESULT];
     NSString* callback = [pluginResult toSuccessCallbackString:callbackId];
@@ -129,12 +144,12 @@
                           @"...", 
                           nil] 
                 forKeys:[NSArray arrayWithObjects:
-                         @"access_token", 
-                         @"expires", 
+                         @"accessToken", 
+                         @"expiresIn", 
                          @"secret", 
                          @"session_key", 
                          @"sig", 
-                         @"uid", 
+                         @"userID", 
                          nil]];
     } else {
         sessionDict = [[NSDictionary new] autorelease];
@@ -168,6 +183,18 @@
 
 }
 
+- (void)fbDidLogout {
+}
+
+- (void)fbDidNotLogin:(BOOL)cancelled {
+}
+
+- (void)fbDidExtendToken:(NSString*)accessToken
+               expiresAt:(NSDate*)expiresAt {
+}
+
+- (void)fbSessionInvalidated {
+}
 
 ////////////////////////////////////////////////////////////////////
 // FBRequestDelegate

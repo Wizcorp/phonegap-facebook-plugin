@@ -40,7 +40,7 @@
             });
             
             function getSession() {
-                alert("session: " + JSON.stringify(FB.getSession()));
+                alert("session: " + JSON.stringify(FB.getAuthResponse()));
             }
             
             function getLoginStatus() {
@@ -83,14 +83,14 @@
                             alert('not logged in');
                         }
                     },
-                    { perms: "email" }
+                    { scope: "email" }
                 );
             }
             
             document.addEventListener('deviceready', function() {
                 try {
                     alert('Device is ready! Make sure you set your app_id below this alert.');
-                    FB.init({ appId: "app_id", nativeInterface: PG.FB });
+                    FB.init({ appId: "app_id", useCachedDialogs: false, nativeInterface: PG.FB });
                     document.getElementById('data').innerHTML = "";
                 } catch (e) {
                     alert(e);
