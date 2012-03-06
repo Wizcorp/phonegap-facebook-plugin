@@ -43,9 +43,9 @@ if (platform == 'android') {
 
   // Generate and patch the facebook-js, then copy it into the
   // application dir.
-  shell("rm lib/facebook_js_sdk.js*", function() {
-    shell("cd lib/facebook-js-sdk && php all.js.php >> ../facebook_js_sdk.js && cd .. && patch < facebook-js-patch && cp facebook_js_sdk.js " + appDir + "assets/www");
-  });
+  //shell("rm lib/facebook_js_sdk.js*", function() {
+  //  shell("cd lib/facebook-js-sdk && php all.js.php >> ../facebook_js_sdk.js && cd .. && patch < facebook-js-patch && cp facebook_js_sdk.js " + appDir + "assets/www");
+  //});
 
   // Copy facebook-android-sdk res into app dir
   shell("cp -rf lib/facebook-android-sdk/facebook/res " + appDir);
