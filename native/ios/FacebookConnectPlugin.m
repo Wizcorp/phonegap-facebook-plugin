@@ -10,7 +10,7 @@
 #import "FacebookConnectPlugin.h"
 #import "JSON.h"
 
-#define APP_SECRET  @"3fa440c0919afdd20a957c6cce288480"
+#define APP_SECRET  @"REPLACE_ME"
 
 @implementation FacebookConnectPlugin
 
@@ -60,6 +60,7 @@
         
     NSString* callbackId = [arguments objectAtIndex:0];// first item is the callbackId
     BOOL validSession = [self.facebook isSessionValid];
+    validSession = NO; // PHONEGAP DEBUG
 
     PluginResult* result = nil;
     NSString* jsString = nil;
@@ -113,8 +114,19 @@
     if ([options objectForKey:@"method"]) {
         [options removeObjectForKey:@"method"];
     }
-	[facebook dialog:method andParams:options andDelegate:self];
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+    for (id key in options) {
+        if ([[options objectForKey:key] isKindOfClass:[NSString class]]) {
+            [params setObject:[options objectForKey:key] forKey:key];
+        } else {
+            SBJSON *jsonWriter = [[SBJSON new] autorelease];
+            NSString *paramString = [jsonWriter stringWithObject:[options objectForKey:key]];
+            [params setObject:paramString forKey:key];
+        }
+    }
+	[facebook dialog:method andParams:params andDelegate:self];
     [method release];
+    [params release];
     
     PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_NO_RESULT];
     NSString* callback = [pluginResult toSuccessCallbackString:callbackId];
@@ -161,7 +173,7 @@
                                  nil] 
                         forKeys:[NSArray arrayWithObjects:
                                  @"status", 
-                                 @"session", 
+                                 @"authResponse", 
                                  nil]];
         
     return statusDict;
