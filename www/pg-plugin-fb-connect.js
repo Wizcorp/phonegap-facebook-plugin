@@ -9,7 +9,7 @@ PG.FB = {
     }
     PhoneGap.exec(function() {
       var authResponse = JSON.parse(localStorage.getItem('pg_fb_session') || '{"expiresIn":0}');
-      if (authResponse && authResponse.expiresIn > new Date().valueOf()) {
+      if (authResponse && authResponse.expiresIn > 0) {
         FB.Auth.setAuthResponse(authResponse, 'connected');
       }
       console.log('PhoneGap Facebook Connect plugin initialized successfully.');
@@ -19,6 +19,7 @@ PG.FB = {
     params = params || { scope: '' };
     PhoneGap.exec(function(e) { // login
         localStorage.setItem('pg_fb_session', JSON.stringify(e.authResponse));
+                  console.log('PHONEGAP DEBUG: login - Saved to local storage: '+e.authResponse.expiresIn+' '+e.authResponse.accessToken);
         FB.Auth.setAuthResponse(e.authResponse, 'connected');
         if (cb) cb(e);
     }, (fail?fail:null), 'com.phonegap.facebook.Connect', 'login', params.scope.split(',') );

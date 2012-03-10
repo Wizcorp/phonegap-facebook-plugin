@@ -10,7 +10,7 @@
 #import "FacebookConnectPlugin.h"
 #import "JSON.h"
 
-#define APP_SECRET  @"REPLACE_ME"
+#define APP_SECRET  @"3fa440c0919afdd20a957c6cce288480"
 
 @implementation FacebookConnectPlugin
 
@@ -59,27 +59,16 @@
     }
         
     NSString* callbackId = [arguments objectAtIndex:0];// first item is the callbackId
-    BOOL validSession = [self.facebook isSessionValid];
-    validSession = NO; // PHONEGAP DEBUG
-
-    PluginResult* result = nil;
-    NSString* jsString = nil;
     
-    if (validSession) {
-        result = [PluginResult resultWithStatus:PGCommandStatus_OK];
-        jsString = [result toSuccessCallbackString:callbackId];
-        
-    } else {
-        NSMutableArray* marray = [NSMutableArray arrayWithArray:arguments];
-        [marray removeObjectAtIndex:0]; // first item is the callbackId
-        
-        // save the callbackId for the login callback
-        self.loginCallbackId = callbackId;
-        
-        return [facebook authorize:marray];
-    }
+    NSMutableArray* marray = [NSMutableArray arrayWithArray:arguments];
+    [marray removeObjectAtIndex:0]; // first item is the callbackId
     
-    [super writeJavascript:jsString];
+    // save the callbackId for the login callback
+    self.loginCallbackId = callbackId;
+    
+    return [facebook authorize:marray];
+    
+    [super writeJavascript:nil];
 }
 
 - (void) logout:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options
@@ -90,7 +79,7 @@
     
     NSString* callbackId = [arguments objectAtIndex:0]; // first item is the callbackId
     
-	[facebook logout:self];
+	[facebook logout];
     
     PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK];
     [super writeJavascript:[pluginResult toSuccessCallbackString:callbackId]];
@@ -144,12 +133,18 @@
     NSString* status = @"unknown";
     NSDictionary* sessionDict = nil;
     
+    NSTimeInterval expiresTimeInterval = [self.facebook.expirationDate timeIntervalSinceNow];
+    NSString* expiresIn = @"0";
+    if (expiresTimeInterval > 0) {
+        expiresIn = [NSString stringWithFormat:@"%d", expiresTimeInterval];
+    }
+    
     if (self.facebook && [self.facebook isSessionValid]) {
         
         status = @"connected";
         sessionDict = [NSDictionary dictionaryWithObjects: [NSArray arrayWithObjects:
                           self.facebook.accessToken, 
-                          [self.facebook.expirationDate description], 
+                          expiresIn, 
                           APP_SECRET, 
                           [NSNumber numberWithBool:YES], 
                           @"...", 
