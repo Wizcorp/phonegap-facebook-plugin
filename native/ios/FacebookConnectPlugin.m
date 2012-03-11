@@ -136,7 +136,7 @@
     NSTimeInterval expiresTimeInterval = [self.facebook.expirationDate timeIntervalSinceNow];
     NSString* expiresIn = @"0";
     if (expiresTimeInterval > 0) {
-        expiresIn = [NSString stringWithFormat:@"%d", expiresTimeInterval];
+        expiresIn = [NSString stringWithFormat:@"%0.0f", expiresTimeInterval];
     }
     
     if (self.facebook && [self.facebook isSessionValid]) {
