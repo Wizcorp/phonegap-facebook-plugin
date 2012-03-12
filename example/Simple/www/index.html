@@ -5,7 +5,7 @@
 	<body>
 		<button onclick="login()">Login</button>
 		<button onclick="me()">Me</button>
-		<button onclick="getSession()">Get session</button>
+		<!--<button onclick="getSession()">Get session</button>-->
 		<button onclick="getLoginStatus()">Get login</button>
 		<button onclick="logout()">Logout</button>
 		<button onclick="facebookWallPost()">facebookWallPost</button>
@@ -43,10 +43,10 @@
                                alert('auth.statusChange event');
                                });
             
-            function getSession() {
+            /*function getSession() {
                 alert("session: " + JSON.stringify(FB.getSession()));
             }
-            
+            */
             function getLoginStatus() {
                 FB.getLoginStatus(function(response) {
                                   if (response.status == 'connected') {
@@ -145,7 +145,7 @@
             document.addEventListener('deviceready', function() {
                                       try {
                                       alert('Device is ready! Make sure you set your app_id below this alert.');
-                                      FB.init({ appId: "273476932664248", nativeInterface: PG.FB, useCachedDialogs: true });
+                                      FB.init({ appId: "appid", nativeInterface: PG.FB, useCachedDialogs: false });
                                       document.getElementById('data').innerHTML = "";
                                       } catch (e) {
                                       alert(e);

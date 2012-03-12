@@ -110,7 +110,7 @@ NOTE: If you are having problems with SBJSON conflicts, download the latest vers
 
 1. Create a basic PhoneGap iOS application. See http://www.phonegap.com/start/#ios-x4
 2. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **native/ios** folder into your app in Xcode (usually in the **Plugins** folder group). Make sure it is added as a "group" (yellow folder)
-3. Modify the **APP\_SECRET** value in **FacebookConnectPlugin.m** with your Facebook app's **APP\_SECRET**
+SKIP -> 3. Modify the **APP\_SECRET** value in **FacebookConnectPlugin.m** with your Facebook app's **APP\_SECRET**
 4. Find the PhoneGap.plist file in the project navigator, expand the "Plugins" sub-tree, and add a new entry. For the key, add **com.phonegap.facebook.Connect**, and its value will be **FacebookConnectPlugin**
 5. From the **PhoneGap Facebook Connect Plugin** folder copy the contents of the **www** folder into the **www** directory in Xcode (don't forget to add script tags in your index.html to reference any .js files copied over)
 6. for Xcode 4, you will need to build it once, and heed the warning - this is an Xcode 4 template limitation. The warning instructions will tell you to drag copy the **www** folder into the project in Xcode (add as a **folder reference** which is a blue folder).
