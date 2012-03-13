@@ -129,6 +129,7 @@ SKIP -> 10. This will create and patch the JS SDK file under **lib/facebook_js_s
 13. Click on your project's icon (the root element) in Project Navigator, select your **Target**, then the **Build Settings** tab, search for **Header Search Paths**.
 14. Add the value **/Users/Shared/PhoneGap/Frameworks/PhoneGap.framework/Headers**
 15. Add the Facebook domains to the ExternalHosts lists, as described below.
+16. Copy the index.html from example folder in **PhoneGap Facebook Connect Plugin** and add appid to init function
 17. Run the application in Xcode.
 
 
