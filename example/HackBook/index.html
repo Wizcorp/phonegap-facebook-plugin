@@ -318,7 +318,7 @@
   document.addEventListener('deviceready', function() {
                             try {
                             alert('Device is ready! Make sure you set your app_id below this alert.');
-                            FB.init({ appId: "273476932664248", nativeInterface: PG.FB, useCachedDialogs: false });
+                            FB.init({ appId: "appid", nativeInterface: PG.FB, useCachedDialogs: false });
                             document.getElementById('data').innerHTML = "";
                             } catch (e) {
                             alert(e);

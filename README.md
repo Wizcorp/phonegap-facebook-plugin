@@ -117,11 +117,11 @@ SKIP -> 3. Modify the **APP\_SECRET** value in **FacebookConnectPlugin.m** with 
 7. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
 8. Run **git submodule update --init** to initialize and pull down the versions of the JS and iOS Facebook SDKs that work with this plugin; they will end up under **lib/**.
 IGNORE STEP 9 & 10 
-9. Next, **build and patch**  the JS file:
+SKIP -> 9. Next, **build and patch**  the JS file:
  
         cd lib/facebook-js-sdk && php all.js.php >> ../facebook_js_sdk.js && cd .. && patch < facebook-js-patch 
 
-10. This will create and patch the JS SDK file under **lib/facebook_js_sdk.js**. Please note: the output filename is important as the patch assumes that filename!
+SKIP -> 10. This will create and patch the JS SDK file under **lib/facebook_js_sdk.js**. Please note: the output filename is important as the patch assumes that filename!
         
 11. From the **PhoneGap Facebook Connect Plugin** folder copy the file **lib/facebook_js_sdk.js** into the **www** directory in Xcode (don't forget to add script tags in your index.html to reference the .js file copied over)
 
@@ -141,10 +141,12 @@ You can either add each subdomain separately:
 * m.facebook.com
 * graph.facebook.com
 * api.facebook.com
+* \*.fbcdn.net
+* \*.akamaihd.net
 
-Or you can allow all Facebook domains with:
+Or you can allow all domains with:
 
-* \*.facebook.com
+* \*
 
 ### iOS URL Scheme
 
