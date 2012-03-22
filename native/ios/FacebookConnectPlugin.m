@@ -10,7 +10,7 @@
 #import "FacebookConnectPlugin.h"
 #import "JSON.h"
 
-
+#define APP_SECRET @"IgnoreMe"
 
 @implementation FacebookConnectPlugin
 
@@ -144,7 +144,9 @@
         status = @"connected";
         sessionDict = [NSDictionary dictionaryWithObjects: [NSArray arrayWithObjects:
                           self.facebook.accessToken, 
-                          expiresIn, 
+                          expiresIn,
+                          APP_SECRET,
+                                                            
                           [NSNumber numberWithBool:YES], 
                           @"...", 
                           @"...", 

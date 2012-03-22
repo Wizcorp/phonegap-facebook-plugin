@@ -43,7 +43,7 @@ FB.Event.monitor('auth.statusChange', function(session) {
   
     clearAction();
   }
-  else if (session && session.status == 'not_authorized') {
+  else if (session && (session.status == 'not_authorized' || session.status == 'notConnected')) {
     document.body.className = 'not_connected';
     
     clearAction();

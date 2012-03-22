@@ -18,17 +18,17 @@ FB.Event.monitor('auth.statusChange', function(session) {
   else {
     preFetchData();
     
-    FB.api({method: 'fql.query', query: 'SELECT user_checkins, publish_checkins FROM permissions WHERE uid = ' + session.authResponse['userID']}, function(response) {
-      if (document.body.className != 'not_connected') {
-        //We couldn't get a check-in for the user, so they haven't granted the permission
-        if (response[0].user_checkins == 1) {
-          document.body.className = 'permissioned';
-        }
-        //We were able to get a check-in for the user, so they have granted the permission already
-        else {
-          document.body.className = 'not_permissioned';
-        }
-      }
+    FB.api({method: 'fql.query', query: 'SELECT user_checkins, publish_checkins FROM permissions WHERE uid = me()'}, function(response) {
+           if (document.body.className != 'not_connected') {
+             //We couldn't get a check-in for the user, so they haven't granted the permission
+             if (response[0] && response[0].user_checkins == 1) {
+               document.body.className = 'permissioned';
+             }
+             //We were able to get a check-in for the user, so they have granted the permission already
+             else {
+               document.body.className = 'not_permissioned';
+             }
+           }
     });
   }
 });
@@ -82,7 +82,7 @@ function displayCheckIns(checkins, dom) {
     var checkin = checkins[i];
     
     markup += '<div class="place">'
-        + '<div class="picture"><img src="http://graph.facebook.com/' + checkin.place.id + '/picture"></div>'
+        + '<div class="picture"><img src="https://graph.facebook.com/' + checkin.place.id + '/picture"></div>'
         + '<div class="info">'
         + '  <div class="name">' + checkin.place.name + '</div>'
         + '  <div class="check-in-msg">' + (checkin.message || '') + '</div>'
@@ -101,7 +101,7 @@ function displayPlaces(places, dom) {
     var place = places[i];
     
     markup += '<div class="place">'
-        + '<div class="picture"><img src="http://graph.facebook.com/' + place.id + '/picture"></div>'
+        + '<div class="picture"><img src="https://graph.facebook.com/' + place.id + '/picture"></div>'
         + '<div class="info">'
         + '  <div class="name">' + place.name + '</div>'
         + '  <div class="check-in-button"><input type="button" value="Check in" onclick="checkin(' + place.id + ')" /></div>'
@@ -125,14 +125,17 @@ function checkin(id) {
     },
     message: ''
   };
-
-  console.log('Checking you into using the following params: ', params);
   
   FB.api('/me/checkins', params,
     function(response) {
       clearAction();
       
-      console.log('Checked you into the place, here\'s the response: ', response);
+      var debugOutput = '';
+      for (var property in response) {
+        debugOutput += property + ': ' + response[property]+'; ';
+      }
+      console.log('Checked you into the place, here\'s the response::'+debugOutput);   
+      //console.log('Checked you into the place, here\'s the response: ', response);
       
       setAction("You've successfully checked in!", false);
       
