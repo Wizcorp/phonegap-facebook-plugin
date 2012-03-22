@@ -64,8 +64,8 @@
         <li class="menu-item" onclick="openPage('Requests');">Requests</li>
         <li class="menu-item" onclick="openPage('News-Feed');">News Feed</li>
         <li class="menu-item" onclick="openPage('Graph-API');">Graph API</li>
-        <li class="menu-item" onclick="openPage('Credits');" id="credits-button">Credits</li>
-        <!-- <li class="menu-item" onclick="openPage('Social-Plugins');">Social Plugins</li> --> 
+        <!-- <li class="menu-item" onclick="openPage('Credits');" id="credits-button">Credits</li>
+        <li class="menu-item" onclick="openPage('Social-Plugins');">Social Plugins</li> --> 
     </ul>
     <div id="like-button"><fb:like url="http://www.cnn.com/" width="275"></fb:like></div>
   </div>
@@ -319,7 +319,6 @@
                             try {
                             alert('Device is ready! Make sure you set your app_id below this alert.');
                             FB.init({ appId: "appid", nativeInterface: PG.FB, useCachedDialogs: false });
-                            document.getElementById('data').innerHTML = "";
                             } catch (e) {
                             alert(e);
                             }
