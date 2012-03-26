@@ -1,9 +1,9 @@
-# PhoneGap/Cordova Facebook Connect Plugin
+# Apache Cordova Facebook Connect Plugin
 
-This is the offical plugin for Facebook Connect in PhoneGap/Cordova!
+This is the offical plugin for Facebook Connect in Apache Cordova (formerly PhoneGap)!
 
-The Facebook Connect plugin for PhoneGap allows you to use the same JavaScript code in your web application as you 
-use in your native PhoneGap application, but your native PhoneGap application will use the Facebook native app to 
+The Facebook Connect plugin for Apache Cordova allows you to use the same JavaScript code in your web application as you 
+use in your native Cordova application, but your native Cordova application will use the Facebook native app to 
 perform Single Sign On for the user (if possible - if it isn't then it
 will fall back to dialog-based authentication).
 
@@ -11,7 +11,7 @@ This is all licensed under MIT except for `app/www/facebook_js_sdk.js` which is 
 
 # Requirements
 
-* PhoneGap v1.5
+* PhoneGap (Cordova) v1.5
 
 The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The working versions of the Facebook Android, JS and iOS SDKs are bundled in this project via git submodules.
 
@@ -48,7 +48,7 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 We've provided a few `install` scripts to get you rolling pretty quick. PLEASE NOTE: only Android works for the `install` scripts at this time.
 
-1. Download the latest version of PhoneGap from www.phonegap.com.
+1. Download the latest version of PhoneGap (Cordova) from www.phonegap.com.
 
 2. Create an Android or iOS Cordova project. Let's assume you have this
    project under `~/phonegap-facebook`.
@@ -76,13 +76,7 @@ and get into the nitty-gritty for the platform of your choice:
 3. You'll need to build + include the Facebook Android SDK and build + patch the
    Facebook JavaScript SDK:
   * First run `git submodule update --init` to initialize and pull down
-    the versions of the JS and Android Facebook SDKs that work with this plugin; they will end up under `lib/`.
-  * Next, build the JS file. `cd lib/facebook-js-sdk` and run `php
-    all.js.php >> ../facebook_js_sdk.js`. This will create the JS SDK file
-    under `lib/facebook_js_sdk.js`. Please note: the output filename is
-    important as the patch assumes that filename!
-  * `cd ..` and apply the patch file by running `patch <
-    facebook-js-patch`.
+    the version of the Android Facebook SDK that works with this plugin; it will end up under `lib/`.
   * NOTE: I haven't been able to compile the facebook android SDK into a
     jar with success. So, I just copied the source into my generated
     Cordova application directory and imported the generated Cordova
