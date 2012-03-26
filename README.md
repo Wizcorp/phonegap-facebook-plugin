@@ -13,7 +13,7 @@ This is all licensed under MIT except for `app/www/facebook_js_sdk.js` which is 
 
 * PhoneGap (Cordova) v1.5
 
-The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The working versions of the Facebook Android, JS and iOS SDKs are bundled in this project via git submodules.
+The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The working versions of the Facebook Android and iOS SDKs are bundled in this project via git submodules.
 
 To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an APP_ID (https://developers.facebook.com/apps). If you plan on rolling this out on Android, please note that you will need to [generate a hash of your Android key(s) and submit those to the Developers page on Facebook](http://developers.facebook.com/docs/mobile/android/build/#sig) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
 
