@@ -20,8 +20,8 @@ import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
-import com.phonegap.api.Plugin;
-import com.phonegap.api.PluginResult;
+import org.apache.cordova.api.Plugin;
+import org.apache.cordova.api.PluginResult;
 
 public class ConnectPlugin extends Plugin {
 
@@ -47,7 +47,7 @@ public class ConnectPlugin extends Plugin {
 
                 Log.d(TAG, "init: Initializing plugin.");
 
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.ctx);
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.ctx.getContext());
                 String access_token = prefs.getString("access_token", null);
                 Long expires = prefs.getLong("access_expires", -1);
 
@@ -70,7 +70,7 @@ public class ConnectPlugin extends Plugin {
                 }
 
                 if(facebook.isSessionValid() && this.userId != null) {
-                    return new PluginResult(PluginResult.Status.OK, this.getResponse());					
+                    return new PluginResult(PluginResult.Status.OK, this.getResponse());
                 }
                 else {
                     return new PluginResult(PluginResult.Status.NO_RESULT);
@@ -81,7 +81,7 @@ public class ConnectPlugin extends Plugin {
                 return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. expected a string as the first arg.");
             }
         }
-        
+
         else if (action.equals("login")) {
             if (facebook != null) {
                 if (facebook.isSessionValid()) {
@@ -114,13 +114,13 @@ public class ConnectPlugin extends Plugin {
                 pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before login.");
             }
         }
-        
+
         else if (action.equals("logout")) {
             if (facebook != null) {
                 try {
-                    facebook.logout(this.ctx);
-                    
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.ctx);
+                    facebook.logout(this.ctx.getContext());
+
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.ctx.getContext());
                     prefs.edit().putLong("access_expires", -1).commit();
                     prefs.edit().putString("access_token", null).commit();
                 } catch (MalformedURLException e) {
@@ -190,7 +190,7 @@ public class ConnectPlugin extends Plugin {
 
             String token = this.fba.facebook.getAccessToken();
             long token_expires = this.fba.facebook.getAccessExpires();
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.fba.ctx);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.fba.ctx.getContext());
             prefs.edit().putLong("access_expires", token_expires).commit();
             prefs.edit().putString("access_token", token).commit();
 
