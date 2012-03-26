@@ -16,7 +16,7 @@
 
 @synthesize facebook, loginCallbackId;
 
-/* This overrides PGPlugin's method, which receives a notification when handleOpenURL is called on the main app delegate */
+/* This overrides CDVPlugin's method, which receives a notification when handleOpenURL is called on the main app delegate */
 - (void) handleOpenURL:(NSNotification*)notification
 {
 	NSURL* url = [notification object];
@@ -38,7 +38,7 @@
 	NSString* appId = [arguments objectAtIndex:1];
 	self.facebook = [[Facebook alloc] initWithAppId:appId andDelegate: self];
 	    
-    PluginResult* result = [PluginResult resultWithStatus:PGCommandStatus_OK];
+    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [super writeJavascript:[result toSuccessCallbackString:callbackId]];
 }
 
@@ -46,7 +46,7 @@
 {
     NSString* callbackId = [arguments objectAtIndex:0]; // first item is the callbackId
     
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsDictionary:[self responseObject]];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[self responseObject]];
     NSString* callback = [pluginResult toSuccessCallbackString:callbackId];
     // we need to wrap the callback in a setTimeout(func, 0) so it doesn't block the UI (handleOpenURL limitation)
     [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
@@ -81,7 +81,7 @@
     
 	[facebook logout];
     
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [super writeJavascript:[pluginResult toSuccessCallbackString:callbackId]];
 }
 
@@ -91,7 +91,7 @@
 
 	[facebook dialog:@"feed" andDelegate:self];
 
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_NO_RESULT];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
     NSString* callback = [pluginResult toSuccessCallbackString:callbackId];
     [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
 }
@@ -117,7 +117,7 @@
     [method release];
     [params release];
     
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_NO_RESULT];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
     NSString* callback = [pluginResult toSuccessCallbackString:callbackId];
     [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
 }
@@ -182,7 +182,7 @@
 {
     [facebook requestWithGraphPath:@"me" andDelegate:self];
     
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsDictionary:
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:
                             [self responseObject]];
     NSString* callback = [pluginResult toSuccessCallbackString:self.loginCallbackId];
 
@@ -240,7 +240,7 @@
  */
 - (void) request:(FBRequest *)request didLoad:(id)result
 {    
-    PluginResult* pluginResult = [PluginResult resultWithStatus:PGCommandStatus_OK messageAsDictionary:
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:
                                   [self responseObject]];
     NSString* callback = [pluginResult toSuccessCallbackString:self.loginCallbackId];
     // we need to wrap the callback in a setTimeout(func, 0) so it doesn't block the UI (handleOpenURL limitation)
