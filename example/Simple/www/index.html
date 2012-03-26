@@ -14,17 +14,17 @@
         <div id="data">loading ...</div>
         
         <script src="http://localhost:8080/target/target-script-min.js#anonymous"></script>
-        <!-- phonegap -->
-		<script src="phonegap-1.4.1.js"></script>
-	    <!-- phonegap facebook plugin -->
-		<script src="pg-plugin-fb-connect.js"></script>
+        <!-- cordova -->
+		<script src="cordova-1.5.0.js"></script>
+	    <!-- cordova facebook plugin -->
+		<script src="cdv-plugin-fb-connect.js"></script>
 	    <!-- facebook js sdk -->
 		<script src="facebook_js_sdk.js"></script>
         
 		<script>
             
-            if (typeof PhoneGap == 'undefined') alert('PhoneGap variable does not exist. Check that you have included phonegap.js correctly');
-            if (typeof PG == 'undefined') alert('PG variable does not exist. Check that you have included pg-plugin-fb-connect.js correctly');
+            if (typeof Cordova == 'undefined') alert('Cordova variable does not exist. Check that you have included phonegap.js correctly');
+            if (typeof CDV == 'undefined') alert('CDV variable does not exist. Check that you have included pg-plugin-fb-connect.js correctly');
             if (typeof FB == 'undefined') alert('FB variable does not exist. Check that you have included the Facebook JS SDK file.');
             
             FB.Event.subscribe('auth.login', function(response) {
@@ -145,7 +145,7 @@
             document.addEventListener('deviceready', function() {
                                       try {
                                       alert('Device is ready! Make sure you set your app_id below this alert.');
-                                      FB.init({ appId: "appid", nativeInterface: PG.FB, useCachedDialogs: false });
+                                      FB.init({ appId: "appid", nativeInterface: CDV.FB, useCachedDialogs: false });
                                       document.getElementById('data').innerHTML = "";
                                       } catch (e) {
                                       alert(e);
