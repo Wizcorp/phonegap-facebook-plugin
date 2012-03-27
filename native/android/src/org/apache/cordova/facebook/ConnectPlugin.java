@@ -87,32 +87,27 @@ public class ConnectPlugin extends Plugin {
 
         else if (action.equals("login")) {
             if (facebook != null) {
-                if (facebook.isSessionValid()) {
-                    Log.d(TAG, "login: Session already valid.");
-                    pr = new PluginResult(PluginResult.Status.OK, getResponse());
-                } else {
-                    final ConnectPlugin me = this;
-                    String[] permissions = new String[args.length()];
-                    try {
-                        for (int i=0; i<args.length(); i++) {
-                            permissions[i] = args.getString(i);
-                        }
-                    } catch (JSONException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                        return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. Expected a string array of permissions.");
+            	final ConnectPlugin me = this;
+                String[] permissions = new String[args.length()];
+                try {
+                    for (int i=0; i<args.length(); i++) {
+                        permissions[i] = args.getString(i);
                     }
-
-                    this.ctx.setActivityResultCallback(this);
-                    this.permissions = permissions;
-                    this.callbackId = callbackId;
-                    Runnable runnable = new Runnable() {
-                        public void run() {
-                            me.facebook.authorize((Activity)me.ctx, me.permissions, new AuthorizeListener(me));
-                        };
-                    };
-                    this.ctx.runOnUiThread(runnable);
+                } catch (JSONException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                    return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. Expected a string array of permissions.");
                 }
+
+                this.ctx.setActivityResultCallback(this);
+                this.permissions = permissions;
+                this.callbackId = callbackId;
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        me.facebook.authorize((Activity)me.ctx, me.permissions, new AuthorizeListener(me));
+                    };
+                };
+                this.ctx.runOnUiThread(runnable);
             } else {
                 pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before login.");
             }
@@ -160,9 +155,9 @@ public class ConnectPlugin extends Plugin {
         		}
         		
         		final ConnectPlugin me = this;
-        		Iterator<String> iter = params.keys();
+        		Iterator<?> iter = params.keys();
         		while (iter.hasNext()) {
-        			String key = iter.next();
+        			String key = (String) iter.next();
         			if (key.equals("method")) {
         				try {
         					this.method = params.getString(key);
