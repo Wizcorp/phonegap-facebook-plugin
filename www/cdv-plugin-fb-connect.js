@@ -12,6 +12,11 @@ CDV.FB = {
       if (authResponse && authResponse.expirationTime) { 
         var nowTime = (new Date()).getTime();
         if (authResponse.expirationTime > nowTime) { 
+          // Update expires in information
+          updatedExpiresIn = Math.floor((authResponse.expirationTime - nowTime) / 1000);
+          authResponse.expiresIn = updatedExpiresIn;
+          
+          localStorage.setItem('cdv_fb_session', JSON.stringify(authResponse));
           FB.Auth.setAuthResponse(authResponse, 'connected');
         }
       }
