@@ -7,21 +7,32 @@ PG.FB = {
       elem.id = 'fb-root';
       document.body.appendChild(elem);
     }
-    PhoneGap.exec(function() {
-      var authResponse = JSON.parse(localStorage.getItem('pg_fb_session') || '{"expiresIn":0}');
-      if (authResponse && authResponse.expirationTime) { 
+    // Check local storage session for initialization
+    var storedSession = {};
+    if (localStorage.getItem('pg_fb_session')) {
+      var checkSession = JSON.parse(localStorage.getItem('pg_fb_session'));
+      if (checkSession && checkSession.accessToken && checkSession.expirationTime) {
         var nowTime = (new Date()).getTime();
-        if (authResponse.expirationTime > nowTime) { 
-          // Update expires in information
-          updatedExpiresIn = Math.floor((authResponse.expirationTime - nowTime) / 1000);
-          authResponse.expiresIn = updatedExpiresIn;
-
-          localStorage.setItem('cdv_fb_session', JSON.stringify(authResponse));
-          FB.Auth.setAuthResponse(authResponse, 'connected');
+        if (checkSession.expirationTime > nowTime) {
+          var updatedExpiresIn = Math.floor((checkSession.expirationTime - nowTime) / 1000);
+          checkSession.expiresIn = updatedExpiresIn;
+          // Update expires in info in local storage
+          localStorage.setItem('pg_fb_session', JSON.stringify(checkSession));
+          storedSession = {"accessToken":checkSession.accessToken,
+                           "expiresIn":checkSession.expiresIn};
         }
       }
+    }
+    PhoneGap.exec(function() {
+      var authResponse = JSON.parse(localStorage.getItem('pg_fb_session') || '{"expiresIn":0}');
+      var nowTime = (new Date()).getTime();
+      if (authResponse && authResponse.accessToken
+          && authResponse.expirationTime && (authResponse.expirationTime > nowTime)) {
+        // Set auth response to simulate a successful login
+        FB.Auth.setAuthResponse(authResponse, 'connected');
+      }
       console.log('PhoneGap Facebook Connect plugin initialized successfully.');
-    }, (fail?fail:null), 'com.phonegap.facebook.Connect', 'init', [apiKey]);
+    }, (fail?fail:null), 'com.phonegap.facebook.Connect', 'init', [apiKey, storedSession]);
   },
   login: function(params, cb, fail) {
     params = params || { scope: '' };
