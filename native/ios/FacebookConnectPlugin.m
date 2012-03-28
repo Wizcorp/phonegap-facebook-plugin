@@ -38,18 +38,12 @@
 	NSString* appId = [arguments objectAtIndex:1];
 	self.facebook = [[Facebook alloc] initWithAppId:appId andDelegate: self];
 	    
-    // Check for any stored session read during init and update Facebook session information
-    if ([options objectForKey:@"accessToken"] && [options objectForKey:@"expiresIn"]) {
-        NSString *expTime = [options objectForKey:@"expiresIn"];
-        NSDate *expirationDate = [NSDate distantFuture];
-        if (expTime != nil) {
-            int expVal = [expTime intValue];
-            if (expVal != 0) {
-                expirationDate = [NSDate dateWithTimeIntervalSinceNow:expVal];
-            }
-        }
-        facebook.accessToken = [options objectForKey:@"accessToken"];
-        facebook.expirationDate = expirationDate;
+    // Check for any stored session update Facebook session information
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([defaults objectForKey:@"FBAccessTokenKey"] 
+        && [defaults objectForKey:@"FBExpirationDateKey"]) {
+        self.facebook.accessToken = [defaults objectForKey:@"FBAccessTokenKey"];
+        self.facebook.expirationDate = [defaults objectForKey:@"FBExpirationDateKey"];
     }
     
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -194,6 +188,12 @@
  */
 - (void) fbDidLogin
 {
+    // Store session information
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:[self.facebook accessToken] forKey:@"FBAccessTokenKey"];
+    [defaults setObject:[self.facebook expirationDate] forKey:@"FBExpirationDateKey"];
+    [defaults synchronize];
+    
     [facebook requestWithGraphPath:@"me" andDelegate:self];
     
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:
@@ -206,6 +206,11 @@
 }
 
 - (void)fbDidLogout {
+    // Cleared stored session information
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults removeObjectForKey:@"FBAccessTokenKey"];
+    [defaults removeObjectForKey:@"FBExpirationDateKey"];
+    [defaults synchronize];
 }
 
 - (void)fbDidNotLogin:(BOOL)cancelled {
@@ -213,6 +218,11 @@
 
 - (void)fbDidExtendToken:(NSString*)accessToken
                expiresAt:(NSDate*)expiresAt {
+    // Updated stored session information
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:accessToken forKey:@"FBAccessTokenKey"];
+    [defaults setObject:expiresAt forKey:@"FBExpirationDateKey"];
+    [defaults synchronize];
 }
 
 - (void)fbSessionInvalidated {
