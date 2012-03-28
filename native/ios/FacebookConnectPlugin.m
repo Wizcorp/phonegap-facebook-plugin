@@ -38,6 +38,20 @@
 	NSString* appId = [arguments objectAtIndex:1];
 	self.facebook = [[Facebook alloc] initWithAppId:appId andDelegate: self];
 	    
+    // Check for any stored session read during init and update Facebook session information
+    if ([options objectForKey:@"accessToken"] && [options objectForKey:@"expiresIn"]) {
+        NSString *expTime = [options objectForKey:@"expiresIn"];
+        NSDate *expirationDate = [NSDate distantFuture];
+        if (expTime != nil) {
+            int expVal = [expTime intValue];
+            if (expVal != 0) {
+                expirationDate = [NSDate dateWithTimeIntervalSinceNow:expVal];
+            }
+        }
+        facebook.accessToken = [options objectForKey:@"accessToken"];
+        facebook.expirationDate = expirationDate;
+    }
+    
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [super writeJavascript:[result toSuccessCallbackString:callbackId]];
 }
