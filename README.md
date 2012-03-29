@@ -91,8 +91,6 @@ and get into the nitty-gritty for the platform of your choice:
 
 5. From the Cordova Facebook Connect Plugin folder copy the `www/cdv-plugin-fb-connect.js` and `lib/facebook_js_sdk.js` files into your application's `assets/www` folder.
 
-6. Temporary change to use a common plugin file. Modify cdv-plugin-fb-connect.js in your project, and replace **Cordova.exec** with **cordova.exec**. There is a current case sensitive incompatibility between the cordova-[RELEASE].js files for iOS and Android that should be resolved in a future release. When that happens, this step will be unnecessary.
-
 Now you are ready to create your application! Check out the `example` folder for what the HTML, JS etc looks like. Note that you will need to replace your appId if you use the example index.html file.
 
 You can run the application from either the command line (`ant clean && ant debug install`) or from Eclipse.

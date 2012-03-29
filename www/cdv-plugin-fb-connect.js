@@ -1,4 +1,5 @@
 CDV = ( typeof CDV == 'undefined' ? {} : CDV );
+var cordova = window.cordova || window.Cordova;
 CDV.FB = {
   init: function(apiKey, fail) {
     // create the fb-root element if it doesn't exist
@@ -7,7 +8,7 @@ CDV.FB = {
       elem.id = 'fb-root';
       document.body.appendChild(elem);
     }
-    Cordova.exec(function() {
+    cordova.exec(function() {
     var authResponse = JSON.parse(localStorage.getItem('cdv_fb_session') || '{"expiresIn":0}');
     if (authResponse && authResponse.expirationTime) { 
       var nowTime = (new Date()).getTime();
@@ -25,7 +26,7 @@ CDV.FB = {
   },
   login: function(params, cb, fail) {
     params = params || { scope: '' };
-    Cordova.exec(function(e) { // login
+    cordova.exec(function(e) { // login
         if (e.authResponse && e.authResponse.expiresIn) {
           var expirationTime = e.authResponse.expiresIn === 0
           ? 0 
@@ -38,19 +39,19 @@ CDV.FB = {
     }, (fail?fail:null), 'org.apache.cordova.facebook.Connect', 'login', params.scope.split(',') );
   },
   logout: function(cb, fail) {
-    Cordova.exec(function(e) {
+    cordova.exec(function(e) {
       localStorage.removeItem('cdv_fb_session');
       FB.Auth.setAuthResponse(null, 'notConnected');
       if (cb) cb(e);
     }, (fail?fail:null), 'org.apache.cordova.facebook.Connect', 'logout', []);
   },
   getLoginStatus: function(cb, fail) {
-    Cordova.exec(function(e) {
+    cordova.exec(function(e) {
       if (cb) cb(e);
     }, (fail?fail:null), 'org.apache.cordova.facebook.Connect', 'getLoginStatus', []);
   },
   dialog: function(params, cb, fail) {
-    Cordova.exec(function(e) { // login
+    cordova.exec(function(e) { // login
       if (cb) cb(e);
                   }, (fail?fail:null), 'org.apache.cordova.facebook.Connect', 'showDialog', [params] );
   }
