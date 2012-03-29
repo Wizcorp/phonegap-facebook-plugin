@@ -11,7 +11,7 @@ This is all licensed under MIT except for `app/www/facebook_js_sdk.js` which is 
 
 # Requirements
 
-* PhoneGap (Cordova) v1.5
+* PhoneGap (Cordova) v1.5 (For compatibility with older versions of PhoneGap, please download the tag [1.4.1support](https://github.com/davejohnson/phonegap-plugin-facebook-connect/zipball/1.4.1support))
 
 The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The working versions of the Facebook Android and iOS SDKs are bundled in this project via git submodules.
 
