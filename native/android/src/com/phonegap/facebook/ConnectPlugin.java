@@ -159,12 +159,22 @@ public class ConnectPlugin extends Plugin {
     public JSONObject getResponse() {
         String response = "{"+
             "\"status\": \""+(facebook.isSessionValid() ? "connected" : "unknown")+"\","+
+            /* old school 
             "\"session\": {"+
               "\"access_token\": \""+facebook.getAccessToken()+"\","+
               "\"expires\": \""+facebook.getAccessExpires()+"\","+
               "\"session_key\": true,"+
               "\"sig\": \"...\","+
               "\"uid\": \""+this.userId+"\""+
+              */
+             //new school: works with oAuth 
+              "\"authResponse\": {"+
+              "\"accessToken\": \""+facebook.getAccessToken()+"\","+
+              "\"expiresIn\": \""+facebook.getAccessExpires()+"\","+
+              "\"session_key\": true,"+
+              "\"sig\": \"...\","+
+              "\"userId\": \""+this.userId+"\""+
+              
             "}"+
           "}";
 
