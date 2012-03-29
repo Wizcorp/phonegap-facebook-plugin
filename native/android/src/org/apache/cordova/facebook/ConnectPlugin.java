@@ -1,7 +1,8 @@
-package com.phonegap.facebook;
+package org.apache.cordova.facebook;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Iterator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,8 +21,8 @@ import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
-import com.phonegap.api.Plugin;
-import com.phonegap.api.PluginResult;
+import org.apache.cordova.api.Plugin;
+import org.apache.cordova.api.PluginResult;
 
 public class ConnectPlugin extends Plugin {
 
@@ -33,6 +34,8 @@ public class ConnectPlugin extends Plugin {
     //used for dialog auth
     private String[] permissions = new String[] {};
     private String callbackId;
+    private Bundle paramBundle;
+    private String method;
 
     @Override
     public PluginResult execute(String action, JSONArray args, final String callbackId) {
@@ -47,7 +50,7 @@ public class ConnectPlugin extends Plugin {
 
                 Log.d(TAG, "init: Initializing plugin.");
 
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.ctx);
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.ctx.getContext());
                 String access_token = prefs.getString("access_token", null);
                 Long expires = prefs.getLong("access_expires", -1);
 
@@ -70,7 +73,7 @@ public class ConnectPlugin extends Plugin {
                 }
 
                 if(facebook.isSessionValid() && this.userId != null) {
-                    return new PluginResult(PluginResult.Status.OK, this.getResponse());					
+                    return new PluginResult(PluginResult.Status.OK, this.getResponse());
                 }
                 else {
                     return new PluginResult(PluginResult.Status.NO_RESULT);
@@ -81,46 +84,41 @@ public class ConnectPlugin extends Plugin {
                 return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. expected a string as the first arg.");
             }
         }
-        
+
         else if (action.equals("login")) {
             if (facebook != null) {
-                if (facebook.isSessionValid()) {
-                    Log.d(TAG, "login: Session already valid.");
-                    pr = new PluginResult(PluginResult.Status.OK, getResponse());
-                } else {
-                    final ConnectPlugin me = this;
-                    String[] permissions = new String[args.length()];
-                    try {
-                        for (int i=0; i<args.length(); i++) {
-                            permissions[i] = args.getString(i);
-                        }
-                    } catch (JSONException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                        return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. Expected a string array of permissions.");
+            	final ConnectPlugin me = this;
+                String[] permissions = new String[args.length()];
+                try {
+                    for (int i=0; i<args.length(); i++) {
+                        permissions[i] = args.getString(i);
                     }
-
-                    this.ctx.setActivityResultCallback(this);
-                    this.permissions = permissions;
-                    this.callbackId = callbackId;
-                    Runnable runnable = new Runnable() {
-                        public void run() {
-                            me.facebook.authorize((Activity)me.ctx, me.permissions, new AuthorizeListener(me));
-                        };
-                    };
-                    this.ctx.runOnUiThread(runnable);
+                } catch (JSONException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                    return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. Expected a string array of permissions.");
                 }
+
+                this.ctx.setActivityResultCallback(this);
+                this.permissions = permissions;
+                this.callbackId = callbackId;
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        me.facebook.authorize((Activity)me.ctx, me.permissions, new AuthorizeListener(me));
+                    };
+                };
+                this.ctx.runOnUiThread(runnable);
             } else {
                 pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before login.");
             }
         }
-        
+
         else if (action.equals("logout")) {
             if (facebook != null) {
                 try {
-                    facebook.logout(this.ctx);
-                    
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.ctx);
+                    facebook.logout(this.ctx.getContext());
+
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.ctx.getContext());
                     prefs.edit().putLong("access_expires", -1).commit();
                     prefs.edit().putString("access_token", null).commit();
                 } catch (MalformedURLException e) {
@@ -145,6 +143,48 @@ public class ConnectPlugin extends Plugin {
                 pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before getLoginStatus.");
             }
         }
+        
+        else if (action.equals("showDialog")) {
+        	if (facebook != null) {
+        		Bundle collect = new Bundle();
+        		JSONObject params = null;
+        		try {
+        			params = args.getJSONObject(0);
+        		} catch (JSONException e) {
+        			params = new JSONObject();
+        		}
+        		
+        		final ConnectPlugin me = this;
+        		Iterator<?> iter = params.keys();
+        		while (iter.hasNext()) {
+        			String key = (String) iter.next();
+        			if (key.equals("method")) {
+        				try {
+        					this.method = params.getString(key);
+        				} catch (JSONException e) {
+        					Log.w(TAG, "Nonstring method parameter provided to dialog");
+        				}
+        			} else {
+        				try {
+        					collect.putString(key, params.getString(key));
+        				} catch (JSONException e) {
+        					// Need to handle JSON parameters
+        					Log.w(TAG, "Nonstring parameter provided to dialog discarded");
+        				}
+        			}
+        		}
+        		this.paramBundle =  new Bundle(collect);
+        		Runnable runnable = new Runnable() {
+        			public void run() {
+        				me.facebook.dialog (me.ctx.getContext(), me.method , me.paramBundle , new UIDialogListener(me));
+        			};
+        		};
+        		this.ctx.runOnUiThread(runnable);
+        	} else {
+        		pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before showDialog.");
+        	}
+        	
+        }
 
         return pr;
     }
@@ -159,12 +199,12 @@ public class ConnectPlugin extends Plugin {
     public JSONObject getResponse() {
         String response = "{"+
             "\"status\": \""+(facebook.isSessionValid() ? "connected" : "unknown")+"\","+
-            "\"session\": {"+
-              "\"access_token\": \""+facebook.getAccessToken()+"\","+
-              "\"expires\": \""+facebook.getAccessExpires()+"\","+
+            "\"authResponse\": {"+
+              "\"accessToken\": \""+facebook.getAccessToken()+"\","+
+              "\"expiresIn\": \""+facebook.getAccessExpires()+"\","+
               "\"session_key\": true,"+
               "\"sig\": \"...\","+
-              "\"uid\": \""+this.userId+"\""+
+              "\"userId\": \""+this.userId+"\""+
             "}"+
           "}";
 
@@ -176,6 +216,36 @@ public class ConnectPlugin extends Plugin {
         }
         return new JSONObject();
     }
+    
+    class UIDialogListener implements DialogListener {
+   	 final ConnectPlugin fba;
+
+		public UIDialogListener(ConnectPlugin fba){
+			super();
+			this.fba = fba;
+		}
+
+		public void onComplete(Bundle values) {
+			//  Handle a successful dialog
+			Log.d(TAG,values.toString());
+			this.fba.success(new PluginResult(PluginResult.Status.OK), this.fba.callbackId);
+		}
+
+		public void onFacebookError(FacebookError e) {
+           Log.d(TAG, "facebook error");
+           this.fba.error("Facebook error: " + e.getMessage(), callbackId);
+       }
+
+       public void onError(DialogError e) {
+           Log.d(TAG, "other error");
+           this.fba.error("Dialog error: " + e.getMessage(), this.fba.callbackId);
+       }
+
+       public void onCancel() {
+           Log.d(TAG, "cancel");
+           this.fba.error("Cancelled", this.fba.callbackId);
+       }
+	}
 
     class AuthorizeListener implements DialogListener {
         final ConnectPlugin fba;
@@ -190,7 +260,7 @@ public class ConnectPlugin extends Plugin {
 
             String token = this.fba.facebook.getAccessToken();
             long token_expires = this.fba.facebook.getAccessExpires();
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.fba.ctx);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.fba.ctx.getContext());
             prefs.edit().putLong("access_expires", token_expires).commit();
             prefs.edit().putString("access_token", token).commit();
 
