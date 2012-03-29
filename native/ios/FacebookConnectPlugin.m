@@ -37,7 +37,7 @@
 	NSString* callbackId = [arguments objectAtIndex:0];
 	NSString* appId = [arguments objectAtIndex:1];
 	self.facebook = [[Facebook alloc] initWithAppId:appId andDelegate: self];
-	    
+
     // Check for any stored session update Facebook session information
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if ([defaults objectForKey:@"FBAccessTokenKey"]
@@ -252,7 +252,7 @@
  */
 - (void)request:(FBRequest *)request didFailWithError:(NSError *)error
 {
-	
+
 }
 
 /**
@@ -323,7 +323,7 @@
  */
 - (void)dialog:(FBDialog*)dialog didFailWithError:(NSError *)error
 {
-	
+
 }
 
 /**
