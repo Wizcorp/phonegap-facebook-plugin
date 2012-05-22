@@ -10,8 +10,6 @@
 #import "FacebookConnectPlugin.h"
 #import "JSON.h"
 
-#define APP_SECRET @"IGNORE"
-
 @implementation FacebookConnectPlugin
 
 @synthesize facebook, loginCallbackId;
@@ -153,7 +151,7 @@
         sessionDict = [NSDictionary dictionaryWithObjects: [NSArray arrayWithObjects:
                           self.facebook.accessToken, 
                           expiresIn,
-                          APP_SECRET,
+                          @"...",
                           [NSNumber numberWithBool:YES], 
                           @"...", 
                           @"...", 
