@@ -10,6 +10,8 @@
 #import "FacebookConnectPlugin.h"
 #import "JSON.h"
 
+#define APP_SECRET @"IGNORE"
+
 @implementation FacebookConnectPlugin
 
 @synthesize facebook, loginCallbackId;
@@ -95,6 +97,11 @@
 {
     NSString* callbackId = [arguments objectAtIndex:0]; // first item is the callbackId
 
+    // !!! RH
+    // save the callbackId for the login callback
+    self.loginCallbackId = callbackId;    
+    // !!! RH END
+    
 	[facebook dialog:@"feed" andDelegate:self];
 
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
@@ -119,13 +126,21 @@
             [params setObject:paramString forKey:key];
         }
     }
+    
+    // !!! RH
+    // save the callbackId for the login callback
+    self.loginCallbackId = callbackId;    
+    // !!! RH END
+
 	[facebook dialog:method andParams:params andDelegate:self];
     [method release];
     [params release];
+
     
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
-    NSString* callback = [pluginResult toSuccessCallbackString:callbackId];
-    [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
+    // !!! RH: We dont know yet about the result of this operation (but if a call the handler NOW, we CANNOT call it later!)
+    //CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
+    //NSString* callback = [pluginResult toSuccessCallbackString:callbackId];
+    //[super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
 }
 
 - (void) dealloc
@@ -151,7 +166,7 @@
         sessionDict = [NSDictionary dictionaryWithObjects: [NSArray arrayWithObjects:
                           self.facebook.accessToken, 
                           expiresIn,
-                          @"...",
+                          APP_SECRET,
                           [NSNumber numberWithBool:YES], 
                           @"...", 
                           @"...", 
@@ -289,6 +304,8 @@
 - (void)dialogDidComplete:(FBDialog *)dialog
 {
 	// TODO
+    NSLog(@"dialogDidComplete");
+    
 }
 
 /**
@@ -296,7 +313,36 @@
  */
 - (void)dialogCompleteWithUrl:(NSURL *)url
 {
-	// TODO	
+
+    // TODO	
+    NSLog(@"dialogCompleteWithUrl: url=%@", url);
+
+    NSDictionary* dict = [NSMutableDictionary dictionary];
+
+    // !!! RH pass url parameters to dict
+    NSString *paramsStr=[url query];
+    NSArray *params= [paramsStr componentsSeparatedByString:@"&"];
+
+    int i;
+    for (i = 0; i < [params count]; i++) {
+        id pve = [params objectAtIndex:i];
+        
+        NSArray *pv= [pve componentsSeparatedByString:@"="];
+        
+       NSLog(@"URL : key=>%@<, value=>%@<", [pv objectAtIndex:0], [pv objectAtIndex:1]); 
+        [dict setValue:[pv objectAtIndex:1] forKey:[pv objectAtIndex:0]];
+     }
+    
+    
+    // !!! put dict into response
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: dict];
+
+    NSString* callback = [pluginResult toSuccessCallbackString:self.loginCallbackId];
+
+    // we need to wrap the callback in a setTimeout(func, 0) so it doesn't block the UI (handleOpenURL limitation)
+    [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
+
+    // !!! RH END        
 }
 
 /**
@@ -305,6 +351,19 @@
 - (void)dialogDidNotCompleteWithUrl:(NSURL *)url
 {
 	// TODO	
+    NSLog(@"dialogDidNotCompleteWithUrl");
+    
+    NSDictionary* dict = [NSDictionary dictionary];
+    
+    
+    // !!! RH: User cancels post dialog by closing the dialog (x button). This should give the same result as if the user pressed 'cancel' in the dialog
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: dict];
+    
+    NSString* callback = [pluginResult toSuccessCallbackString:self.loginCallbackId];
+    
+    // we need to wrap the callback in a setTimeout(func, 0) so it doesn't block the UI (handleOpenURL limitation)
+    [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
+
 }
 
 /**
@@ -313,6 +372,7 @@
 - (void)dialogDidNotComplete:(FBDialog *)dialog
 {
 	// TODO	
+       NSLog(@"dialogDidNotComplete");
 }
 
 /**
@@ -320,7 +380,8 @@
  */
 - (void)dialog:(FBDialog*)dialog didFailWithError:(NSError *)error
 {
-	
+    NSLog(@"didFailWithError");
+
 }
 
 /**
