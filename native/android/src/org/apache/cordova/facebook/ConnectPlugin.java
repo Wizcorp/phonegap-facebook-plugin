@@ -14,8 +14,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.*;
 
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
