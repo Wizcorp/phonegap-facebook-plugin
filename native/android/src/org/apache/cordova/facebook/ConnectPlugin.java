@@ -37,6 +37,23 @@ public class ConnectPlugin extends Plugin {
     private Bundle paramBundle;
     private String method;
 
+    private void logStatus(PluginResult.Status status, String message){
+      Log.d(TAG, PluginResult.StatusMessages[status.ordinal()] + " " + message);
+    }
+
+    public PluginResult logResult(PluginResult.Status status, final JSONObject json){
+      logStatus(status, json.toString());
+      return new PluginResult(status, json);
+    }
+    public PluginResult logResult(PluginResult.Status status, final String msg){
+      logStatus(status, msg.toString());
+      return new PluginResult(status, msg);
+    }
+    public PluginResult logNoResult(){
+      logStatus(PluginResult.Status.NO_RESULT, "");
+      return new PluginResult(PluginResult.Status.NO_RESULT);
+    }
+
     @Override
     public PluginResult execute(String action, JSONArray args, final String callbackId) {
         PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
@@ -73,15 +90,15 @@ public class ConnectPlugin extends Plugin {
                 }
 
                 if(facebook.isSessionValid() && this.userId != null) {
-                    return new PluginResult(PluginResult.Status.OK, this.getResponse());
+                    return logResult(PluginResult.Status.OK, this.getResponse());
                 }
                 else {
-                    return new PluginResult(PluginResult.Status.NO_RESULT);
+                    return logNoResult();
                 }
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-                return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. expected a string as the first arg.");
+                return logResult(PluginResult.Status.ERROR, "Invalid JSON args used. expected a string as the first arg.");
             }
         }
 
@@ -96,7 +113,7 @@ public class ConnectPlugin extends Plugin {
                 } catch (JSONException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
-                    return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. Expected a string array of permissions.");
+                    return logResult(PluginResult.Status.ERROR, "Invalid JSON args used. Expected a string array of permissions.");
                 }
 
                 this.ctx.setActivityResultCallback(this);
@@ -109,7 +126,7 @@ public class ConnectPlugin extends Plugin {
                 };
                 this.ctx.runOnUiThread(runnable);
             } else {
-                pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before login.");
+                pr = logResult(PluginResult.Status.ERROR, "Must call init before login.");
             }
         }
 
@@ -124,23 +141,23 @@ public class ConnectPlugin extends Plugin {
                 } catch (MalformedURLException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
-                    pr = new PluginResult(PluginResult.Status.MALFORMED_URL_EXCEPTION, "Error logging out.");
+                    pr = logResult(PluginResult.Status.MALFORMED_URL_EXCEPTION, "Error logging out.");
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
-                    pr = new PluginResult(PluginResult.Status.IO_EXCEPTION, "Error logging out.");
+                    pr = logResult(PluginResult.Status.IO_EXCEPTION, "Error logging out.");
                 }
-                pr = new PluginResult(PluginResult.Status.OK, getResponse());
+                pr = logResult(PluginResult.Status.OK, getResponse());
             } else {
-                pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before logout.");
+                pr = logResult(PluginResult.Status.ERROR, "Must call init before logout.");
             }
         }
 
         else if (action.equals("getLoginStatus")) {
             if (facebook != null) {
-                pr = new PluginResult(PluginResult.Status.OK, getResponse());
+                pr = logResult(PluginResult.Status.OK, getResponse());
             } else {
-                pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before getLoginStatus.");
+                pr = logResult(PluginResult.Status.ERROR, "Must call init before getLoginStatus.");
             }
         }
         
@@ -181,7 +198,7 @@ public class ConnectPlugin extends Plugin {
         		};
         		this.ctx.runOnUiThread(runnable);
         	} else {
-        		pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before showDialog.");
+        		pr = logResult(PluginResult.Status.ERROR, "Must call init before showDialog.");
         	}
         	
         }
@@ -226,9 +243,7 @@ public class ConnectPlugin extends Plugin {
 		}
 
 		public void onComplete(Bundle values) {
-			//  Handle a successful dialog
-			Log.d(TAG,values.toString());
-			this.fba.success(new PluginResult(PluginResult.Status.OK), this.fba.callbackId);
+            this.fba.success(logResult(PluginResult.Status.OK, values.toString()), this.fba.callbackId);
 		}
 
 		public void onFacebookError(FacebookError e) {
