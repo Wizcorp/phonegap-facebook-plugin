@@ -36,19 +36,23 @@ public class ConnectPlugin extends Plugin {
     private String method;
 
     private void logStatus(PluginResult.Status status, String message){
-      Log.d(TAG, PluginResult.StatusMessages[status.ordinal()] + " " + message);
+      Log.d(TAG, PluginResult.StatusMessages[status.ordinal()] + ": " + message);
     }
 
     public PluginResult logResult(PluginResult.Status status, final JSONObject json){
       logStatus(status, json.toString());
       return new PluginResult(status, json);
     }
+    public PluginResult logResult(PluginResult.Status status, final String msg, final JSONObject json){
+      logStatus(status, msg + ": " +  json.toString());
+      return new PluginResult(status, json);
+    }
     public PluginResult logResult(PluginResult.Status status, final String msg){
       logStatus(status, msg.toString());
       return new PluginResult(status, msg);
     }
-    public PluginResult logNoResult(){
-      logStatus(PluginResult.Status.NO_RESULT, "");
+    public PluginResult logNoResult(final String msg){
+      logStatus(PluginResult.Status.NO_RESULT, msg);
       return new PluginResult(PluginResult.Status.NO_RESULT);
     }
 
@@ -76,25 +80,22 @@ public class ConnectPlugin extends Plugin {
                         JSONObject o = new JSONObject(this.facebook.request("/me"));
                         this.userId = o.getString("id");
                     } catch (MalformedURLException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     } catch (JSONException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
 
-                if(facebook.isSessionValid() && this.userId != null) {
-                    return logResult(PluginResult.Status.OK, this.getResponse());
-                }
-                else {
-                    return logNoResult();
+                if(!facebook.isSessionValid()) {
+                    return logNoResult("session invalid");
+                } else if (this.userId == null) {
+                    return logNoResult("no userId");
+                } else {
+                    return logResult(PluginResult.Status.OK, "init", this.getResponse());
                 }
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
                 return logResult(PluginResult.Status.ERROR, "Invalid JSON args used. expected a string as the first arg.");
             }
@@ -117,6 +118,9 @@ public class ConnectPlugin extends Plugin {
                 this.ctx.setActivityResultCallback(this);
                 this.permissions = permissions;
                 this.callbackId = callbackId;
+
+                Log.d(TAG, "authorizing");
+
                 Runnable runnable = new Runnable() {
                     public void run() {
                         me.facebook.authorize((Activity)me.ctx, me.permissions, new AuthorizeListener(me));
@@ -145,7 +149,7 @@ public class ConnectPlugin extends Plugin {
                     e.printStackTrace();
                     pr = logResult(PluginResult.Status.IO_EXCEPTION, "Error logging out.");
                 }
-                pr = logResult(PluginResult.Status.OK, getResponse());
+                pr = logResult(PluginResult.Status.OK, "logout", getResponse());
             } else {
                 pr = logResult(PluginResult.Status.ERROR, "Must call init before logout.");
             }
@@ -153,7 +157,7 @@ public class ConnectPlugin extends Plugin {
 
         else if (action.equals("getLoginStatus")) {
             if (facebook != null) {
-                pr = logResult(PluginResult.Status.OK, getResponse());
+                pr = logResult(PluginResult.Status.OK, "getLoginStatus", getResponse());
             } else {
                 pr = logResult(PluginResult.Status.ERROR, "Must call init before getLoginStatus.");
             }
