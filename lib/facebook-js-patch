@@ -552,7 +552,7 @@ index a4d3007..a62fb82 100644
 +    // if nativeInterface is specified then fire off the native initialization as well.
 +    FB._nativeInterface = options.nativeInterface;
 +    if (FB._nativeInterface) {
-+      FB._nativeInterface.init(FB._apiKey, function(e) {alert('PhoneGap Facebook Connect plugin fail on init!');});
++      FB._nativeInterface.init(FB._apiKey, function(e) {console.log('PhoneGap Facebook Connect plugin fail on init!');});
 +    }
 +
      // disable logging if told to do so, but only if the url doesnt have the
@@ -567,13 +567,13 @@ index a4d3007..a62fb82 100644
 +    if (FB._nativeInterface) {
 +        switch (params.method) {
 +            case 'auth.login':
-+                FB._nativeInterface.login(params, cb, function(e) {alert('PhoneGap Facebook Connect plugin fail on login!' + e);});
++                FB._nativeInterface.login(params, cb, function(e) {console.log('PhoneGap Facebook Connect plugin fail on login!' + e);});
 +                break;
 +            case 'auth.logout':
-+                FB._nativeInterface.logout(cb, function(e) {alert('PhoneGap Facebook Connect plugin fail on logout!');});
++                FB._nativeInterface.logout(cb, function(e) {console.log('PhoneGap Facebook Connect plugin fail on logout!');});
 +                break;
 +            case 'auth.status':
-+                FB._nativeInterface.getLoginStatus(cb, function(e) {alert('PhoneGap Facebook Connect plugin fail on auth.status!');});
++                FB._nativeInterface.getLoginStatus(cb, function(e) {console.log('PhoneGap Facebook Connect plugin fail on auth.status!');});
 +                break;
 +        }
 +        return;
