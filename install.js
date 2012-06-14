@@ -39,7 +39,11 @@ if (platform == 'android') {
   var pluginsFile = appDir + 'res/xml/plugins.xml';
   var pluginsXml = fs.readFileSync(pluginsFile).toString();
   pluginsXml = pluginsXml.replace(/<\/plugins>/gi,'<plugin name="com.phonegap.facebook.Connect" value="com.phonegap.facebook.ConnectPlugin" /></plugins>'); 
-  fs.writeFileSync(pluginsFile, pluginsXml);
+  if(pluginsXml.search('<plugin name="com.phonegap.facebook.Connect" value="com.phonegap.facebook.ConnectPlugin" />') < 0) {
+    //Already exists. No need to again insert. 
+	pluginsXml = pluginsXml.replace(/<\/plugins>/gi,'<plugin name="com.phonegap.facebook.Connect" value="com.phonegap.facebook.ConnectPlugin" /></plugins>'); 
+	fs.writeFileSync(pluginsFile, pluginsXml);
+  }
 
   // Generate and patch the facebook-js, then copy it into the
   // application dir.
