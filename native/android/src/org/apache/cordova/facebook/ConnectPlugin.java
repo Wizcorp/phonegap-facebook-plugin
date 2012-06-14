@@ -174,6 +174,7 @@ public class ConnectPlugin extends Plugin {
         			}
         		}
         		this.paramBundle =  new Bundle(collect);
+        		this.callbackId = callbackId;
         		Runnable runnable = new Runnable() {
         			public void run() {
         				me.facebook.dialog (me.ctx.getContext(), me.method , me.paramBundle , new UIDialogListener(me));
