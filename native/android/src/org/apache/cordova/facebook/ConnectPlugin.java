@@ -56,6 +56,16 @@ public class ConnectPlugin extends Plugin {
       return new PluginResult(PluginResult.Status.NO_RESULT);
     }
 
+    public void fetchAndSetUserId() {
+        try {
+            JSONObject o = new JSONObject(this.facebook.request("/me"));
+            this.userId = o.getString("id");
+        } catch (MalformedURLException e) { e.printStackTrace();
+        } catch (IOException e) { e.printStackTrace();
+        } catch (JSONException e) { e.printStackTrace();
+        }
+    }
+
     @Override
     public PluginResult execute(String action, JSONArray args, final String callbackId) {
         PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
@@ -76,16 +86,7 @@ public class ConnectPlugin extends Plugin {
                 if (access_token != null && expires != -1) {
                     this.facebook.setAccessToken(access_token);
                     this.facebook.setAccessExpires(expires);
-                	  try {
-                        JSONObject o = new JSONObject(this.facebook.request("/me"));
-                        this.userId = o.getString("id");
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    fetchAndSetUserId();
                 }
 
                 if(!facebook.isSessionValid()) {
@@ -284,21 +285,8 @@ public class ConnectPlugin extends Plugin {
 
           	Log.d(TAG, "authorized");
             Log.d(TAG, values.toString());
-
-            try {
-                JSONObject o = new JSONObject(this.fba.facebook.request("/me"));
-                this.fba.userId = o.getString("id");
-                this.fba.success(getResponse(), this.fba.callbackId);
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            this.fba.fetchAndSetUserId();
+            this.fba.success(getResponse(), this.fba.callbackId);
         }
 
         public void onFacebookError(FacebookError e) {
