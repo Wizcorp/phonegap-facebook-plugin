@@ -28,7 +28,6 @@ public class ConnectPlugin extends Plugin {
     private final String TAG = "ConnectPlugin";
 
     private Facebook facebook;
-    private String userId;
     //used for dialog auth
     private String[] permissions = new String[] {};
     private String callbackId;
@@ -56,16 +55,6 @@ public class ConnectPlugin extends Plugin {
       return new PluginResult(PluginResult.Status.NO_RESULT);
     }
 
-    public void fetchAndSetUserId() {
-        try {
-            JSONObject o = new JSONObject(this.facebook.request("/me"));
-            this.userId = o.getString("id");
-        } catch (MalformedURLException e) { e.printStackTrace();
-        } catch (IOException e) { e.printStackTrace();
-        } catch (JSONException e) { e.printStackTrace();
-        }
-    }
-
     @Override
     public PluginResult execute(String action, JSONArray args, final String callbackId) {
         PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
@@ -86,13 +75,10 @@ public class ConnectPlugin extends Plugin {
                 if (access_token != null && expires != -1) {
                     this.facebook.setAccessToken(access_token);
                     this.facebook.setAccessExpires(expires);
-                    fetchAndSetUserId();
                 }
 
                 if(!facebook.isSessionValid()) {
                     return logNoResult("session invalid");
-                } else if (this.userId == null) {
-                    return logNoResult("no userId");
                 } else {
                     return logResult(PluginResult.Status.OK, "init", this.getResponse());
                 }
@@ -224,8 +210,7 @@ public class ConnectPlugin extends Plugin {
               "\"accessToken\": \""+facebook.getAccessToken()+"\","+
               "\"expiresIn\": \""+facebook.getAccessExpires()+"\","+
               "\"session_key\": true,"+
-              "\"sig\": \"...\","+
-              "\"userId\": \""+this.userId+"\""+
+              "\"sig\": \"...\""+
             "}"+
           "}";
 
@@ -285,7 +270,6 @@ public class ConnectPlugin extends Plugin {
 
           	Log.d(TAG, "authorized");
             Log.d(TAG, values.toString());
-            this.fba.fetchAndSetUserId();
             this.fba.success(getResponse(), this.fba.callbackId);
         }
 
