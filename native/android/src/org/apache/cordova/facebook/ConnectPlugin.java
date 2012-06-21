@@ -14,8 +14,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.*;
 
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
@@ -30,12 +28,32 @@ public class ConnectPlugin extends Plugin {
     private final String TAG = "ConnectPlugin";
 
     private Facebook facebook;
-    private String userId;
     //used for dialog auth
     private String[] permissions = new String[] {};
     private String callbackId;
     private Bundle paramBundle;
     private String method;
+
+    private void logStatus(PluginResult.Status status, String message){
+      Log.d(TAG, PluginResult.StatusMessages[status.ordinal()] + ": " + message);
+    }
+
+    public PluginResult logResult(PluginResult.Status status, final JSONObject json){
+      logStatus(status, json.toString());
+      return new PluginResult(status, json);
+    }
+    public PluginResult logResult(PluginResult.Status status, final String msg, final JSONObject json){
+      logStatus(status, msg + ": " +  json.toString());
+      return new PluginResult(status, json);
+    }
+    public PluginResult logResult(PluginResult.Status status, final String msg){
+      logStatus(status, msg.toString());
+      return new PluginResult(status, msg);
+    }
+    public PluginResult logNoResult(final String msg){
+      logStatus(PluginResult.Status.NO_RESULT, msg);
+      return new PluginResult(PluginResult.Status.NO_RESULT);
+    }
 
     @Override
     public PluginResult execute(String action, JSONArray args, final String callbackId) {
@@ -57,31 +75,16 @@ public class ConnectPlugin extends Plugin {
                 if (access_token != null && expires != -1) {
                     this.facebook.setAccessToken(access_token);
                     this.facebook.setAccessExpires(expires);
-                	  try {
-                        JSONObject o = new JSONObject(this.facebook.request("/me"));
-                        this.userId = o.getString("id");
-                    } catch (MalformedURLException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
                 }
 
-                if(facebook.isSessionValid() && this.userId != null) {
-                    return new PluginResult(PluginResult.Status.OK, this.getResponse());
-                }
-                else {
-                    return new PluginResult(PluginResult.Status.NO_RESULT);
+                if(!facebook.isSessionValid()) {
+                    return logNoResult("session invalid");
+                } else {
+                    return logResult(PluginResult.Status.OK, "init", this.getResponse());
                 }
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
-                return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. expected a string as the first arg.");
+                return logResult(PluginResult.Status.ERROR, "Invalid JSON args used. expected a string as the first arg.");
             }
         }
 
@@ -96,12 +99,15 @@ public class ConnectPlugin extends Plugin {
                 } catch (JSONException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
-                    return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. Expected a string array of permissions.");
+                    return logResult(PluginResult.Status.ERROR, "Invalid JSON args used. Expected a string array of permissions.");
                 }
 
                 this.ctx.setActivityResultCallback(this);
                 this.permissions = permissions;
                 this.callbackId = callbackId;
+
+                Log.d(TAG, "authorizing");
+
                 Runnable runnable = new Runnable() {
                     public void run() {
                         me.facebook.authorize((Activity)me.ctx, me.permissions, new AuthorizeListener(me));
@@ -109,7 +115,7 @@ public class ConnectPlugin extends Plugin {
                 };
                 this.ctx.runOnUiThread(runnable);
             } else {
-                pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before login.");
+                pr = logResult(PluginResult.Status.ERROR, "Must call init before login.");
             }
         }
 
@@ -124,23 +130,23 @@ public class ConnectPlugin extends Plugin {
                 } catch (MalformedURLException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
-                    pr = new PluginResult(PluginResult.Status.MALFORMED_URL_EXCEPTION, "Error logging out.");
+                    pr = logResult(PluginResult.Status.MALFORMED_URL_EXCEPTION, "Error logging out.");
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
-                    pr = new PluginResult(PluginResult.Status.IO_EXCEPTION, "Error logging out.");
+                    pr = logResult(PluginResult.Status.IO_EXCEPTION, "Error logging out.");
                 }
-                pr = new PluginResult(PluginResult.Status.OK, getResponse());
+                pr = logResult(PluginResult.Status.OK, "logout", getResponse());
             } else {
-                pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before logout.");
+                pr = logResult(PluginResult.Status.ERROR, "Must call init before logout.");
             }
         }
 
         else if (action.equals("getLoginStatus")) {
             if (facebook != null) {
-                pr = new PluginResult(PluginResult.Status.OK, getResponse());
+                pr = logResult(PluginResult.Status.OK, "getLoginStatus", getResponse());
             } else {
-                pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before getLoginStatus.");
+                pr = logResult(PluginResult.Status.ERROR, "Must call init before getLoginStatus.");
             }
         }
         
@@ -182,7 +188,7 @@ public class ConnectPlugin extends Plugin {
         		};
         		this.ctx.runOnUiThread(runnable);
         	} else {
-        		pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before showDialog.");
+        		pr = logResult(PluginResult.Status.ERROR, "Must call init before showDialog.");
         	}
         	
         }
@@ -204,8 +210,7 @@ public class ConnectPlugin extends Plugin {
               "\"accessToken\": \""+facebook.getAccessToken()+"\","+
               "\"expiresIn\": \""+facebook.getAccessExpires()+"\","+
               "\"session_key\": true,"+
-              "\"sig\": \"...\","+
-              "\"userId\": \""+this.userId+"\""+
+              "\"sig\": \"...\""+
             "}"+
           "}";
 
@@ -227,9 +232,7 @@ public class ConnectPlugin extends Plugin {
 		}
 
 		public void onComplete(Bundle values) {
-			//  Handle a successful dialog
-			Log.d(TAG,values.toString());
-			this.fba.success(new PluginResult(PluginResult.Status.OK), this.fba.callbackId);
+            this.fba.success(logResult(PluginResult.Status.OK, values.toString()), this.fba.callbackId);
 		}
 
 		public void onFacebookError(FacebookError e) {
@@ -267,21 +270,7 @@ public class ConnectPlugin extends Plugin {
 
           	Log.d(TAG, "authorized");
             Log.d(TAG, values.toString());
-
-            try {
-                JSONObject o = new JSONObject(this.fba.facebook.request("/me"));
-                this.fba.userId = o.getString("id");
-                this.fba.success(getResponse(), this.fba.callbackId);
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            this.fba.success(getResponse(), this.fba.callbackId);
         }
 
         public void onFacebookError(FacebookError e) {
