@@ -96,7 +96,7 @@ View the [Video](http://www.youtube.com/watch?v=nVxFGiIoPgk&list=UU-b4-PjK0gq4QD
 10. Click on your project's icon (the root element) in Project Navigator, select your **Target**, then the **Build Settings** tab, search for **Header Search Paths**.
 11. Add the value **/Users/Shared/Cordova/Frameworks/Cordova.framework/Headers**
 12. Add the Facebook domains to the ExternalHosts lists, as described below.
-13. Make sure the <script> tags are added and are correct in the index.html. This include a tag for cordova-1.8.1.js, facebook_js_sdk.js and cdv-plugin-fb-connect.js.
+13. Make sure the &lt;script&gt; tags are added and are correct in the index.html. This include a tag for cordova-1.8.1.js, facebook_js_sdk.js and cdv-plugin-fb-connect.js.
 14. Add your AppID to your index.html. Should be in the callback for the deviceready event. Leave the quotes. 
 15. Run the application in Xcode.
 
