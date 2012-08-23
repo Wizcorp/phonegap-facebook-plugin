@@ -4,25 +4,22 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 
+import org.apache.cordova.api.Plugin;
+import org.apache.cordova.api.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.*;
 
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
-import org.apache.cordova.api.Plugin;
-import org.apache.cordova.api.PluginResult;
 
 public class ConnectPlugin extends Plugin {
 
@@ -50,7 +47,7 @@ public class ConnectPlugin extends Plugin {
 
                 Log.d(TAG, "init: Initializing plugin.");
 
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.ctx.getContext());
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(cordova.getActivity());
                 String access_token = prefs.getString("access_token", null);
                 Long expires = prefs.getLong("access_expires", -1);
 
@@ -61,13 +58,13 @@ public class ConnectPlugin extends Plugin {
                         JSONObject o = new JSONObject(this.facebook.request("/me"));
                         this.userId = o.getString("id");
                     } catch (MalformedURLException e) {
-                        // TODO Auto-generated catch block
+                       
                         e.printStackTrace();
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
+                       
                         e.printStackTrace();
                     } catch (JSONException e) {
-                        // TODO Auto-generated catch block
+                       
                         e.printStackTrace();
                     }
                 }
@@ -79,7 +76,7 @@ public class ConnectPlugin extends Plugin {
                     return new PluginResult(PluginResult.Status.NO_RESULT);
                 }
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
+               
                 e.printStackTrace();
                 return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. expected a string as the first arg.");
             }
@@ -94,20 +91,21 @@ public class ConnectPlugin extends Plugin {
                         permissions[i] = args.getString(i);
                     }
                 } catch (JSONException e1) {
-                    // TODO Auto-generated catch block
+                   
                     e1.printStackTrace();
                     return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. Expected a string array of permissions.");
                 }
-
-                this.ctx.setActivityResultCallback(this);
+                cordova.setActivityResultCallback(this);
+//                this.ctx.setActivityResultCallback(this);
                 this.permissions = permissions;
                 this.callbackId = callbackId;
                 Runnable runnable = new Runnable() {
                     public void run() {
-                        me.facebook.authorize((Activity)me.ctx, me.permissions, new AuthorizeListener(me));
+                        me.facebook.authorize(cordova.getActivity(), me.permissions, new AuthorizeListener(me));
                     };
                 };
-                this.ctx.runOnUiThread(runnable);
+                cordova.getActivity().runOnUiThread(runnable);
+//                this.ctx.runOnUiThread(runnable);
             } else {
                 pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before login.");
             }
@@ -116,17 +114,17 @@ public class ConnectPlugin extends Plugin {
         else if (action.equals("logout")) {
             if (facebook != null) {
                 try {
-                    facebook.logout(this.ctx.getContext());
+                    facebook.logout(cordova.getActivity());
 
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.ctx.getContext());
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.cordova.getActivity());
                     prefs.edit().putLong("access_expires", -1).commit();
                     prefs.edit().putString("access_token", null).commit();
                 } catch (MalformedURLException e) {
-                    // TODO Auto-generated catch block
+                   
                     e.printStackTrace();
                     pr = new PluginResult(PluginResult.Status.MALFORMED_URL_EXCEPTION, "Error logging out.");
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
+                   
                     e.printStackTrace();
                     pr = new PluginResult(PluginResult.Status.IO_EXCEPTION, "Error logging out.");
                 }
@@ -177,10 +175,11 @@ public class ConnectPlugin extends Plugin {
         		this.callbackId = callbackId;
         		Runnable runnable = new Runnable() {
         			public void run() {
-        				me.facebook.dialog (me.ctx.getContext(), me.method , me.paramBundle , new UIDialogListener(me));
+        				me.facebook.dialog (me.cordova.getActivity(), me.method , me.paramBundle , new UIDialogListener(me));
         			};
         		};
-        		this.ctx.runOnUiThread(runnable);
+        		cordova.getActivity().runOnUiThread(runnable);
+//        		this.ctx.runOnUiThread(runnable);
         	} else {
         		pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before showDialog.");
         	}
@@ -212,7 +211,7 @@ public class ConnectPlugin extends Plugin {
         try {
             return new JSONObject(response);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
+           
             e.printStackTrace();
         }
         return new JSONObject();
@@ -261,7 +260,7 @@ public class ConnectPlugin extends Plugin {
 
             String token = this.fba.facebook.getAccessToken();
             long token_expires = this.fba.facebook.getAccessExpires();
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.fba.ctx.getContext());
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.fba.cordova.getActivity());
             prefs.edit().putLong("access_expires", token_expires).commit();
             prefs.edit().putString("access_token", token).commit();
 
@@ -273,13 +272,13 @@ public class ConnectPlugin extends Plugin {
                 this.fba.userId = o.getString("id");
                 this.fba.success(getResponse(), this.fba.callbackId);
             } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
+               
                 e.printStackTrace();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+               
                 e.printStackTrace();
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
+               
                 e.printStackTrace();
             }
         }
@@ -300,4 +299,3 @@ public class ConnectPlugin extends Plugin {
         }
     }
 }
-
