@@ -1,4 +1,4 @@
-<html xmlns:og="http://ogp.me/ns" xmlns:fb="http://www.facebook.com/2008/fbml" lang="en" manifest="hackbook.manifest">
+<html xmlns:og="http://ogp.me/ns" xmlns:fb="http://www.facebook.com/2008/fbml" lang="en">
 <head>
   <title>Hackbook</title>
   <!-- See https://developers.facebook.com/docs/opengraph/ -->
@@ -27,12 +27,6 @@
 <body>
   <!-- This initializes the Facebook JS SDK. -->
   <div id="fb-root"></div>
-  <!--<script src=" http://connect.facebook.net/en_US/all.js"></script>-->
-  <script src="cordova-1.8.1.js"></script>
-    <!-- cordova facebook plugin -->
-  	<script src="cdv-plugin-fb-connect.js"></script>
-    <!-- facebook js sdk -->
-  	<script src="facebook_js_sdk.js"></script>
   
   <div id="header">
     <div id="back-link" onclick="openPage('root')"><div id="back">&lt; Back</div></div>
@@ -64,8 +58,8 @@
         <li class="menu-item" onclick="openPage('Requests');">Requests</li>
         <li class="menu-item" onclick="openPage('News-Feed');">News Feed</li>
         <li class="menu-item" onclick="openPage('Graph-API');">Graph API</li>
-        <!-- <li class="menu-item" onclick="openPage('Credits');" id="credits-button">Credits</li>
-        <li class="menu-item" onclick="openPage('Social-Plugins');">Social Plugins</li> --> 
+        <!--<li class="menu-item" onclick="openPage('Credits');" id="credits-button">Credits</li>-->
+        <!-- <li class="menu-item" onclick="openPage('Social-Plugins');">Social Plugins</li> --> 
     </ul>
     <div id="like-button"><fb:like url="http://www.cnn.com/" width="275"></fb:like></div>
   </div>
@@ -268,7 +262,7 @@
     </div>
   </div>
   
-  <!-- Page: Credits
+  <!-- Page: Credits -->
   <div id="page-Credits" class="page"> 
     <p id="main-desc">
       Your app or game can prompt the user to pay for a virtual good by using Credits.
@@ -284,10 +278,10 @@
       
       <div id="publish_button" class="button" onclick="sendPay()" />Prompt to Pay</div>
     </div>
-  </div>-->
+  </div>
   
   <!-- Page: Social Plugins -->
-  <!--<div id="page-Social-Plugins" class="page"> 
+  <div id="page-Social-Plugins" class="page"> 
     <p id="main-desc">
       Social plugins lets a user see what their friends have liked, commented on or shared on sites across the web.
       Currently, the only social plugin that's available is the Like button. More coming soon.<br /><br />
@@ -300,7 +294,16 @@
         <fb:like></fb:like>
       </p>
     </div>
-  </div>-->
+  </div>
+ 
+ <div id="deviceready"></div>
+ 
+  <script type="text/javascript" src="cordova-2.0.0.js"></script>
+  <script type="text/javascript" src="js/index.js"></script>
+  <!-- cordova facebook plugin -->
+  <script src="cdv-plugin-fb-connect.js"></script>
+  <!-- facebook js sdk -->
+  <script src="facebook_js_sdk.js"></script> 
   
   <!--<script src="js/_config.js"></script>-->
   <script src="js/ui.js"></script>
@@ -311,18 +314,20 @@
   <!--<script src="js/credits.js"></script>-->
   
   <script>
-  if ((typeof Cordova == 'undefined') || (typeof cordova == 'undefined')) alert('Cordova variable does not exist. Check that you have included cordova.js correctly');
-  if (typeof CDV == 'undefined') alert('CDV variable does not exist. Check that you have included pg-plugin-fb-connect.js correctly');
-  if (typeof FB == 'undefined') alert('FB variable does not exist. Check that you have included the Facebook JS SDK file.');
-  
-  document.addEventListener('deviceready', function() {
-                            try {
-                            //alert('Device is ready! Make sure you set your app_id below this alert.');
-                            FB.init({ appId: "appid", nativeInterface: CDV.FB, useCachedDialogs: false });
-                            } catch (e) {
-                            alert(e);
-                            }
-                            }, false);
+      // Initialize the Facebook SDK
+      document.addEventListener('deviceready', function() {
+          FB.init({
+              appId: 'appid',
+              nativeInterface: CDV.FB,
+              useCachedDialogs: false
+          });
+      
+          FB.getLoginStatus(handleStatusChange);
+      
+          authUser();
+          updateAuthElements();
+      });
   </script>
+  
 </body>
 </html>

@@ -8,9 +8,9 @@ This is all licensed under MIT except for `app/www/facebook_js_sdk.js` which is 
 
 # Requirements
 
-* PhoneGap (Cordova) v1.8.1 (For compatibility with older versions of PhoneGap (1.4.1 or less), please download the tag [1.4.1support](https://github.com/davejohnson/phonegap-plugin-facebook-connect/zipball/1.4.1support))
+* PhoneGap (Cordova) v2.0.0 (For compatibility with older versions of PhoneGap (1.4.1 or less), please download the tag [1.4.1support](https://github.com/davejohnson/phonegap-plugin-facebook-connect/zipball/1.4.1support))
 
-The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The working versions of the Facebook Android and iOS SDKs are bundled in this project via git submodules.
+The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The install instruction include how to get the latest SDK for use in your project.
 
 To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an APP_ID (https://developers.facebook.com/apps). If you plan on rolling this out on Android, please note that you will need to [generate a hash of your Android key(s) and submit those to the Developers page on Facebook](http://developers.facebook.com/docs/mobile/android/build/#sig) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
 
@@ -82,23 +82,40 @@ You can run the application from either the command line (`ant clean && ant debu
 
 NOTE: If you are having problems with SBJSON conflicts, download the latest version of git clone the latest cordova-ios code, build the installer, and run the installer to get updated!
 
-View the [Video](http://www.youtube.com/watch?v=nVxFGiIoPgk&list=UU-b4-PjK0gq4QDpIpsLiFdg&index=1&feature=plcp)
+(To be updated) View the [Video](http://www.youtube.com/watch?v=nVxFGiIoPgk&list=UU-b4-PjK0gq4QDpIpsLiFdg&index=1&feature=plcp)
 
-1. Create a basic Cordova iOS application by following the [PhoneGap Getting Started Guide](http://docs.phonegap.com/en/1.8.1/guide_getting-started_ios_index.md.html#Getting%20Started%20with%20android)
-2. From the **Cordova Facebook Connect Plugin** folder copy the contents of the **native/ios** folder into your app in Xcode (usually in the **Plugins** folder group). Make sure it is added as a "group" (yellow folder)
-3. Find the Cordova.plist file in the project navigator, expand the "Plugins" sub-tree, and add a new entry. For the key, add **org.apache.cordova.facebook.Connect**, and its value will be **FacebookConnectPlugin**
-4. From the **example** folder, copy either the contents of HackBook folder or the Simple folder into your **www** directory in Xcode. Overwrite the original index.html file in your project.
-5. From the **Cordova Facebook Connect Plugin** folder copy the contents of the **www** folder into the **www** directory in Xcode. If you do not find a **www** folder in Xcode, you need to go back to step one and make sure to follow all the steps.
-6. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
-7. Run **git submodule update --init** to initialize and pull down the versions of the android and iOS Facebook SDKs that work with this plugin; they will end up under **lib/**.
-8. From the **Cordova Facebook Connect Plugin** folder copy the file **lib/facebook_js_sdk.js** into the **www** directory in Xcode
-9. From `lib/facebook-ios-sdk` Remove **facebook-ios-sdk.xcodeproj** and **facebook_ios_sdk_Prefix.pch** files. Drag the **src** folder into your project under **Plugins** folder and make sure it is added as a "group" (yellow folder)
-10. Click on your project's icon (the root element) in Project Navigator, select your **Target**, then the **Build Settings** tab, search for **Header Search Paths**.
-11. Add the value **/Users/Shared/Cordova/Frameworks/Cordova.framework/Headers**
-12. Add the Facebook domains to the ExternalHosts lists, as described below.
-13. Make sure the &lt;script&gt; tags are added and are correct in the index.html. This include a tag for cordova-1.8.1.js, facebook_js_sdk.js and cdv-plugin-fb-connect.js.
-14. Add your AppID to your index.html. Should be in the callback for the deviceready event. Leave the quotes. 
-15. Run the application in Xcode.
+### Create a Basic Cordova App
+
+Create a basic Cordova iOS application by following the [PhoneGap Getting Started Guide](http://docs.phonegap.com/en/2.0.0/guide_getting-started_ios_index.md.html#Getting%20Started%20with%20iOS)
+
+### Add the Facebook iOS and JavaScript SDK
+
+1. Add the Facebook SDK for iOS Framework by dragging the FacebookSDK.framework folder from the SDK installation folder into the Frameworks section of your Project Navigator.
+2. Choose 'Create groups for any added folders' and deselect 'Copy items into destination group's folder (if needed)' to keep the reference to the SDK installation folder, rather than creating a copy.
+3. Add the Facebook SDK for iOS resource bundle by dragging the FacebookSDKResources.bundle file from the FacebookSDK.framework/Resources folder into the Frameworks section of your Project Navigator.
+4. As you did when copying the Framework, choose 'Create groups for any added folders' and deselect 'Copy items into destination group's folder (if needed)'
+5. Add the headers by dragging the DeprecatedHeaders folder from the FacebookSDK.framework/Versions/A/DeprecatedHeaders folder into the Frameworks section of your Project Navigator.
+6. Choose 'Create groups for any added folders' and deselect 'Copy items into destination group's folder (if needed)'. This adds the headers as a reference.
+7. Click on your project's icon (the root element) in Project Navigator, select your **Project**, then the **Build Settings** tab, search for **Other Linker Flags**.
+8. Add the value **-lsqlite3.0**
+9. From the **Cordova Facebook Connect Plugin** folder copy the file **lib/facebook_js_sdk.js** into the **www** directory in Xcode.
+
+### Add the Cordova Facebook Connect Plugin
+
+1. From the **Cordova Facebook Connect Plugin** folder copy the contents of the **native/ios** folder into your app in Xcode (usually in the **Plugins** folder group). Make sure it is added as a "group" (yellow folder)
+2. Find the Cordova.plist file in the project navigator, expand the "Plugins" sub-tree, and add a new entry. For the key, add **org.apache.cordova.facebook.Connect**, and its value will be **FacebookConnectPlugin**
+3. From the **Cordova Facebook Connect Plugin** folder copy the contents of the **www** folder into the **www** directory in Xcode.
+4. Add the Facebook domains to the ExternalHosts lists, as described below.
+
+### Run the included samples
+
+1. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, add a new entry. For the key, add *FacebookAppID**, and its value is your Facebook **APP_ID**.
+2. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
+3. You can quickly test the examples by following the next instructions then mirror the same process for your app.
+4. From the **example** folder, copy either the contents of HackBook folder or the Simple folder into your **www** directory in Xcode. Overwrite the original index.html file in your project. For HackBook, overwrite the original css and js folders as well.
+5. Make sure the &lt;script&gt; tags are added and are correct in the index.html. This include a tag for cordova-2.0.0.js, facebook_js_sdk.js and cdv-plugin-fb-connect.js.
+6. Add your AppID to your index.html. Should be in the callback for the deviceready event. Leave the quotes. 
+7. Run the application in Xcode.
 
 
 ### iOS URL Whitelist

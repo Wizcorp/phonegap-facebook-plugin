@@ -19,6 +19,8 @@ function sendPay() {
 }
 
 //If Hackbook is running from within the Facebook iOS native app, disable Credits
-if (FB.UA.nativeApp()) {
-  document.getElementById('credits-button').style.display = 'none';
+function checkForCredits() {
+  if (FB.UA.nativeApp()) {
+    document.getElementById('credits-button').style.display = 'none';
+  }
 }

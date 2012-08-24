@@ -6,32 +6,36 @@
 //////////////////////////
 
 //Detect when Facebook tells us that the user's session has been returned
-FB.Event.monitor('auth.statusChange', function(session) {
-  //If the user isn't logged in, set the body class so that we show/hide the correct elements
-  if (session == undefined || session.status == 'not_authorized') {
-    if (document.body.className != 'not_connected') {
-      document.body.className = 'not_permissioned';
+function updateAuthElements() {
+  FB.Event.subscribe('auth.statusChange', function(session) {
+    //If the user isn't logged in, set the body class so that we show/hide the correct elements
+    if (!session.authResponse) {
+      if (document.body.className != 'not_connected') {
+        document.body.className = 'not_permissioned';
+      }
     }
-  }
-  //The user is logged in, so let's see if they've granted the check-in permission and pre-fetch some data
-  //Depending on if they have or haven't, we'll set the body to reflect that so we show/hide the correct elements on the page
-  else {
-    preFetchData();
-    
-    FB.api({method: 'fql.query', query: 'SELECT user_checkins, publish_checkins FROM permissions WHERE uid = me()'}, function(response) {
-           if (document.body.className != 'not_connected') {
-             //We couldn't get a check-in for the user, so they haven't granted the permission
-             if (response[0] && response[0].user_checkins == 1) {
-               document.body.className = 'permissioned';
-             }
-             //We were able to get a check-in for the user, so they have granted the permission already
-             else {
-               document.body.className = 'not_permissioned';
-             }
-           }
-    });
-  }
-});
+    //The user is logged in, so let's see if they've granted the check-in permission and pre-fetch some data
+    //Depending on if they have or haven't, we'll set the body to reflect that so we show/hide the correct elements on the page
+    else {
+      preFetchData();
+      
+      FB.api({method: 'fql.query', query: 'SELECT user_checkins, publish_checkins FROM permissions WHERE uid = me()'}, function(response) {
+        if (document.body.className != 'not_connected') {
+        console.log("Reading permissions");
+        console.log(response);
+          //We couldn't get a check-in for the user, so they haven't granted the permission
+          if (response[0].user_checkins == 1) {
+            document.body.className = 'permissioned';
+          }
+          //We were able to get a check-in for the user, so they have granted the permission already
+          else {
+            document.body.className = 'not_permissioned';
+          }
+        }
+      });
+    }
+  });
+}
 
 //Get the user's basic information
 function getUserBasicInfo() {
@@ -40,9 +44,15 @@ function getUserBasicInfo() {
   var markup = '<div class="data-header">Your information:</div>';
   
   //Update display of user name and picture
-  if (FB.$('user-info')) {
-    markup = markup + '<strong>User ID:</strong> ' + user.id + '<br />' + '<strong>Name:</strong> ' + user.name + '<br />' + '<strong>Profile picture URL:</strong> <a href="' + user.picture + '" target="_blank">' + user.picture + '</a><br />';
-    FB.$('user-info').innerHTML = markup;
+  if (document.getElementById('user-info')) {
+    var profilePictureUrl = '';
+    if (user.picture.data) {
+      profilePictureUrl = user.picture.data.url;
+    } else {
+      profilePictureUrl = user.picture;
+    }
+    markup = markup + '<strong>User ID:</strong> ' + user.id + '<br />' + '<strong>Name:</strong> ' + user.name + '<br />' + '<strong>Profile picture URL:</strong> <a href="' + profilePictureUrl + '" target="_blank">' + profilePictureUrl + '</a><br />';
+    document.getElementById('user-info').innerHTML = markup;
     
     clearAction();
   }
@@ -53,10 +63,16 @@ function getUserFriends() {
   var markup = '<div class="data-header">Friends (capped at 25):</div>';
   
   for (var i=0; i < friendsInfo.length && i < 25; i++) {
-    markup = markup + '<img src="' + friendsInfo[i].picture + '">' + friendsInfo[i].name + '<br />';
+    var profilePictureUrl = '';
+    if (friendsInfo[i].picture.data) {
+      profilePictureUrl = friendsInfo[i].picture.data.url;
+    } else {
+      profilePictureUrl = friendsInfo[i].picture;
+    }
+    markup = markup + '<img src="' + profilePictureUrl + '">' + friendsInfo[i].name + '<br />';
   }
   
-  FB.$('user-friends').innerHTML = markup;
+  document.getElementById('user-friends').innerHTML = markup;
 }
 
 //Get the user's check-ins
@@ -69,7 +85,7 @@ function getCheckIns() {
     clearAction();
     
     if (!response.error) {
-      displayCheckIns(response.data, FB.$('checkins'));
+      displayCheckIns(response.data, document.getElementById('checkins'));
     }
   });
 }
@@ -82,7 +98,7 @@ function displayCheckIns(checkins, dom) {
     var checkin = checkins[i];
     
     markup += '<div class="place">'
-        + '<div class="picture"><img src="https://graph.facebook.com/' + checkin.place.id + '/picture"></div>'
+        + '<div class="picture"><img src="http://graph.facebook.com/' + checkin.place.id + '/picture"></div>'
         + '<div class="info">'
         + '  <div class="name">' + checkin.place.name + '</div>'
         + '  <div class="check-in-msg">' + (checkin.message || '') + '</div>'
@@ -101,7 +117,7 @@ function displayPlaces(places, dom) {
     var place = places[i];
     
     markup += '<div class="place">'
-        + '<div class="picture"><img src="https://graph.facebook.com/' + place.id + '/picture"></div>'
+        + '<div class="picture"><img src="http://graph.facebook.com/' + place.id + '/picture"></div>'
         + '<div class="info">'
         + '  <div class="name">' + place.name + '</div>'
         + '  <div class="check-in-button"><input type="button" value="Check in" onclick="checkin(' + place.id + ')" /></div>'
@@ -125,17 +141,14 @@ function checkin(id) {
     },
     message: ''
   };
+
+  console.log('Checking you into using the following params: ', params);
   
   FB.api('/me/checkins', params,
     function(response) {
       clearAction();
       
-      var debugOutput = '';
-      for (var property in response) {
-        debugOutput += property + ': ' + response[property]+'; ';
-      }
-      console.log('Checked you into the place, here\'s the response::'+debugOutput);   
-      //console.log('Checked you into the place, here\'s the response: ', response);
+      console.log('Checked you into the place, here\'s the response: ', response);
       
       setAction("You've successfully checked in!", false);
       
@@ -160,7 +173,7 @@ function getNearby() {
       clearAction();
       console.log('Got some places near you: ', response);
       if (!response.error) {
-        displayPlaces(response.data, FB.$('locations-nearby'));
+        displayPlaces(response.data, document.getElementById('locations-nearby'));
       }
     });
   });
