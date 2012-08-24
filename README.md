@@ -90,7 +90,7 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 
 ### Add the Facebook iOS and JavaScript SDK
 
-1. Download the latest Facebook SDK for iOS from the [iOS Dev Center](https://developers.facebook.com/ios/)
+1. Download the latest Facebook SDK for iOS from the [iOS Dev Center](https://developers.facebook.com/ios/).
 2. Add the Facebook SDK for iOS Framework by dragging the **FacebookSDK.framework** folder from the SDK installation folder into the Frameworks section of your Project Navigator.
 3. Choose 'Create groups for any added folders' and deselect 'Copy items into destination group's folder (if needed)' to keep the reference to the SDK installation folder, rather than creating a copy.
 4. Add the Facebook SDK for iOS resource bundle by dragging the **FacebookSDKResources.bundle** file from the **FacebookSDK.framework/Resources** folder into the Frameworks section of your Project Navigator.
@@ -110,7 +110,7 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 
 ### Run the included samples
 
-1. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, add a new entry. For the key, add *FacebookAppID**, and its value is your Facebook **APP_ID**
+1. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, add a new entry. For the key, add **FacebookAppID**, and its value is your Facebook **APP_ID**.
 2. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
 3. You can quickly test the examples by following the next instructions then mirror the same process for your app.
 4. From the **example** folder, copy either the contents of HackBook folder or the Simple folder into your **www** directory in Xcode. Overwrite the original index.html file in your project. For HackBook, overwrite the original css and js folders as well.
