@@ -90,15 +90,16 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 
 ### Add the Facebook iOS and JavaScript SDK
 
-1. Add the Facebook SDK for iOS Framework by dragging the FacebookSDK.framework folder from the SDK installation folder into the Frameworks section of your Project Navigator.
-2. Choose 'Create groups for any added folders' and deselect 'Copy items into destination group's folder (if needed)' to keep the reference to the SDK installation folder, rather than creating a copy.
-3. Add the Facebook SDK for iOS resource bundle by dragging the FacebookSDKResources.bundle file from the FacebookSDK.framework/Resources folder into the Frameworks section of your Project Navigator.
-4. As you did when copying the Framework, choose 'Create groups for any added folders' and deselect 'Copy items into destination group's folder (if needed)'
-5. Add the headers by dragging the DeprecatedHeaders folder from the FacebookSDK.framework/Versions/A/DeprecatedHeaders folder into the Frameworks section of your Project Navigator.
-6. Choose 'Create groups for any added folders' and deselect 'Copy items into destination group's folder (if needed)'. This adds the headers as a reference.
-7. Click on your project's icon (the root element) in Project Navigator, select your **Project**, then the **Build Settings** tab, search for **Other Linker Flags**.
-8. Add the value **-lsqlite3.0**
-9. From the **Cordova Facebook Connect Plugin** folder copy the file **lib/facebook_js_sdk.js** into the **www** directory in Xcode.
+1. Download the latest Facebook SDK for iOS from the [iOS Dev Center](https://developers.facebook.com/ios/)
+2. Add the Facebook SDK for iOS Framework by dragging the **FacebookSDK.framework** folder from the SDK installation folder into the Frameworks section of your Project Navigator.
+3. Choose 'Create groups for any added folders' and deselect 'Copy items into destination group's folder (if needed)' to keep the reference to the SDK installation folder, rather than creating a copy.
+4. Add the Facebook SDK for iOS resource bundle by dragging the **FacebookSDKResources.bundle** file from the **FacebookSDK.framework/Resources** folder into the Frameworks section of your Project Navigator.
+5. As you did when copying the Framework, choose 'Create groups for any added folders' and deselect 'Copy items into destination group's folder (if needed)'
+6. Add the headers by dragging the **DeprecatedHeaders** folder from the **FacebookSDK.framework/Versions/A/DeprecatedHeaders** folder into the Frameworks section of your Project Navigator.
+7. Choose 'Create groups for any added folders' and deselect 'Copy items into destination group's folder (if needed)'. This adds the headers as a reference.
+8. Click on your project's icon (the root element) in Project Navigator, select your **Project**, then the **Build Settings** tab, search for **Other Linker Flags**.
+9. Add the value **-lsqlite3.0**
+10. From the **Cordova Facebook Connect Plugin** folder copy the file **lib/facebook_js_sdk.js** into the **www** directory in Xcode.
 
 ### Add the Cordova Facebook Connect Plugin
 
@@ -109,7 +110,7 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 
 ### Run the included samples
 
-1. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, add a new entry. For the key, add *FacebookAppID**, and its value is your Facebook **APP_ID**.
+1. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, add a new entry. For the key, add *FacebookAppID**, and its value is your Facebook **APP_ID**
 2. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
 3. You can quickly test the examples by following the next instructions then mirror the same process for your app.
 4. From the **example** folder, copy either the contents of HackBook folder or the Simple folder into your **www** directory in Xcode. Overwrite the original index.html file in your project. For HackBook, overwrite the original css and js folders as well.
