@@ -7,23 +7,20 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "FBConnect.h"
+#import "Facebook.h"
 
-#ifdef CORDOVA_FRAMEWORK
+/*#ifdef CORDOVA_FRAMEWORK
     #import <Cordova/CDVPlugin.h>
     #import <Cordova/CDVPluginResult.h>
 #else
     #import "CDVPlugin.h"
     #import "CDVPluginResult.h"
-#endif
+#endif*/
 
 
-@interface FacebookConnectPlugin : CDVPlugin < FBSessionDelegate, FBRequestDelegate, FBDialogDelegate > {
+#import <Cordova/CDVPlugin.h>
+
+@interface FacebookConnectPlugin : CDVPlugin {
 }
-
-@property (nonatomic, retain) Facebook *facebook;
-@property (nonatomic, copy) NSString* loginCallbackId;
-
-- (NSDictionary*) responseObject;
 
 @end

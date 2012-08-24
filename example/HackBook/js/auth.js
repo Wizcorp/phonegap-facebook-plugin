@@ -8,47 +8,48 @@
 var user = [];
 
 //Detect when Facebook tells us that the user's session has been returned
-FB.Event.monitor('auth.statusChange', function(session) {
-  console.log('Got the user\'s session: ', session);
-  
-  if (session && session.status != 'not_authorized' && session.status != 'notConnected') {
-    if (session.authResponse['accessToken']) {
-      document.body.className = 'connected';
-      
-      //Fetch user's id, name, and picture
-      FB.api('/me', {
-        fields: 'name, picture'
-      },
-      function(response) {
-        if (!response.error) {
-          user = response;
-          
-          console.log('Got the user\'s name and picture: ', response);
-          
-          //Update display of user name and picture
-          if (FB.$('user-name')) {
-            FB.$('user-name').innerHTML = user.name;
-          }
-          if (FB.$('user-picture')) {
-            FB.$('user-picture').src = user.picture;
-          }
-        }
-        
-        clearAction();
-      });
-    }
-  }
-  else if (session === undefined) {
-    document.body.className = 'not_connected';
-  
-    clearAction();
-  }
-  else if (session && (session.status == 'not_authorized' || session.status == 'notConnected')) {
-    document.body.className = 'not_connected';
+function authUser() {
+  FB.Event.subscribe('auth.statusChange', handleStatusChange);
+}
+
+function handleStatusChange(session) {
+    console.log('Got the user\'s session: ', session);
     
-    clearAction();
-  }
-});
+    if (session.authResponse) {
+        document.body.className = 'connected';
+        
+        //Fetch user's id, name, and picture
+        FB.api('/me', {
+          fields: 'name, picture'
+        },
+        function(response) {
+          if (!response.error) {
+            user = response;
+            
+            console.log('Got the user\'s name and picture: ');
+            console.log(response);
+            
+            //Update display of user name and picture
+            if (document.getElementById('user-name')) {
+              document.getElementById('user-name').innerHTML = user.name;
+            }
+            if (document.getElementById('user-picture')) {
+              if (user.picture.data) {
+                  document.getElementById('user-picture').src = user.picture.data.url;
+              } else {
+                  document.getElementById('user-picture').src = user.picture;
+              }
+            }
+          }
+          
+          clearAction();
+        });
+    } else {
+      document.body.className = 'not_connected';
+      
+      clearAction();
+    }
+}
 
 //Prompt the user to login and ask for the 'email' permission
 function promptLogin() {
@@ -70,7 +71,9 @@ function promptExtendedPermissions() {
 function uninstallApp() {
   FB.api({method: 'auth.revokeAuthorization'},
     function(response) {
-      window.location.reload();
+     // window.location.reload();
+     // To clear the local storage cache and native session, call logout
+     logout();
     });
 }
 

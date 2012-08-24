@@ -10,7 +10,7 @@ if (window.location.host == 'facebookmobileweb.com' || window.location.host == '
 }
 //Add your Application ID here
 else {
-  var gAppID = 'enter_your_appid_here';
+  var gAppID = '269377779842002';
 }
 
 if (gAppID == 'enter_your_appid_here') {
@@ -18,12 +18,28 @@ if (gAppID == 'enter_your_appid_here') {
 }
 
 //Initialize the Facebook SDK
-FB.init({ 
-  appId: gAppID, 
-  status: true,
-  cookie: true,
-  xfbml: true,
-  frictionlessRequests: true,
-  useCachedDialogs: true,
-  oauth: true
-});
+//See https://developers.facebook.com/docs/reference/javascript/
+window.fbAsyncInit = function() {
+  FB.init({ 
+    appId: gAppID,
+    status: true,
+    cookie: true,
+    xfbml: true,
+    frictionlessRequests: true,
+    useCachedDialogs: true,
+    oauth: true
+  });
+  
+  authUser();
+  checkForCredits();
+  updateAuthElements();
+};
+
+// Load the SDK Asynchronously
+(function(d){
+ var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+ if (d.getElementById(id)) {return;}
+ js = d.createElement('script'); js.id = id; js.async = true;
+ js.src = "//connect.facebook.net/en_US/all.js";
+ ref.parentNode.insertBefore(js, ref);
+}(document));
