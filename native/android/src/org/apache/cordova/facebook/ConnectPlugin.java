@@ -104,7 +104,7 @@ public class ConnectPlugin extends Plugin {
                 this.callbackId = callbackId;
                 Runnable runnable = new Runnable() {
                     public void run() {
-                        me.facebook.authorize((Activity)me.ctx, me.permissions, new AuthorizeListener(me));
+                        me.facebook.authorize((Activity)me.cordova.getContext(), me.permissions, new AuthorizeListener(me));
                     };
                 };
                 this.ctx.runOnUiThread(runnable);
@@ -191,10 +191,14 @@ public class ConnectPlugin extends Plugin {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        facebook.authorizeCallback(requestCode, resultCode, data);
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                facebook.authorizeCallback(requestCode, resultCode, data);
+            }
+        }).start();
     }
 
     public JSONObject getResponse() {
