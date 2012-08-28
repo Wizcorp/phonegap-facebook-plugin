@@ -104,7 +104,7 @@ public class ConnectPlugin extends Plugin {
                 this.callbackId = callbackId;
                 Runnable runnable = new Runnable() {
                     public void run() {
-                        me.facebook.authorize((Activity)me.ctx, me.permissions, new AuthorizeListener(me));
+                        me.facebook.authorize((Activity)me.cordova.getContext(), me.permissions, new AuthorizeListener(me));
                     };
                 };
                 this.ctx.runOnUiThread(runnable);
