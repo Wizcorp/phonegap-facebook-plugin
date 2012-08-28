@@ -191,10 +191,14 @@ public class ConnectPlugin extends Plugin {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        facebook.authorizeCallback(requestCode, resultCode, data);
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                facebook.authorizeCallback(requestCode, resultCode, data);
+            }
+        }).start();
     }
 
     public JSONObject getResponse() {
