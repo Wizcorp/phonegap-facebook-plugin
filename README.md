@@ -50,7 +50,7 @@ View the [Video](http://www.youtube.com/watch?v=mlpBgWiel2w)
 1. [Create a basic Cordova Android application](http://docs.phonegap.com/en/1.8.1/guide_getting-started_android_index.md.html#Getting%20Started%20with%20Android).
  * NOTE: Min Target has to be set to 8. The plugin has an issue if you set your minimum target higher than that. You can edit this in your android manifest file.
  
-2. In the Cordova Android application you will need to put the following in your `res/xml/plugins.xml` file: <pre>&lt;plugin name="org.apache.cordova.facebook.Connect" value="org.apache.cordova.facebook.ConnectPlugin" /&gt;</pre>
+2. In the Cordova Android application you will need to put the following in your `res/xml/config.xml` file as a child to the plugin tag: <pre>&lt;plugin name="org.apache.cordova.facebook.Connect" value="org.apache.cordova.facebook.ConnectPlugin" /&gt;</pre>
 
 3. You'll need to build + include the Facebook Android SDK and include the
    Facebook JavaScript SDK:
