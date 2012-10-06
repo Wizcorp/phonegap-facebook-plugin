@@ -9,16 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "Facebook.h"
 
-/*#ifdef CORDOVA_FRAMEWORK
-    #import <Cordova/CDVPlugin.h>
-    #import <Cordova/CDVPluginResult.h>
-#else
-    #import "CDVPlugin.h"
-    #import "CDVPluginResult.h"
-#endif*/
-
-
-#import <Cordova/CDVPlugin.h>
+#import <Cordova/CDV.h>
 
 @interface FacebookConnectPlugin : CDVPlugin {
 }
