@@ -197,8 +197,10 @@ public class ConnectPlugin extends Plugin {
     }
 
     public JSONObject getResponse() {
-        String response = "{"+
-            "\"status\": \""+(facebook.isSessionValid() ? "connected" : "unknown")+"\","+
+    	String response;
+    	if (facebook.isSessionValid()) {
+    		response = "{"+
+            "\"status\": \"connected\","+
             "\"authResponse\": {"+
               "\"accessToken\": \""+facebook.getAccessToken()+"\","+
               "\"expiresIn\": \""+facebook.getAccessExpires()+"\","+
@@ -207,6 +209,11 @@ public class ConnectPlugin extends Plugin {
               "\"userId\": \""+this.userId+"\""+
             "}"+
           "}";
+    	} else {
+    		response = "{"+
+            "\"status\": \"unknown\""+
+          "}";
+    	}
 
         try {
             return new JSONObject(response);
