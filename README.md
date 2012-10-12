@@ -8,11 +8,15 @@ This is all licensed under MIT except for `app/www/facebook_js_sdk.js` which is 
 
 # Requirements
 
-* PhoneGap (Cordova) v2.0.0 (For compatibility with older versions of PhoneGap (1.4.1 or less), please download the tag [1.4.1support](https://github.com/davejohnson/phonegap-plugin-facebook-connect/zipball/1.4.1support))
+* PhoneGap (Cordova) v2.1.0 (For compatibility with older versions of PhoneGap (1.4.1 or less), please download the tag [1.4.1support](https://github.com/davejohnson/phonegap-plugin-facebook-connect/zipball/1.4.1support))
 
 The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The install instruction include how to get the latest SDK for use in your project.
 
-To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an APP_ID (https://developers.facebook.com/apps). If you plan on rolling this out on Android, please note that you will need to [generate a hash of your Android key(s) and submit those to the Developers page on Facebook](http://developers.facebook.com/docs/mobile/android/build/#sig) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
+To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an APP_ID (https://developers.facebook.com/apps). 
+
+If you plan on rolling this out on iOS, please note that you will need to ensure that you have properly set up your Native iOS App settings on the [Facebook App Dashboard](http://developers.facebook.com/apps). Please see the [Getting Started with the Facebook SDK](https://developers.facebook.com/docs/getting-started/facebook-sdk-for-ios/3.1/), Create a Facebook App section for more details on this.
+
+If you plan on rolling this out on Android, please note that you will need to [generate a hash of your Android key(s) and submit those to the Developers page on Facebook](http://developers.facebook.com/docs/mobile/android/build/#sig) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
 
 # Project Structure
 
@@ -86,7 +90,7 @@ NOTE: If you are having problems with SBJSON conflicts, download the latest vers
 
 ### Create a Basic Cordova App
 
-Create a basic Cordova iOS application by following the [PhoneGap Getting Started Guide](http://docs.phonegap.com/en/2.0.0/guide_getting-started_ios_index.md.html#Getting%20Started%20with%20iOS)
+Create a basic Cordova iOS application by following the [PhoneGap Getting Started Guide](http://docs.phonegap.com/en/2.1.0/guide_getting-started_ios_index.md.html#Getting%20Started%20with%20iOS)
 
 ### Add the Facebook iOS and JavaScript SDK
 
