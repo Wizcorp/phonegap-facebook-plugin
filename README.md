@@ -86,7 +86,7 @@ You can run the application from either the command line (`ant clean && ant debu
 
 NOTE 1: If you are having problems with SBJSON conflicts, download the latest version of git clone the latest cordova-ios code, build the installer, and run the installer to get updated!
 
-NOTE 2: If you're upgrading from SDK 3.0 to 3.1 in the iOS6, you can't ask for both read and write permissions when the user is authenticating. If you do this you'll get a `com.facebook.sdk error 2` error alert. This happens due to a flow change in the 3.1 SDK. More info about this can be found in the [official docs](https://developers.facebook.com/docs/tutorial/iossdk/upgrading-from-3.0-to-3.1/)
+NOTE 2: If you're upgrading from SDK 3.0 to 3.1 in the iOS6, you can't ask for both read and write permissions when the user is authenticating. If you do this you'll get a `com.facebook.sdk error 2` error alert. This happens due to a flow change in the 3.1 SDK. More info about this can be found in the [official docs](https://developers.facebook.com/docs/tutorial/iossdk/upgrading-from-3.0-to-3.1/).
 
 (To be updated) View the [Video](http://www.youtube.com/watch?v=nVxFGiIoPgk&list=UU-b4-PjK0gq4QDpIpsLiFdg&index=1&feature=plcp)
 
