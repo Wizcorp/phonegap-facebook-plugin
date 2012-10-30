@@ -154,8 +154,8 @@
         
         <!-- frameworks -->
         <framework src="libsqlite3.dylib" />
-        <framework src="Social.framework" />
-        <framework src="Accounts.framework" />
-        <framework src="AdSupport.framework" />
+        <framework src="Social.framework" weak="true" />
+        <framework src="Accounts.framework" weak="true" />
+        <framework src="AdSupport.framework" weak="true" />
     </platform>
 </plugin>
