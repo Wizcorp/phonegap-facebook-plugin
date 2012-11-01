@@ -26,22 +26,6 @@ body.not_connected .show_when_connected {
  display: none;
 }
 
-body.permissioned .show_when_not_connected {
- display: none;
-}
-
-body.not_permissioned .show_when_not_connected {
- display: none;
-}
-
-body.permissioned #extended_permission_button {
- display: none;
-}
-
-body.not_permissioned #extended_permission_button {
- display: block;
-}
-
 #action {
   display: none;
   position: fixed;
@@ -255,39 +239,6 @@ h1 {
   text-align: center;
 }
 
-
-body.permissioned .show_when_not_permissioned {
- display: none;
-}
-
-body .show_when_not_permissioned {
- display: none;
-}
-
-body .show_when_permissioned {
- display: block;
-}
-
-body.permissioned .show_when_permissioned {
- display: block;
-}
-
-body.not_permissioned .show_when_not_permissioned {
- display: block;
-}
-
-body.not_permissioned .show_when_permissioned {
- display: none;
-}
-
-body.not_connected .show_when_not_permissioned {
- display: block;
-}
-
-body.not_connected .show_when_permissioned {
- display: none;
-}
-
 #fb-content {
   margin-top: 10px;
 }
@@ -388,14 +339,6 @@ body.not_connected .button-requires-connect {
 }
 
 body.connected .info-requires-connect {
-  display: none;
-}
-
-body.not_permissioned .info-requires-connect {
-  display: none;
-}
-
-body.permissioned .info-requires-connect {
   display: none;
 }
 

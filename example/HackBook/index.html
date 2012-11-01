@@ -101,10 +101,19 @@
         If your app needs more than this basic information to function, you must request specific permissions from the user.
         For example, you might prompt the user to grant access to their Likes in order to recommend related content for them.
       </p>
+
+      <div id="disabled_perm_user_likes">
+        <div id="extended_permission_button" class="button button-requires-connect" onclick="promptPermission('user_likes')" />Grant the 'user_likes' permission</div>
       
-      <div id="extended_permission_button" class="button button-requires-connect" onclick="promptExtendedPermissions()" />Grant the 'user_likes' permission</div>
-      
-      <div class="info-requires-connect">You need to login before you can use this functionality.</div>
+        <div class="info-requires-connect">You need to login before you can use this functionality.</div>
+      </div>
+      <div id="enabled_perm_user_likes">
+        <div class="show_when_connected">
+          <p>
+            You've already granted the user_likes permission previously so the button isn't shown.
+          </p>
+      </div>
+      </div>
     </div>
   </div>
   
@@ -231,14 +240,14 @@
       
       <div id="checkins"></div>
   
-      <div class="show_when_not_permissioned">
-        <div class="button button-requires-connect" onclick="promptCheckInPermission()" />Grant check-in permission</div>
-        
-        <div class="info-requires-connect">You need to login before you can use this functionality.</div>
+      <div id="disabled_perm_user_status">
+          <div class="button button-requires-connect" onclick="promptPermission('user_status')" />Grant check-in permission</div>
+          
+          <div class="info-requires-connect">You need to login before you can use this functionality.</div>
       </div>
-      
-      <div class="show_when_permissioned">
-        <div class="button" onclick="getCheckIns();hideButton(this);"/>Get past check-ins</div>
+        
+      <div id="enabled_perm_user_status">
+          <div class="button button-requires-connect" onclick="getCheckIns();hideButton(this);"/>Get past check-ins</div>
       </div>
     </div>
     
@@ -250,14 +259,14 @@
        
       <div id="locations-nearby"></div>
   
-      <div class="show_when_not_permissioned">
-        <div class="button button-requires-connect" onclick="promptCheckInPermission()" />Grant check-in permission</div>
+      <div id="disabled_perm_publish_checkins">
+        <div class="button button-requires-connect" onclick="promptPermission('publish_checkins')" />Grant publish check-in permission</div>
         
         <div class="info-requires-connect">You need to login before you can use this functionality.</div>
       </div>
       
-      <div class="show_when_permissioned">
-        <div class="button" onclick="getNearby();hideButton(this);" />Find nearby locations</div>
+      <div id="enabled_perm_publish_checkins">
+        <div class="button button-requires-connect" onclick="getNearby();hideButton(this);" />Find nearby locations</div>
       </div>
     </div>
   </div>
