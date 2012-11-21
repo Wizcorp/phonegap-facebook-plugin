@@ -17,18 +17,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.facebook.GraphUser;
+import com.facebook.FacebookDialogException;
+import com.facebook.FacebookException;
+import com.facebook.FacebookOperationCanceledException;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
-import com.facebook.android.DialogError;
-import com.facebook.android.Facebook;
-import com.facebook.android.Facebook.DialogListener;
-import com.facebook.android.FacebookError;
+import com.facebook.model.GraphUser;
+import com.facebook.widget.WebDialog;
+import com.facebook.widget.WebDialog.OnCompleteListener;
 
 public class ConnectPlugin extends Plugin {
 	
+	private static final String FEED_DIALOG = "feed";
+	private static final String APPREQUESTS_DIALOG = "apprequests";
     private static final String PUBLISH_PERMISSION_PREFIX = "publish";
     private static final String MANAGE_PERMISSION_PREFIX = "manage";
     @SuppressWarnings("serial")
@@ -44,7 +47,6 @@ public class ConnectPlugin extends Plugin {
     private String loginCallbackId = "";
     private String dialogCallbackId = "";
     
-    private Facebook facebook;
     private String applicationId;
     
     private String userId;
@@ -63,9 +65,6 @@ public class ConnectPlugin extends Plugin {
             	
             	// Get the Facebook App Id
             	applicationId = args.getString(0);
-            	
-            	// Initiate Facebook
-            	facebook = new Facebook(applicationId);
                 
             	// Save the callback Id, in the case that the user's session
             	// is open and we can get user info
@@ -207,46 +206,66 @@ public class ConnectPlugin extends Plugin {
         }
         
         else if (action.equals("showDialog")) {
-        	if (facebook != null) {
-        		Bundle collect = new Bundle();
-        		JSONObject params = null;
-        		try {
-        			params = args.getJSONObject(0);
-        		} catch (JSONException e) {
-        			params = new JSONObject();
-        		}
-        		
-        		final ConnectPlugin me = this;
-        		Iterator<?> iter = params.keys();
-        		while (iter.hasNext()) {
-        			String key = (String) iter.next();
-        			if (key.equals("method")) {
-        				try {
-        					this.method = params.getString(key);
-        				} catch (JSONException e) {
-        					Log.w(TAG, "Nonstring method parameter provided to dialog");
-        				}
-        			} else {
-        				try {
-        					collect.putString(key, params.getString(key));
-        				} catch (JSONException e) {
-        					// Need to handle JSON parameters
-        					Log.w(TAG, "Nonstring parameter provided to dialog discarded");
-        				}
-        			}
-        		}
-        		this.paramBundle =  new Bundle(collect);
-        		this.dialogCallbackId = callbackId;
-        		Runnable runnable = new Runnable() {
-        			public void run() {
-        				me.facebook.dialog (me.cordova.getActivity(), me.method , me.paramBundle , new UIDialogListener(me));
-        			};
-        		};
-        		cordova.getActivity().runOnUiThread(runnable);
-        	} else {
-        		pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before showDialog.");
-        	}
         	
+        	Bundle collect = new Bundle();
+    		JSONObject params = null;
+    		try {
+    			params = args.getJSONObject(0);
+    		} catch (JSONException e) {
+    			params = new JSONObject();
+    		}
+    		
+    		final ConnectPlugin me = this;
+    		Iterator<?> iter = params.keys();
+    		while (iter.hasNext()) {
+    			String key = (String) iter.next();
+    			if (key.equals("method")) {
+    				try {
+    					this.method = params.getString(key);
+    				} catch (JSONException e) {
+    					Log.w(TAG, "Nonstring method parameter provided to dialog");
+    				}
+    			} else {
+    				try {
+    					collect.putString(key, params.getString(key));
+    				} catch (JSONException e) {
+    					// Need to handle JSON parameters
+    					Log.w(TAG, "Nonstring parameter provided to dialog discarded");
+    				}
+    			}
+    		}
+    		this.paramBundle =  new Bundle(collect);
+    		this.dialogCallbackId = callbackId;
+    		
+    		if (this.method.equals(FEED_DIALOG)) {
+    			Runnable runnable = new Runnable() {
+        			public void run() {
+        				WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(
+        						me.cordova.getActivity(),
+        						Session.getActiveSession(),
+        						paramBundle))
+        						.setOnCompleteListener(new UIDialogListener(me))
+        						.build();
+        				feedDialog.show();
+        			};
+    			};
+    			cordova.getActivity().runOnUiThread(runnable);
+    		} else if (this.method.equals(APPREQUESTS_DIALOG)) {
+    			Runnable runnable = new Runnable() {
+        			public void run() {
+        				WebDialog requestsDialog = (new WebDialog.RequestsDialogBuilder(
+        						me.cordova.getActivity(),
+        						Session.getActiveSession(),
+        						paramBundle))
+        						.setOnCompleteListener(new UIDialogListener(me))
+        						.build();
+        				requestsDialog.show();
+        			};
+    			};
+    			cordova.getActivity().runOnUiThread(runnable);
+    		} else {
+    			pr = new PluginResult(PluginResult.Status.ERROR, "Unsupported dialog method.");
+    		}
         }
 
         return pr;
@@ -314,8 +333,6 @@ public class ConnectPlugin extends Plugin {
     	if (state.isOpened()) {
     		// Get user info
     		getUserInfo(session);
-    		// Set the Facebook session for dialogs
-        	facebook.setSession(session);
     	}
     }
     
@@ -330,7 +347,7 @@ public class ConnectPlugin extends Plugin {
 
     }
     
-    class UIDialogListener implements DialogListener {
+    class UIDialogListener implements OnCompleteListener {
    	 final ConnectPlugin fba;
 
 		public UIDialogListener(ConnectPlugin fba){
@@ -338,45 +355,52 @@ public class ConnectPlugin extends Plugin {
 			this.fba = fba;
 		}
 
-		public void onComplete(Bundle values) {
-			// Handle a successful dialog:
-			// Send the URL parameters back, for a requests dialog, the "request" parameter
-		    // will include the resutling request id. For a feed dialog, the "post_id"
-		    // parameter will include the resulting post id.
-			// Note: If the user clicks on the Cancel button, the parameter will be empty
-			//Log.d(TAG,values.toString());
-			if (values.size() > 0) {
-				JSONObject response = new JSONObject();
-				try {
-					Set<String> keys = values.keySet();
-					for (String key : keys) {
-						response.put(key, values.get(key));
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
+		@Override
+		public void onComplete(Bundle values,
+				FacebookException exception) {
+			if (exception != null) {
+				// User clicked "x"
+				if (exception instanceof FacebookOperationCanceledException) {
+					Log.d(TAG, "cancel");
+			           this.fba.success(new PluginResult(PluginResult.Status.NO_RESULT), 
+			        		   this.fba.dialogCallbackId);
 				}
-				this.fba.success(new PluginResult(PluginResult.Status.OK, response), 
-						this.fba.dialogCallbackId);
+				// Dialog error
+				else if (exception instanceof FacebookDialogException) {
+					Log.d(TAG, "other error");
+			           this.fba.error("Dialog error: " + exception.getMessage(), 
+			        		   this.fba.dialogCallbackId);
+				}
+				// Facebook error
+				else {
+					Log.d(TAG, "facebook error");
+			           this.fba.error("Facebook error: " + exception.getMessage(), 
+			        		   this.fba.dialogCallbackId);
+				}
 			} else {
-				this.fba.success(new PluginResult(PluginResult.Status.OK), this.fba.dialogCallbackId);
+				// Handle a successful dialog:
+				// Send the URL parameters back, for a requests dialog, the "request" parameter
+			    // will include the resulting request id. For a feed dialog, the "post_id"
+			    // parameter will include the resulting post id.
+				// Note: If the user clicks on the Cancel button, the parameter will be empty
+				if (values.size() > 0) {
+					JSONObject response = new JSONObject();
+					try {
+						Set<String> keys = values.keySet();
+						for (String key : keys) {
+							response.put(key, values.get(key));
+						}
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+					this.fba.success(new PluginResult(PluginResult.Status.OK, response), 
+							this.fba.dialogCallbackId);
+				} else {
+					this.fba.success(new PluginResult(PluginResult.Status.OK), 
+							this.fba.dialogCallbackId);
+				}
 			}
 		}
-
-		public void onFacebookError(FacebookError e) {
-           Log.d(TAG, "facebook error");
-           this.fba.error("Facebook error: " + e.getMessage(), this.fba.dialogCallbackId);
-       }
-
-       public void onError(DialogError e) {
-           Log.d(TAG, "other error");
-           this.fba.error("Dialog error: " + e.getMessage(), this.fba.dialogCallbackId);
-       }
-
-       public void onCancel() {
-    	   // This happens when the user clicks on the "x" cancel icon
-           Log.d(TAG, "cancel");
-           this.fba.success(new PluginResult(PluginResult.Status.NO_RESULT), this.fba.dialogCallbackId);
-       }
 	}
     
     class RequestUserCallback implements Request.GraphUserCallback {
