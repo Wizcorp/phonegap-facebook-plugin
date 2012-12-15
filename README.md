@@ -8,7 +8,7 @@ This is all licensed under MIT except for `app/www/facebook_js_sdk.js` which is 
 
 # Requirements
 
-* PhoneGap (Cordova) v2.1.0 (For compatibility with older versions of PhoneGap (1.4.1 or less), please download the tag [1.4.1support](https://github.com/davejohnson/phonegap-plugin-facebook-connect/zipball/1.4.1support))
+* PhoneGap (Cordova) v2.2.0 (For compatibility with older versions of PhoneGap (1.4.1 or less), please download the tag [1.4.1support](https://github.com/davejohnson/phonegap-plugin-facebook-connect/zipball/1.4.1support))
 
 The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The install instruction include how to get the latest SDK for use in your project.
 
@@ -49,8 +49,8 @@ If you plan on rolling this out on Android, please note that you will need to [g
 
 ## Android
 
-1. [Create a basic Cordova Android application](http://docs.phonegap.com/en/2.1.0/guide_getting-started_android_index.md.html#Getting%20Started%20with%20Android).
- * NOTE: Min Target has to be set to 8. The plugin has an issue if you set your minimum target higher than that. You can edit this in your android manifest file.
+1. [Create a basic Cordova Android application](http://docs.phonegap.com/en/2.2.0/guide_getting-started_android_index.md.html#Getting%20Started%20with%20Android).
+ * NOTE: Min Target has to be set to 8. The plugin has an issue if you set your minimum target higher than that. You can edit this in your Android Manifest file. Set the Project Build Target to at least 11 if you see Android Manifest errors related to newer attributes that have been added in 2.2.0.
  
 2. In the Cordova Android application you will need to put the following in your `res/xml/config.xml` file as a child to the plugin tag: <pre>&lt;plugin name="org.apache.cordova.facebook.Connect" value="org.apache.cordova.facebook.ConnectPlugin" /&gt;</pre>
 
@@ -58,9 +58,9 @@ If you plan on rolling this out on Android, please note that you will need to [g
   * [Install the Facebook SDK for Android and the Facebook APK](https://developers.facebook.com/docs/getting-started/facebook-sdk-for-android/3.0/)
   * [Import the Facebook SDK into Eclipse](https://developers.facebook.com/docs/getting-started/facebook-sdk-for-android/3.0/)
   * Link the Facebook SDK library to your project.  View the properties for the project, and navigate to the 'Android' tab. In the lower part of the dialog, click 'Add' and choose the 'FacebookSDK' project from the workspace.
-  * Add a new activity to your app to handle Facebook Login. Open up your `AndroidManifest.xml` file and add this additional activity:
+  * Add a new `com.facebook.LoginActivity` activity to your app to handle Facebook Login. Open up your `AndroidManifest.xml` file and add this additional activity:
 
-          <activity android:name="com.facebook.LoginActivity"
+            <activity android:name="com.facebook.LoginActivity"
                   android:label="@string/app_name" />
 
 4. From the Cordova Facebook Connect Plugin folder copy the src folder from `native/android/` folder into the root of your Cordova Android application. It should merge with the existing src folder. 

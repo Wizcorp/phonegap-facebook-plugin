@@ -76,7 +76,18 @@ public class ConnectPlugin extends Plugin {
         		.build();
             	if (session.getState() == SessionState.CREATED_TOKEN_LOADED) {
             		Session.setActiveSession(session);
-                    session.open();
+            		// - Create the request
+                    Session.OpenRequest openRequest = new Session.OpenRequest(cordova.getActivity());
+                    // - Set the status change call back
+                    openRequest.setCallback(new Session.StatusCallback() {
+                    	@Override
+                        public void call(Session session, 
+                                         SessionState state,
+                                         Exception exception) {
+                    		onSessionStateChange(state, exception);
+                    	}
+                    });
+                    session.openForRead(openRequest); 
             	}
 
                 // If we have a valid open session, get user's info
@@ -142,18 +153,18 @@ public class ConnectPlugin extends Plugin {
             	if (publishPermissions && readPermissions) {
             		pr = new PluginResult(PluginResult.Status.ERROR, "Cannot ask for both read and publish permissions.");
             	} else {
-            		// Set up the reauthorization request with the permissios
-                	Session.ReauthorizeRequest reauthorizeRequest =  new Session.ReauthorizeRequest(cordova.getActivity(), 
+            		// Set up the new permissions request
+                	Session.NewPermissionsRequest newPermissionsRequest =  new Session.NewPermissionsRequest(cordova.getActivity(), 
                 			permissions);
                 	// Set up the activity result callback to this class
                 	cordova.setActivityResultCallback(this);
                 	// Check for write permissions, the default is read (empty)
                 	if (publishPermissions) {
-                		// Reauthorize for publish
-                		session.reauthorizeForPublish(reauthorizeRequest);
+                		// Request new publish permissions
+                		session.requestNewPublishPermissions(newPermissionsRequest);
                 	} else {
-                		// Reauthorize for read
-                		session.reauthorizeForRead(reauthorizeRequest);
+                		// Request new read permissions
+                		session.requestNewReadPermissions(newPermissionsRequest);
                 	}
             	}
         	} else {
