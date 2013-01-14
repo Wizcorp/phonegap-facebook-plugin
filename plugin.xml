@@ -49,6 +49,25 @@
         <header-file src="FacebookConnectPlugin.h" target-dir="FacebookConnect" />
         <source-file src="FacebookConnectPlugin.m" target-dir="FacebookConnect" />
 
+        <config-file parent="FacebookAppID">
+            <string>$FBID</string>
+        </config-file>
+        
+        <config-file parent="CFBundleURLTypes">
+          <array>
+            <dict>
+              <key>CFBundleTypeRole</key>
+              <string>None</string>
+              <key>CFBundleURLName</key>
+              <string>$PACKAGE_NAME</string>
+              <key>CFBundleURLSchemes</key>
+              <array>
+                <string>fb$FBID</string>
+              </array>
+            </dict>
+          </array>
+        </config-file>
+
         <!-- facebook source files -->
         <source-file src="facebook/Facebook.m" target-dir="FacebookConnect" />
         <source-file src="facebook/FBCacheDescriptor.m" target-dir="FacebookConnect" />
