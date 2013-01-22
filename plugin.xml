@@ -50,7 +50,7 @@
         <source-file src="FacebookConnectPlugin.m" target-dir="FacebookConnect" />
 
         <config-file parent="FacebookAppID">
-            <string>$FBID</string>
+            <string>$APP_ID</string>
         </config-file>
         
         <config-file parent="CFBundleURLTypes">
@@ -62,7 +62,7 @@
               <string>$PACKAGE_NAME</string>
               <key>CFBundleURLSchemes</key>
               <array>
-                <string>fb$FBID</string>
+                <string>fb$APP_ID</string>
               </array>
             </dict>
           </array>
