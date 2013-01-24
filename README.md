@@ -1,51 +1,20 @@
-# Apache Cordova Facebook Connect Plugin
+# Cordova Facebook Connect Plugin for Android and iOS
 
-This is the official plugin for Facebook Connect in Apache Cordova/PhoneGap!
+---
 
-The Facebook Connect plugin for Apache Cordova allows you to use the same JavaScript code in your web application as you use in your native Cordova application, but your native Cordova application will use the Facebook native app to perform Single Sign On for the user (if possible - if it isn't then it will fall back to dialog-based authentication).
+## DESCRIPTION
 
-This is all licensed under MIT except for `app/www/facebook_js_sdk.js` which is the Facebook JS SDK and is Apache 2.0.
+The Facebook Connect plugin for [Apache Cordova](http://incubator.apache.org/cordova/) allows you to use the same JavaScript code in your Cordova application as you use in your web application. However, unlink in the browser, the Cordova application will use the native Facebook app to perform Single Sign On for the user.  If this is not possible then the sign on will degrade gracefully using the standard dialog based authentication.
 
-# Requirements
+* Supported on PhoneGap (Cordova) v2.1.0 and above.
 
-* PhoneGap (Cordova) v2.1.0 (For compatibility with older versions of PhoneGap (1.4.1 or less), please download the tag [1.4.1support](https://github.com/davejohnson/phonegap-plugin-facebook-connect/zipball/1.4.1support))
+## Facebook Requirements and Set-Up
 
-The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The install instruction include how to get the latest SDK for use in your project.
-
-To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an APP_ID (https://developers.facebook.com/apps).
+Register your application with Facebook to get an [APP_ID](https://developers.facebook.com/apps).
 
 If you plan on rolling this out on iOS, please note that you will need to ensure that you have properly set up your Native iOS App settings on the [Facebook App Dashboard](http://developers.facebook.com/apps). Please see the [Getting Started with the Facebook SDK](https://developers.facebook.com/docs/getting-started/facebook-sdk-for-ios/3.1/): Create a Facebook App section, for more details on this.
 
-If you plan on rolling this out on Android, please note that you will need to [generate a hash of your Android key(s) and submit those to the Developers page on Facebook](http://developers.facebook.com/docs/mobile/android/build/#sig) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
-
-# Project Structure
-
-<pre>
-  |-example
-  |  `-www
-  |    `-index.html
-  |-lib
-  |  |-facebook-js-patch
-  |  |-facebook_js_sdk.js
-  |  |-facebook-android-sdk
-  |  `-facebook-ios-sdk
-  |-native
-  |  |-android
-  |  `-ios
-  `-www
-     `-cdv-plugin-fb-connect.js
-</pre>
-
-`lib/facebook-js-patch` can be ignored. It is currently not used.
-
-`lib/facebook_js_sdk.js` is the modified facebook-js-sdk. It already includes the hooks to work with this plugin.
-
-`native/android` and `native/ios` contain the native code for the plugin for both Android and iOS platforms.
-
-`www/cdv-plugin-fb-connect.js` is the JavaScript code for the plugin, this defines the JS API.
-
-
-# Getting Started
+[Generate a hash of your Android key(s) and submit those to the Developers page on Facebook](http://developers.facebook.com/docs/mobile/android/build/#sig) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
 
 ## Android
 
@@ -166,5 +135,16 @@ Make sure you add the scheme to your [PROJECTNAME]-Info.plist (located as one of
 &lt;/array&gt;
 </pre>
 
+## Automatic Installation
+This plugin is based on [pluginstall](https://github.com/phonegap-build/pluginstall). to install it to your app,
+simply execute pluginstall as follows;
 
+	pluginstall [PLATFORM] [TARGET-PATH] [PLUGIN-PATH] APP_ID="[APP_ID]"
+	
+	where
+		[PLATFORM] = ios or android
+		[TARGET-PATH] = path to folder containing your phonegap project
+		[PLUGIN-PATH] = path to folder containing this plugin
+		[APP_ID] = Your APP_ID as registered on Facebook
 
+For additional info, take a look at the [Cordova Pluginstall Specification](https://github.com/alunny/cordova-plugin-spec)
