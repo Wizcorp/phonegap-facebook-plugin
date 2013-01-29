@@ -1,4 +1,4 @@
-# Cordova Facebook Connect Plugin for Android and iOS
+# Adobe® PhoneGap™ Build™ plugin for Facebook Connect
 
 ---
 
