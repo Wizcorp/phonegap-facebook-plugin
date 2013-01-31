@@ -29,11 +29,14 @@ window.fbAsyncInit = function() {
     useCachedDialogs: true,
     oauth: true
   });
-  
+
+  FB.getLoginStatus(handleStatusChange);
+
   authUser();
   checkForCredits();
   updateAuthElements();
 };
+
 
 // Load the SDK Asynchronously
 (function(d){

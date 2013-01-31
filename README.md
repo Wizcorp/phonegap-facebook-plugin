@@ -8,7 +8,7 @@ This is all licensed under MIT except for `app/www/facebook_js_sdk.js` which is 
 
 # Requirements
 
-* PhoneGap (Cordova) v2.1.0 (For compatibility with older versions of PhoneGap (1.4.1 or less), please download the tag [1.4.1support](https://github.com/davejohnson/phonegap-plugin-facebook-connect/zipball/1.4.1support))
+* PhoneGap (Cordova) v2.2.0 (For compatibility with older versions of PhoneGap (1.4.1 or less), please download the tag [1.4.1support](https://github.com/davejohnson/phonegap-plugin-facebook-connect/zipball/1.4.1support))
 
 The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The install instruction include how to get the latest SDK for use in your project.
 
@@ -16,7 +16,7 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 If you plan on rolling this out on iOS, please note that you will need to ensure that you have properly set up your Native iOS App settings on the [Facebook App Dashboard](http://developers.facebook.com/apps). Please see the [Getting Started with the Facebook SDK](https://developers.facebook.com/docs/getting-started/facebook-sdk-for-ios/3.1/): Create a Facebook App section, for more details on this.
 
-If you plan on rolling this out on Android, please note that you will need to [generate a hash of your Android key(s) and submit those to the Developers page on Facebook](http://developers.facebook.com/docs/mobile/android/build/#sig) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
+If you plan on rolling this out on Android, please note that you will need to [generate a hash of your Android key(s) and submit those to the Developers page on Facebook](https://developers.facebook.com/docs/getting-started/facebook-sdk-for-android/3.0/) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
 
 # Project Structure
 
@@ -49,28 +49,19 @@ If you plan on rolling this out on Android, please note that you will need to [g
 
 ## Android
 
-View the [Video](http://www.youtube.com/watch?v=mlpBgWiel2w)
-
-1. [Create a basic Cordova Android application](http://docs.phonegap.com/en/2.1.0/guide_getting-started_android_index.md.html#Getting%20Started%20with%20Android).
- * NOTE: Min Target has to be set to 8. The plugin has an issue if you set your minimum target higher than that. You can edit this in your android manifest file.
-
+1. [Create a basic Cordova Android application](http://docs.phonegap.com/en/2.2.0/guide_getting-started_android_index.md.html#Getting%20Started%20with%20Android).
+ * NOTE: Min Target has to be set to 8. The plugin has an issue if you set your minimum target higher than that. You can edit this in your Android Manifest file. Set the Project Build Target to at least 11 if you see Android Manifest errors related to newer attributes that have been added in 2.2.0.
+ 
 2. In the Cordova Android application you will need to put the following in your `res/xml/config.xml` file as a child to the plugin tag: <pre>&lt;plugin name="org.apache.cordova.facebook.Connect" value="org.apache.cordova.facebook.ConnectPlugin" /&gt;</pre>
 
-3. You'll need to build + include the Facebook Android SDK and include the
-   Facebook JavaScript SDK:
-  * First run `git submodule update --init` to initialize and pull down
-    the version of the Android Facebook SDK that works with this plugin; it will end up under `lib/`. Copy the src and res folders from lib/facebook-android-sdk/facebook/ into the root of your Cordova Android application. It should merge with the existing src and res folders and not overwrite.
-  * NOTE: I haven't been able to compile the facebook android SDK into a
-    jar with success. So, I just copied the source into my generated
-    Cordova application directory and imported the generated Cordova
-    Android package as an import at the top of FbDialog.java.
+3. You'll need to set up the Facebook SDK for Android:
+  * [Install the Facebook SDK for Android and the Facebook APK](https://developers.facebook.com/docs/getting-started/facebook-sdk-for-android/3.0/)
+  * [Import the Facebook SDK into Eclipse](https://developers.facebook.com/docs/getting-started/facebook-sdk-for-android/3.0/)
+  * Link the Facebook SDK library to your project.  View the properties for the project, and navigate to the 'Android' tab. In the lower part of the dialog, click 'Add' and choose the 'FacebookSDK' project from the workspace.
+  * Add a new `com.facebook.LoginActivity` activity to your app to handle Facebook Login. Open up your `AndroidManifest.xml` file and add this additional activity:
 
-    TODO: Fix this
-    :P. `cd facebook-android-sdk/facebook` and run `jar cf
-    facebook-android-sdk.jar src`. This will create a
-    `facebook-android-sdk.jar` file that you need to copy into your
-    generated Cordova-Android's `libs` directory (and also add to your
-    build path).
+            <activity android:name="com.facebook.LoginActivity"
+                  android:label="@string/app_name" />
 
 4. From the Cordova Facebook Connect Plugin folder copy the src folder from `native/android/` folder into the root of your Cordova Android application. It should merge with the existing src folder.
 

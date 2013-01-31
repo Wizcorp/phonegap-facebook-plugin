@@ -8,31 +8,11 @@
 //Detect when Facebook tells us that the user's session has been returned
 function updateAuthElements() {
   FB.Event.subscribe('auth.statusChange', function(session) {
-    //If the user isn't logged in, set the body class so that we show/hide the correct elements
-    if (!session.authResponse) {
-      if (document.body.className != 'not_connected') {
-        document.body.className = 'not_permissioned';
-      }
-    }
-    //The user is logged in, so let's see if they've granted the check-in permission and pre-fetch some data
-    //Depending on if they have or haven't, we'll set the body to reflect that so we show/hide the correct elements on the page
-    else {
+    if (session.authResponse) { 
+      //The user is logged in, so let's pre-fetch some data and check the current 
+      //permissions to show/hide the proper elements.
       preFetchData();
-      
-      FB.api({method: 'fql.query', query: 'SELECT user_checkins, publish_checkins FROM permissions WHERE uid = me()'}, function(response) {
-        if (document.body.className != 'not_connected') {
-        console.log("Reading permissions");
-        console.log(response);
-          //We couldn't get a check-in for the user, so they haven't granted the permission
-          if (response[0].user_checkins == 1) {
-            document.body.className = 'permissioned';
-          }
-          //We were able to get a check-in for the user, so they have granted the permission already
-          else {
-            document.body.className = 'not_permissioned';
-          }
-        }
-      });
+      checkUserPermissions();
     }
   });
 }
@@ -177,20 +157,6 @@ function getNearby() {
       }
     });
   });
-}
-
-//Prompt the user to grant the check-in permission
-function promptCheckInPermission() {
-  FB.login(function(response) {
-    if (response.authResponse) {
-      //User granted permissions
-      document.body.className = 'permissioned';
-    } 
-    else {
-      //User didn't grant permissions
-      alert('You need to grant the check-in permission before using this functionality.');
-    }
-  }, {scope:'user_checkins,publish_checkins'});
 }
 
 //Pre-fetch data, mainly used for requests and feed publish dialog

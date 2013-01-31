@@ -7,13 +7,16 @@
 
 var user = [];
 
+var permissions = ['user_status', 'publish_checkins', 'user_likes'];
+
 //Detect when Facebook tells us that the user's session has been returned
 function authUser() {
   FB.Event.subscribe('auth.statusChange', handleStatusChange);
 }
 
+// Handle status changes
 function handleStatusChange(session) {
-    console.log('Got the user\'s session: ', session);
+    console.log('Got the user\'s session: ' + JSON.stringify(session));
     
     if (session.authResponse) {
         document.body.className = 'connected';
@@ -26,29 +29,60 @@ function handleStatusChange(session) {
           if (!response.error) {
             user = response;
             
-            console.log('Got the user\'s name and picture: ');
-            console.log(response);
+            console.log('Got the user\'s name and picture: ' + JSON.stringify(response));
             
             //Update display of user name and picture
             if (document.getElementById('user-name')) {
               document.getElementById('user-name').innerHTML = user.name;
             }
             if (document.getElementById('user-picture')) {
-              if (user.picture.data) {
-                  document.getElementById('user-picture').src = user.picture.data.url;
-              } else {
-                  document.getElementById('user-picture').src = user.picture;
-              }
+              document.getElementById('user-picture').src = user.picture.data.url;
             }
           }
           
           clearAction();
         });
-    } else {
+    }
+    else  {
       document.body.className = 'not_connected';
-      
+    
       clearAction();
     }
+}
+
+//Check the current permissions to set the page elements.
+//Pass back a flag to check for a specific permission, to
+//handle the cancel detection flow.
+function checkUserPermissions(permissionToCheck) {
+  var permissionsFQLQuery = 'SELECT ' + permissions.join() + ' FROM permissions WHERE uid = me()';
+  FB.api('/fql', { q: permissionsFQLQuery },
+    function(response) {
+      if (document.body.className != 'not_connected') {
+          for (var i = 0; i < permissions.length; i++) {
+            var perm = permissions[i];
+            var enabledElementName = document.getElementById('enabled_perm_' + perm);
+            var disabledElementName = document.getElementById('disabled_perm_' + perm);
+            if (response.data[0][perm] == 1) {
+              enabledElementName.style.display = 'block';
+              disabledElementName.style.display = 'none';
+            } else {
+              enabledElementName.style.display = 'none';
+              disabledElementName.style.display = 'block';
+            }
+          }
+          if (permissionToCheck) {
+            if (response.data[0][permissionToCheck] == 1) {
+              setAction("The '" + permissionToCheck + "' permission has been granted.", false);
+              setTimeout('clearAction();', 2000);
+              return true;
+            } else {
+              setAction('You need to grant the ' + permissionToCheck + ' permission before using this functionality.', false);
+              setTimeout('clearAction();', 2000);
+            } return false;
+          }
+          return true;
+      }
+  });
 }
 
 //Prompt the user to login and ask for the 'email' permission
@@ -56,25 +90,24 @@ function promptLogin() {
   FB.login(null, {scope: 'email'});
 }
 
-//This will prompt the user to grant you acess to their Facebook Likes
-function promptExtendedPermissions() {
-  FB.login(function() {
-    setAction("The 'user_likes' permission has been granted.", false);
-    
-    setTimeout('clearAction();', 2000);
-    
-    document.body.className = 'permissioned';
-  }, {scope: 'user_likes'});
+//This will prompt the user to grant you acess to a given permission
+function promptPermission(permission) {
+  FB.login(function(response) {
+    if (response.authResponse) {
+      checkUserPermissions(permission)
+    }
+  }, {scope: permission});
 }
 
-//See https://developers.facebook.com/docs/reference/rest/auth.revokeAuthorization/
+//See https://developers.facebook.com/docs/reference/api/user/#permissions
 function uninstallApp() {
-  FB.api({method: 'auth.revokeAuthorization'},
+  FB.api('/me/permissions', 'DELETE',
     function(response) {
-     // window.location.reload();
-     // To clear the local storage cache and native session, call logout
-     logout();
-    });
+      //window.location.reload();
+      // For may instead call logout to clear
+      // cache data, ex: using in a PhoneGap app
+      logout();
+  });
 }
 
 //See https://developers.facebook.com/docs/reference/javascript/FB.logout/
