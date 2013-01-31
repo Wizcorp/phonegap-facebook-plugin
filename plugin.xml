@@ -15,12 +15,13 @@
     
     <!-- android -->
     <platform name="android">
-        <!-- Cordova 1.5 - 1.9 -->
+      
+        <!-- Cordova < 2.0.0 -->
         <config-file target="res/xml/plugins.xml" parent="/plugins">
             <plugin name="org.apache.cordova.facebook.Connect" value="org.apache.cordova.facebook.ConnectPlugin"/>
         </config-file>
         
-        <!-- Cordova 2.0.0 -->
+        <!-- Cordova >= 2.0.0 -->
         <config-file target="res/xml/config.xml" parent="/cordova/plugins">
             <plugin name="org.apache.cordova.facebook.Connect" value="org.apache.cordova.facebook.ConnectPlugin"/>
         </config-file>
@@ -43,17 +44,22 @@
     
     <!-- ios -->
     <platform name="ios">
+      
+        <!-- Cordova < 2.3 -->
         <plugins-plist key="org.apache.cordova.facebook.Connect" string="FacebookConnectPlugin" />
         
-        <!-- cordova plugin src files -->
+        <!-- Cordova >= 2.3 -->
+        <config-file target="config.xml" parent="/cordova/plugins">
+            <plugin name="org.apache.cordova.facebook.Connect" value="FacebookConnectPlugin"/>
+        </config-file>
+        
         <header-file src="FacebookConnectPlugin.h" target-dir="FacebookConnect" />
         <source-file src="FacebookConnectPlugin.m" target-dir="FacebookConnect" />
-
-        <config-file parent="FacebookAppID">
+        <config-file target="*-Info.plist" parent="FacebookAppID">
             <string>$APP_ID</string>
         </config-file>
         
-        <config-file parent="CFBundleURLTypes">
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
           <array>
             <dict>
               <key>CFBundleTypeRole</key>
