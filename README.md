@@ -82,7 +82,7 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 
 ### Add the Cordova Facebook Connect Plugin
 
-1. From the **Cordova Facebook Connect Plugin** folder copy the contents of the **native/ios** folder into your app in Xcode (usually in the **Plugins** folder group). Make sure it is added as a "group" (yellow folder)
+1. From the **Cordova Facebook Connect Plugin** folder copy the contents of the **native/ios** folder (without the facebook folder) into your app in Xcode (usually in the **Plugins** folder group). Make sure it is added as a "group" (yellow folder).
 2. Find the Cordova.plist file in the project navigator, expand the "Plugins" sub-tree, and add a new entry. For the key, add **org.apache.cordova.facebook.Connect**, and its value will be **FacebookConnectPlugin**
 3. From the **Cordova Facebook Connect Plugin** folder copy the contents of the **www** folder into the **www** directory in Xcode.
 4. Add the Facebook domains to the ExternalHosts lists, as described below.
