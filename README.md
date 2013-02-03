@@ -43,7 +43,7 @@ View the [Video](http://www.youtube.com/watch?v=mlpBgWiel2w)
 
 4. From the Cordova Facebook Connect Plugin folder copy the src folder from `native/android/` folder into the root of your Cordova Android application. It should merge with the existing src folder.
 
-5. From the Cordova Facebook Connect Plugin folder copy the `www/cdv-plugin-fb-connect.js`, `lib/facebook_js_sdk.js` and `example/HackBook/` files into your application's `assets/www` folder. Overwrite the existing index.html file.
+5. From the Cordova Facebook Connect Plugin folder copy the `www/cdv-plugin-fb-connect.js`, `lib/facebook-js-sdk.js` and `example/HackBook/` files into your application's `assets/www` folder. Overwrite the existing index.html file.
 
 6. Replace your appId in the new index.html file. Leave the quotes.
 
@@ -74,7 +74,7 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 7. Choose 'Create groups for any added folders' and deselect 'Copy items into destination group's folder (if needed)'. This adds the headers as a reference.
 8. Click on your project's icon (the root element) in Project Navigator, select your **Project**, then the **Build Settings** tab, search for **Other Linker Flags**.
 9. Add the value **-lsqlite3.0**
-10. From the **Cordova Facebook Connect Plugin** folder copy the file **lib/facebook_js_sdk.js** into the **www** directory in Xcode.
+10. From the **Cordova Facebook Connect Plugin** folder copy the file **lib/facebook-js-sdk.js** into the **www** directory in Xcode.
 11. Click on your project's icon (the root element) in Project Navigator, select your **Target**, then the **Build Phases** tab, then the **Link Binary With Libraries** option.
 12. Add the **Social.framework** framework. Make it an optional framework to support pre iOS6 apps.
 13. Add the **Accounts.framework** framework. Make it an optional framework to support pre iOS6 apps.
@@ -93,7 +93,7 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 2. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
 3. You can quickly test the examples by following the next instructions then mirror the same process for your app.
 4. From the **example** folder, copy either the contents of HackBook folder or the Simple folder into your **www** directory in Xcode. Overwrite the original index.html file in your project. For HackBook, overwrite the original css and js folders as well.
-5. Make sure the &lt;script&gt; tags are added and are correct in the index.html. This include a tag for cordova-2.1.0.js, facebook_js_sdk.js and cdv-plugin-fb-connect.js.
+5. Make sure the &lt;script&gt; tags are added and are correct in the index.html. This include a tag for cordova-2.1.0.js, facebook-js-sdk.js and cdv-plugin-fb-connect.js.
 6. Add your AppID to your index.html. Should be in the callback for the deviceready event. Leave the quotes.
 7. Run the application in Xcode.
 
