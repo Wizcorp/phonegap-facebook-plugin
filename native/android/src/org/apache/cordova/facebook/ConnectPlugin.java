@@ -178,7 +178,8 @@ public class ConnectPlugin extends Plugin {
                 // - Create the request
                 Session.OpenRequest openRequest = new Session.OpenRequest(cordova.getActivity());
                 // - Set the permissions
-                openRequest.setPermissions(permissions);
+                // commenting following line: see bug: https://github.com/davejohnson/phonegap-plugin-facebook-connect/issues/246
+                // openRequest.setPermissions(permissions);
                 // - Set the status change call back
                 openRequest.setCallback(new Session.StatusCallback() {
                 	@Override
