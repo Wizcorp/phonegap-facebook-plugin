@@ -16,6 +16,11 @@ If you plan on rolling this out on iOS, please note that you will need to ensure
 
 [Generate a hash of your Android key(s) and submit those to the Developers page on Facebook](http://developers.facebook.com/docs/mobile/android/build/#sig) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
 
+## PhoneGap Build
+
+If using this plugin on PhoneGap Build you can ignore the instructions below and go straight to the 
+PhoneGap Build documentation available [here] (https://build.phonegap.com/docs/plugins#facebookconnect).
+
 ## Android
 
 View the [Video](http://www.youtube.com/watch?v=mlpBgWiel2w)
