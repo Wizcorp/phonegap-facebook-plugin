@@ -394,7 +394,9 @@ public class ConnectPlugin extends Plugin {
 			    // will include the resulting request id. For a feed dialog, the "post_id"
 			    // parameter will include the resulting post id.
 				// Note: If the user clicks on the Cancel button, the parameter will be empty
-				if (values.size() > 0) {
+				// NOTE: before my proposed changes the callback function is not called at all!
+				// NOTE: this is not in sync with the behavior under iOS see my comments attached
+				// if (values.size() > 0) {
 					JSONObject response = new JSONObject();
 					try {
 						Set<String> keys = values.keySet();
@@ -406,10 +408,10 @@ public class ConnectPlugin extends Plugin {
 					}
 					this.fba.success(new PluginResult(PluginResult.Status.OK, response), 
 							this.fba.dialogCallbackId);
-				} else {
+				/* } else {
 					this.fba.success(new PluginResult(PluginResult.Status.OK), 
 							this.fba.dialogCallbackId);
-				}
+				}*/
 			}
 		}
 	}
