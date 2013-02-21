@@ -308,6 +308,7 @@
     #else
         [method release];
         [params release];
+        [options release];
     #endif
     
     [super writeJavascript:nil];
