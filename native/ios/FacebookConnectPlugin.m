@@ -281,7 +281,7 @@
     // Save the callback ID
     self.dialogCallbackId = command.callbackId;
     
-    NSMutableDictionary *options = [command.arguments lastObject];
+    NSMutableDictionary *options = [[command.arguments lastObject] mutableCopy];
     NSString* method = [[NSString alloc] initWithString:[options objectForKey:@"method"]];
     if ([options objectForKey:@"method"]) {
         [options removeObjectForKey:@"method"];
