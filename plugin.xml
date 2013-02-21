@@ -2,32 +2,40 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="com.phonegap.facebook"
-    version="0.1.0">
+    version="0.2.0">
 
     <name>Facebook Connect</name>
 
-    <asset src="www" />
+    <asset src="www/cdv-plugin-fb-connect.js" target="cdv-plugin-fb-connect.js" />
+    <asset src="www/facebook-js-sdk.js" target="facebook-js-sdk.js" />
+    
     <access origin="m.facebook.com" />
     <access origin="graph.facebook.com" />
     <access origin="api.facebook.com" />
     <access origin="*.fbcdn.net" />
     <access origin="*.akamaihd.net" />
     
+    <preference name="APP_ID" />
+    
+    <engines>
+      <engine name="cordova" version=">=2.1.0" />
+    </engines>
+    
     <!-- android -->
     <platform name="android">
-      
-        <!-- Cordova < 2.0.0 -->
-        <config-file target="res/xml/plugins.xml" parent="/plugins">
-            <plugin name="org.apache.cordova.facebook.Connect" value="org.apache.cordova.facebook.ConnectPlugin"/>
-        </config-file>
-        
-        <!-- Cordova >= 2.0.0 -->
+
         <config-file target="res/xml/config.xml" parent="/cordova/plugins">
             <plugin name="org.apache.cordova.facebook.Connect" value="org.apache.cordova.facebook.ConnectPlugin"/>
         </config-file>
         
         <!-- res files -->
-        <source-file src="facebook/res" />
+        <source-file src="facebook/res/drawable/close.png" target-dir="res/drawable" />
+        <source-file src="facebook/res/drawable/facebook_icon.png" target-dir="res/drawable" />
+        <source-file src="facebook/res/drawable-hdpi/close.png" target-dir="res/drawable-hdpi" />
+        <source-file src="facebook/res/drawable-hdpi/facebook_icon.png" target-dir="res/drawable-hdpi" />
+        <source-file src="facebook/res/drawable-ldpi/close.png" target-dir="res/drawable-ldpi" />
+        <source-file src="facebook/res/drawable-ldpi/facebook_icon.png" target-dir="res/drawable-ldpi" />
+        <source-file src="facebook/res/drawable-xhdpi/close.png" target-dir="res/drawable-xhdpi" />
         
         <!-- cordova plugin src files -->
         <source-file src="ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
@@ -174,7 +182,7 @@
         <header-file src="facebook/JSON/FBSBJsonWriter.h" target-dir="FacebookConnect" />
         
         <!-- facebook resource files -->
-        <resource-file src="facebook/resources/FacebookSDKResources.bundle" target-dir="bbbb" target="aaaa" />
+        <resource-file src="facebook/resources/FacebookSDKResources.bundle"  />
         <resource-file src="facebook/resources/FBUserSettingsViewResources.bundle" />
         
         <!-- frameworks -->
