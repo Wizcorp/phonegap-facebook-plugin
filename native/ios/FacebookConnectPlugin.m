@@ -4,6 +4,7 @@
 //
 //  Created by Jesse MacFadyen on 11-04-22.
 //  Updated by Mathijs de Bruin on 11-08-25.
+//  Updated by Christine Abernathy on 13-01-22
 //  Copyright 2011 Nitobi, Mathijs de Bruin. All rights reserved.
 //
 
@@ -11,9 +12,7 @@
 #import "FBSBJSON.h"
 
 @interface FacebookConnectPlugin ()
-<FBDialogDelegate>
 
-@property (strong, nonatomic) Facebook *facebook;
 @property (strong, nonatomic) NSString *userid;
 
 @property (strong, nonatomic) NSString* loginCallbackId;
@@ -25,7 +24,6 @@
 
 @implementation FacebookConnectPlugin
 
-@synthesize facebook = _facebook;
 @synthesize userid = _userid;
 @synthesize loginCallbackId = _loginCallbackId;
 @synthesize dialogCallbackId = _dialogCallbackId;
@@ -54,17 +52,6 @@
         case FBSessionStateOpenTokenExtended:
             if (!error) {
                 // We have a valid session
-                
-                if (nil == self.facebook) {
-                    // Initiate a Facebook instance
-                    self.facebook = [[Facebook alloc]
-                                     initWithAppId:FBSession.activeSession.appID
-                                     andDelegate:nil];
-                }
-                
-                // Store the Facebook session information
-                self.facebook.accessToken = FBSession.activeSession.accessToken;
-                self.facebook.expirationDate = FBSession.activeSession.expirationDate;
                 
                 if (state == FBSessionStateOpen) {
                     // Get the user's info
@@ -96,8 +83,6 @@
         case FBSessionStateClosed:
         case FBSessionStateClosedLoginFailed:
             [FBSession.activeSession closeAndClearTokenInformation];
-            // Clear out the Facebook instance
-            self.facebook = nil;
             self.userid = @"";
             break;
         default:
@@ -141,9 +126,6 @@
 - (void) init:(CDVInvokedUrlCommand*)command
 {    
     self.userid = @"";
-    
-    // No need to use this right now, store it?
-        //NSString* appId = [command.arguments objectAtIndex:0];
     
     [FBSession openActiveSessionWithReadPermissions:nil
                                    allowLoginUI:NO
@@ -210,7 +192,7 @@
         } else if (publishPermissionFound) {
             // Only publish permissions
             [FBSession.activeSession
-             reauthorizeWithPublishPermissions:permissions
+             requestNewPublishPermissions:permissions
              defaultAudience:FBSessionDefaultAudienceFriends
              completionHandler:^(FBSession *session, NSError *error) {
                 [self sessionStateChanged:session
@@ -220,7 +202,7 @@
         } else {
             // Only read permissions
             [FBSession.activeSession
-             reauthorizeWithReadPermissions:permissions
+             requestNewReadPermissions:permissions
              completionHandler:^(FBSession *session, NSError *error) {
                  [self sessionStateChanged:session
                                      state:session.state
@@ -301,7 +283,31 @@
             [params setObject:paramString forKey:key];
         }
     }
-        [self.facebook dialog:method andParams:params andDelegate:self];
+    // Show the web dialog
+    [FBWebDialogs
+     presentDialogModallyWithSession:FBSession.activeSession
+     dialog:method parameters:params
+     handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
+         if (error) {
+             // Dialog failed with error
+         } else {
+             if (result == FBWebDialogResultDialogNotCompleted) {
+                 // User clicked the "x" icon to Cancel
+                 CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
+                 NSString* callback = [pluginResult toSuccessCallbackString:self.dialogCallbackId];
+                 [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
+             } else {
+                 // Send the URL parameters back, for a requests dialog, the "request" parameter
+                 // will include the resutling request id. For a feed dialog, the "post_id"
+                 // parameter will include the resulting post id.
+                 NSDictionary *params = [self parseURLParams:[resultURL query]];
+                 
+                 CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
+                 NSString* callback = [pluginResult toSuccessCallbackString:self.dialogCallbackId];
+                 [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
+             }
+         }
+    }];
     
     // For optional ARC support
     #if __has_feature(objc_arc)
@@ -316,7 +322,6 @@
 
 - (void) dealloc
 {
-    self.facebook = nil;
     [super dealloc];
 }
 
@@ -325,7 +330,7 @@
     NSString* status = @"unknown";
     NSDictionary* sessionDict = nil;
     
-    NSTimeInterval expiresTimeInterval = [FBSession.activeSession.expirationDate timeIntervalSinceNow];
+    NSTimeInterval expiresTimeInterval = [FBSession.activeSession.accessTokenData.expirationDate timeIntervalSinceNow];
     NSString* expiresIn = @"0";
     if (expiresTimeInterval > 0) {
         expiresIn = [NSString stringWithFormat:@"%0.0f", expiresTimeInterval];
@@ -335,7 +340,7 @@
         
         status = @"connected";
         sessionDict = [NSDictionary dictionaryWithObjects: [NSArray arrayWithObjects:
-                          FBSession.activeSession.accessToken, 
+                          FBSession.activeSession.accessTokenData.accessToken,
                           expiresIn,
                           @"...",
                           [NSNumber numberWithBool:YES], 
@@ -375,74 +380,6 @@
         [params setObject:val forKey:[kv objectAtIndex:0]];
     }
     return params;
-}
-
-////////////////////////////////////////////////////////////////////
-// FBDialogDelegate
-
-/**
- * Called when the dialog succeeds and is about to be dismissed.
- */
-- (void)dialogDidComplete:(FBDialog *)dialog
-{
-        // TODO
-}
-
-/**
- * Called when the dialog succeeds with a returning url.
- */
-- (void)dialogCompleteWithUrl:(NSURL *)url
-{       
-    // Send the URL parameters back, for a requests dialog, the "request" parameter
-    // will include the resutling request id. For a feed dialog, the "post_id"
-    // parameter will include the resulting post id.
-    NSDictionary *params = [self parseURLParams:[url query]];
-    
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
-    NSString* callback = [pluginResult toSuccessCallbackString:self.dialogCallbackId];
-    [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
-}
-
-/**
- * Called when the dialog get canceled by the user.
- */
-- (void)dialogDidNotCompleteWithUrl:(NSURL *)url
-{
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
-    NSString* callback = [pluginResult toSuccessCallbackString:self.dialogCallbackId];
-    [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
-}
-
-/**
- * Called when the dialog is cancelled and is about to be dismissed.
- */
-- (void)dialogDidNotComplete:(FBDialog *)dialog
-{
-        // TODO 
-}
-
-/**
- * Called when dialog failed to load due to an error.
- */
-- (void)dialog:(FBDialog*)dialog didFailWithError:(NSError *)error
-{
-        
-}
-
-/**
- * Asks if a link touched by a user should be opened in an external browser.
- *
- * If a user touches a link, the default behavior is to open the link in the Safari browser,
- * which will cause your app to quit.  You may want to prevent this from happening, open the link
- * in your own internal browser, or perhaps warn the user that they are about to leave your app.
- * If so, implement this method on your delegate and return NO.  If you warn the user, you
- * should hold onto the URL and once you have received their acknowledgement open the URL yourself
- * using [[UIApplication sharedApplication] openURL:].
- */
-- (BOOL)dialog:(FBDialog*)dialog shouldOpenURLInExternalBrowser:(NSURL *)url
-{
-        // TODO: pass this back to JS
-        return NO;
 }
 
 @end
