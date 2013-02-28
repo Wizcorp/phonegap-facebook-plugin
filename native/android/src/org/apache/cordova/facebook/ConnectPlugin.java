@@ -306,7 +306,7 @@ public class ConnectPlugin extends Plugin {
               "\"expiresIn\": \""+expiresIn+"\","+
               "\"session_key\": true,"+
               "\"sig\": \"...\","+
-              "\"userId\": \""+this.userId+"\""+
+              "\"userID\": \""+this.userId+"\""+
             "}"+
           "}";
     	} else {
