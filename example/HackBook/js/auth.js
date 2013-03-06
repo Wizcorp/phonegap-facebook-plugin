@@ -19,7 +19,7 @@ function handleStatusChange(session) {
     console.log('Got the user\'s session: ' + JSON.stringify(session));
     
     if (session.authResponse) {
-        document.body.className = 'connected';
+        //document.body.className = 'connected';
         
         //Fetch user's id, name, and picture
         FB.api('/me', {
@@ -27,6 +27,8 @@ function handleStatusChange(session) {
         },
         function(response) {
           if (!response.error) {
+            document.body.className = 'connected';
+
             user = response;
             
             console.log('Got the user\'s name and picture: ' + JSON.stringify(response));
@@ -38,6 +40,16 @@ function handleStatusChange(session) {
             if (document.getElementById('user-picture')) {
               document.getElementById('user-picture').src = user.picture.data.url;
             }
+          } else {
+            document.body.className = 'not_connected';
+            console.log('Error getting user info: ' + JSON.stringify(response.error));
+            // Check for errors due to app being unininstalled
+            if (response.error.error_subcode && response.error.error_subcode == "458") {
+              setTimeout(function() {
+                alert("The app was removed. Please log in again.");
+              }, 0);              
+            }
+            logout();         
           }
           
           clearAction();
@@ -106,6 +118,7 @@ function uninstallApp() {
       //window.location.reload();
       // For may instead call logout to clear
       // cache data, ex: using in a PhoneGap app
+      console.log('APP Uninstalled');
       logout();
   });
 }

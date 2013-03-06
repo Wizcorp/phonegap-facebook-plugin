@@ -14,19 +14,12 @@
 @interface FacebookConnectPlugin ()
 
 @property (strong, nonatomic) NSString *userid;
-
 @property (strong, nonatomic) NSString* loginCallbackId;
 @property (strong, nonatomic) NSString* dialogCallbackId;
-
-- (NSDictionary*) responseObject;
 
 @end
 
 @implementation FacebookConnectPlugin
-
-@synthesize userid = _userid;
-@synthesize loginCallbackId = _loginCallbackId;
-@synthesize dialogCallbackId = _dialogCallbackId;
 
 /* This overrides CDVPlugin's method, which receives a notification when handleOpenURL is called on the main app delegate */
 - (void) handleOpenURL:(NSNotification*)notification
@@ -59,25 +52,16 @@
                      ^(FBRequestConnection *connection, id <FBGraphUser>user, NSError *error) {
                          if (!error) {
                              self.userid = user.id;
-                             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:
-                                                              [self responseObject]];
-                             NSString* callback = [pluginResult toSuccessCallbackString:self.loginCallbackId];
-                             // we need to wrap the callback in a setTimeout(func, 0) so it doesn't block the UI (handleOpenURL limitation)
-                             [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
+                             // Send the plugin result. Wait for a successful fetch of user info.
+                             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                                                           messageAsDictionary:[self responseObject]];
+                             [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
                          } else {
                              self.userid = @"";
                              
                          }
                      }];
                 }
-                
-                // Send the plugin result
-                CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:
-                                                 [self responseObject]];
-                NSString* callback = [pluginResult toSuccessCallbackString:self.loginCallbackId];
-                
-                // we need to wrap the callback in a setTimeout(func, 0) so it doesn't block the UI (handleOpenURL limitation)
-                [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
             }
             break;
         case FBSessionStateClosed:
@@ -90,13 +74,39 @@
     }
     
     if (error) {
-        UIAlertView *alertView = [[UIAlertView alloc]
-                                  initWithTitle:@"Error"
-                                  message:error.localizedDescription
-                                  delegate:nil
-                                  cancelButtonTitle:@"OK"
-                                  otherButtonTitles:nil];
-        [alertView show];
+        NSString *alertMessage = nil;
+        
+        if (error.fberrorShouldNotifyUser) {
+            // If the SDK has a message for the user, surface it.
+            alertMessage = error.fberrorUserMessage;
+        } else if (error.fberrorCategory == FBErrorCategoryAuthenticationReopenSession) {
+            // Handles session closures that can happen outside of the app.
+            // Here, the error is inspected to see if it is due to the app
+            // being uninstalled. If so, this is surfaced. Otherwise, a
+            // generic session error message is displayed.
+            NSInteger underlyingSubCode = [[error userInfo]
+                                           [@"com.facebook.sdk:ParsedJSONResponseKey"]
+                                           [@"body"]
+                                           [@"error"]
+                                           [@"error_subcode"] integerValue];
+            if (underlyingSubCode == 458) {
+                alertMessage = @"The app was removed. Please log in again.";
+            } else {
+                alertMessage = @"Your current session is no longer valid. Please log in again.";
+            }
+        } else if (error.fberrorCategory == FBErrorCategoryUserCancelled) {
+            // The user has cancelled a login. You can inspect the error
+            // for more context. In the plugin, we will simply ignore it.
+        } else {
+            // For simplicity, this sample treats other errors blindly.
+            alertMessage = @"Error. Please try again later.";
+        }
+        
+        if (alertMessage) {
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                              messageAsString:alertMessage];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
+        }
     }
 }
 
@@ -137,16 +147,15 @@
                                                       error:error];
                               }];
     
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [super writeJavascript:[result toSuccessCallbackString:command.callbackId]];
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void) getLoginStatus:(CDVInvokedUrlCommand*)command
 {    
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[self responseObject]];
-    NSString* callback = [pluginResult toSuccessCallbackString:command.callbackId];
-    // we need to wrap the callback in a setTimeout(func, 0) so it doesn't block the UI (handleOpenURL limitation)
-    [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                                  messageAsDictionary:[self responseObject]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void) login:(CDVInvokedUrlCommand*)command
@@ -252,10 +261,10 @@
     }
     
     // Close the session and clear the cache
-        [FBSession.activeSession closeAndClearTokenInformation];
+    [FBSession.activeSession closeAndClearTokenInformation];
     
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [super writeJavascript:[pluginResult toSuccessCallbackString:command.callbackId]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void) showDialog:(CDVInvokedUrlCommand*)command
@@ -269,44 +278,43 @@
         [options removeObjectForKey:@"method"];
     }
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
-    for (id key in options) {
-        if ([[options objectForKey:key] isKindOfClass:[NSString class]]) {
-            [params setObject:[options objectForKey:key] forKey:key];
+    [options enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        if ([obj isKindOfClass:[NSString class]]) {
+            params[key] = obj;
         } else {
             // For optional ARC support
-            #if __has_feature(objc_arc)
-                FBSBJSON *jsonWriter = [FBSBJSON new];
-            #else
-                FBSBJSON *jsonWriter = [[FBSBJSON new] autorelease];
-            #endif
-            NSString *paramString = [jsonWriter stringWithObject:[options objectForKey:key]];
-            [params setObject:paramString forKey:key];
+#if __has_feature(objc_arc)
+            FBSBJSON *jsonWriter = [FBSBJSON new];
+#else
+            FBSBJSON *jsonWriter = [[FBSBJSON new] autorelease];
+#endif
+            params[key] = [jsonWriter stringWithObject:obj];
         }
-    }
+    }];
+    
     // Show the web dialog
     [FBWebDialogs
      presentDialogModallyWithSession:FBSession.activeSession
      dialog:method parameters:params
      handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
+         CDVPluginResult* pluginResult = nil;
          if (error) {
              // Dialog failed with error
+             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                              messageAsString:@"Error completing dialog."];
          } else {
              if (result == FBWebDialogResultDialogNotCompleted) {
                  // User clicked the "x" icon to Cancel
-                 CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
-                 NSString* callback = [pluginResult toSuccessCallbackString:self.dialogCallbackId];
-                 [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
+                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
              } else {
                  // Send the URL parameters back, for a requests dialog, the "request" parameter
                  // will include the resutling request id. For a feed dialog, the "post_id"
                  // parameter will include the resulting post id.
-                 NSDictionary *params = [self parseURLParams:[resultURL query]];
-                 
-                 CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
-                 NSString* callback = [pluginResult toSuccessCallbackString:self.dialogCallbackId];
-                 [super writeJavascript:[NSString stringWithFormat:@"setTimeout(function() { %@; }, 0);", callback]];
+                 NSDictionary *params = [self parseURLParams:[resultURL query]];                 
+                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
              }
          }
+         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
     }];
     
     // For optional ARC support
@@ -318,11 +326,6 @@
     #endif
     
     [super writeJavascript:nil];
-}
-
-- (void) dealloc
-{
-    [super dealloc];
 }
 
 - (NSDictionary*) responseObject
@@ -339,22 +342,14 @@
     if (FBSession.activeSession.isOpen) {
         
         status = @"connected";
-        sessionDict = [NSDictionary dictionaryWithObjects: [NSArray arrayWithObjects:
-                          FBSession.activeSession.accessTokenData.accessToken,
-                          expiresIn,
-                          @"...",
-                          [NSNumber numberWithBool:YES], 
-                          @"...", 
-                          self.userid, 
-                          nil] 
-                forKeys:[NSArray arrayWithObjects:
-                         @"accessToken", 
-                         @"expiresIn", 
-                         @"secret", 
-                         @"session_key", 
-                         @"sig", 
-                         @"userID", 
-                         nil]];
+        sessionDict = @{
+                        @"accessToken" : FBSession.activeSession.accessTokenData.accessToken,
+                        @"expiresIn" : expiresIn,
+                        @"secret" : @"...",
+                        @"session_key" : [NSNumber numberWithBool:YES],
+                        @"sig" : @"...",
+                        @"userID" : self.userid,
+                        };
     }
     
     NSMutableDictionary *statusDict = [NSMutableDictionary dictionaryWithObject:status forKey:@"status"];
@@ -366,19 +361,18 @@
 }
 
 /**
- * A function for parsing URL parameters.
+ * A method for parsing URL parameters.
  */
 - (NSDictionary*)parseURLParams:(NSString *)query {
     NSArray *pairs = [query componentsSeparatedByString:@"&"];
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
-    for (NSString *pair in pairs) {
-        NSArray *kv = [pair componentsSeparatedByString:@"="];
-        NSString *val =
-        [[kv objectAtIndex:1]
-         stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        
-        [params setObject:val forKey:[kv objectAtIndex:0]];
-    }
+    [pairs enumerateObjectsUsingBlock:
+     ^(NSString *pair, NSUInteger idx, BOOL *stop) {
+         NSArray *kv = [pair componentsSeparatedByString:@"="];
+         NSString *val = [kv[1]
+                          stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+         params[kv[0]] = val;
+    }];
     return params;
 }
 
