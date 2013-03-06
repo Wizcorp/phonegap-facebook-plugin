@@ -8,7 +8,7 @@ This is all licensed under MIT except for `app/www/facebook_js_sdk.js` which is 
 
 # Requirements
 
-* PhoneGap (Cordova) v2.4.0 (For compatibility with older versions of PhoneGap (1.4.1 or less), please download the tag [1.4.1support](https://github.com/phonegap/phonegap-facebook-plugin/archive/1.4.1support.zip))
+* PhoneGap (Cordova) v2.5.0 (For compatibility with older versions of PhoneGap (1.4.1 or less), please download the tag [1.4.1support](https://github.com/phonegap/phonegap-facebook-plugin/archive/1.4.1support.zip))
 
 The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The install instruction include how to get the latest SDK for use in your project.
 
@@ -49,7 +49,7 @@ If you plan on rolling this out on Android, please note that you will need to [g
 
 ## Android
 
-1. [Create a basic Cordova Android application](http://docs.phonegap.com/en/2.4.0/guide_getting-started_android_index.md.html#Getting%20Started%20with%20Android).
+1. [Create a basic Cordova Android application](http://docs.phonegap.com/en/2.5.0/guide_getting-started_android_index.md.html#Getting%20Started%20with%20Android).
  * NOTE: Min Target has to be set to 8. The plugin has an issue if you set your minimum target higher than that. You can edit this in your Android Manifest file. Set the Project Build Target to at least 11 if you see Android Manifest errors related to newer attributes that have been added in 2.2.0.
  
 2. In the Cordova Android application you will need to put the following in your `res/xml/config.xml` file as a child to the plugin tag: <pre>&lt;plugin name="org.apache.cordova.facebook.Connect" value="org.apache.cordova.facebook.ConnectPlugin" /&gt;</pre>
@@ -83,7 +83,7 @@ NOTE 2: If you're upgrading from SDK 3.0 to 3.1 in the iOS6, you can't ask for b
 
 ### Create a Basic Cordova App
 
-Create a basic Cordova iOS application by following the [PhoneGap Getting Started Guide](http://docs.phonegap.com/en/2.4.0/guide_getting-started_ios_index.md.html#Getting%20Started%20with%20iOS)
+Create a basic Cordova iOS application by following the [PhoneGap Getting Started Guide](http://docs.phonegap.com/en/2.5.0/guide_getting-started_ios_index.md.html#Getting%20Started%20with%20iOS)
 
 ### Add the Facebook iOS and JavaScript SDK
 
@@ -118,7 +118,7 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 2. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
 3. You can quickly test the examples by following the next instructions then mirror the same process for your app.
 4. From the **example** folder, copy either the contents of HackBook folder or the Simple folder into your **www** directory in Xcode. Overwrite the original index.html file in your project. For HackBook, overwrite the original css and js folders as well.
-5. Make sure the &lt;script&gt; tags are added and are correct in the index.html. This include a tag for cordova-2.4.0.js, facebook_js_sdk.js and cdv-plugin-fb-connect.js.
+5. Make sure the &lt;script&gt; tags are added and are correct in the index.html. This include a tag for cordova-2.5.0.js, facebook_js_sdk.js and cdv-plugin-fb-connect.js.
 6. Add your AppID to your index.html. Should be in the callback for the deviceready event. Leave the quotes.
 7. Run the application in Xcode.
 
