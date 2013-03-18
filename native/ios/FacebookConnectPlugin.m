@@ -63,6 +63,10 @@
                      }];
                 }
             }
+            // Send the plugin result
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:
+                                             [self responseObject]];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
             break;
         case FBSessionStateClosed:
         case FBSessionStateClosedLoginFailed:
@@ -97,6 +101,7 @@
         } else if (error.fberrorCategory == FBErrorCategoryUserCancelled) {
             // The user has cancelled a login. You can inspect the error
             // for more context. In the plugin, we will simply ignore it.
+            alertMessage = @"User cancelled action.";
         } else {
             // For simplicity, this sample treats other errors blindly.
             alertMessage = @"Error. Please try again later.";
