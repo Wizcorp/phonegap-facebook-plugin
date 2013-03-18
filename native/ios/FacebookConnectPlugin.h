@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Facebook.h"
+#import <FacebookSDK/FacebookSDK.h>
 
 #import <Cordova/CDV.h>
 
