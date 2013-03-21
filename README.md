@@ -8,7 +8,7 @@ This is all licensed under MIT except for `app/www/facebook_js_sdk.js` which is 
 
 # Requirements
 
-* PhoneGap (Cordova) v2.5.0 (For compatibility with older versions of PhoneGap (1.4.1 or less), please download the tag [1.4.1support](https://github.com/phonegap/phonegap-facebook-plugin/archive/1.4.1support.zip))
+* PhoneGap (Cordova) v2.5.0 
 
 The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The install instruction include how to get the latest SDK for use in your project.
 
@@ -125,7 +125,7 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 
 ### iOS URL Whitelist
 
-The Facebook SDK will try to access various URLs, and their domains must be whitelisted in your Cordova.plist under ExternalHosts.
+The Facebook SDK will try to access various URLs, and their domains must be whitelisted in your config.xml under ExternalHosts.
 
 You can either add each subdomain separately:
 
@@ -135,20 +135,17 @@ You can either add each subdomain separately:
 * \*.fbcdn.net
 * \*.akamaihd.net
 
-Or you can allow all domains with:
+Or you can allow all domains with (set to this by default):
 
 * \*
 
 ### iOS URL Scheme
 
-Make sure you add the scheme to your [PROJECTNAME]-Info.plist (located as one of the files in your Xcode project), substitute [APP_ID] and [SCHEME_ID] below to the appropriate values. This is to handle the re-direct from Mobile Safari or the Facebook app, after permission authorization.
+Make sure you add the scheme to your [PROJECTNAME]-Info.plist (located as one of the files in your Xcode project), substitute [APP_ID] below to the appropriate values. This is to handle the re-direct from Mobile Safari or the Facebook app, after permission authorization.
 
-* [**SCHEME_ID**] is usually a unique identifier for the scheme, in reverse domain name notation (i.e com.facebook.phonegap.myscheme)
 * [**APP_ID**] is the Facebook app id given by Facebook
 
 <pre>
-&lt;key&gt;FacebookAppID&lt;/key&gt;
-&lt;string&gt;[**APP_ID**]&lt;/string&gt;
 &lt;key&gt;CFBundleURLTypes&lt;/key&gt;
 &lt;array&gt;
 	&lt;dict&gt;
