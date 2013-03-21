@@ -15,7 +15,6 @@ Register your application with Facebook to get an [APP_ID](https://developers.fa
 
 If you plan on rolling this out on iOS, please note that you will need to ensure that you have properly set up your Native iOS App settings on the [Facebook App Dashboard](http://developers.facebook.com/apps). Please see the [Getting Started with the Facebook SDK](https://developers.facebook.com/docs/getting-started/facebook-sdk-for-ios/3.1/): Create a Facebook App section, for more details on this.
 
-<<<<<<< HEAD
 If you plan on rolling this out on Android, please note that you will need to [generate a hash of your Android key(s) and submit those to the Developers page on Facebook](https://developers.facebook.com/docs/getting-started/facebook-sdk-for-android/3.0/) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
 
 # Project Structure
@@ -43,9 +42,7 @@ If you plan on rolling this out on Android, please note that you will need to [g
 `native/android` and `native/ios` contain the native code for the plugin for both Android and iOS platforms.
 
 `www/cdv-plugin-fb-connect.js` is the JavaScript code for the plugin, this defines the JS API.
-=======
-[Generate a hash of your Android key(s) and submit those to the Developers page on Facebook](http://developers.facebook.com/docs/mobile/android/build/#sig) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
->>>>>>> fef6bc4427aedac3966044d84600f7ba0c8ee4d3
+
 
 ## PhoneGap Build
 
@@ -163,10 +160,9 @@ Make sure you add the scheme to your [PROJECTNAME]-Info.plist (located as one of
 </pre>
 
 ## Automatic Installation
-This plugin is based on [pluginstall](https://github.com/phonegap-build/pluginstall). to install it to your app,
-simply execute pluginstall as follows;
+This plugin is based on [plugman](https://git-wip-us.apache.org/repos/asf?p=cordova-plugman.git;a=summary). To install it to your app, simply execute pluginstall as follows;
 
-	pluginstall [PLATFORM] [TARGET-PATH] [PLUGIN-PATH] APP_ID="[APP_ID]"
+	plugman --platform [PLATFORM] --project [TARGET-PATH] --plugin [PLUGIN-PATH] APP_ID="[APP_ID]"
 	
 	where
 		[PLATFORM] = ios or android
@@ -174,4 +170,3 @@ simply execute pluginstall as follows;
 		[PLUGIN-PATH] = path to folder containing this plugin
 		[APP_ID] = Your APP_ID as registered on Facebook
 
-For additional info, take a look at the [Cordova Pluginstall Specification](https://github.com/alunny/cordova-plugin-spec)
