@@ -2,15 +2,13 @@
 
 This is the official plugin for Facebook in Apache Cordova/PhoneGap!
 
-The Facebook plugin for Apache Cordova allows you to use the same JavaScript code in your web application as you use in your native Cordova application, but your native Cordova application will use the Facebook native app to perform Single Sign On for the user (if possible - if it isn't then it will fall back to dialog-based authentication).
+The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) allows you to use the same JavaScript code in your Cordova application as you use in your web application. However, unlike in the browser, the Cordova application will use the native Facebook app to perform Single Sign On for the user.  If this is not possible then the sign on will degrade gracefully using the standard dialog based authentication.
 
-This is all licensed under MIT except for `app/www/facebook_js_sdk.js` which is the Facebook JS SDK and is Apache 2.0.
+* Supported on PhoneGap (Cordova) v2.1.0 and above.
 
-# Requirements
+## Facebook Requirements and Set-Up
 
-* PhoneGap (Cordova) v2.5.0 
-
-The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The install instruction include how to get the latest SDK for use in your project.
+The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The manual install instructions include how to get the latest SDK for use in your project.
 
 To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an APP_ID (https://developers.facebook.com/apps).
 
@@ -22,32 +20,44 @@ If you plan on rolling this out on Android, please note that you will need to [g
 
 <pre>
   |-example
-  |  `-www
+  |  `-Simple
   |    `-index.html
-  |-lib
-  |  |-facebook-js-patch
-  |  |-facebook_js_sdk.js
-  |  |-facebook-android-sdk
-  |  `-facebook-ios-sdk
-  |-native
-  |  |-android
+  |  `-HackBook
+  |    `-index.html
+  |    `-README
+  |    `-hackbook.manifest
+  |    `-img
+  |    `-css
+  |    `-js
+  |-test
+  |  `-pg-plugin-fb-connect-tests.js
+  |-src
+  |  `-android
+  |      `-ConnectPlugin.java
+  |      `-facebook
   |  `-ios
-  `-www
-     `-cdv-plugin-fb-connect.js
+  |      `-FacebookConnectPlugin.m
+  |      `-FacebookConnectPlugin.h
+  |      `-facebook
+  |`-www
+  |  `-cdv-plugin-fb-connect.js
+  |  `-facebook_js_sdk.js
 </pre>
 
-`lib/facebook-js-patch` can be ignored. It is currently not used.
 
-`lib/facebook_js_sdk.js` is the modified facebook-js-sdk. It already includes the hooks to work with this plugin.
-
-`native/android` and `native/ios` contain the native code for the plugin for both Android and iOS platforms.
+`www/facebook_js_sdk.js` is the modified facebook-js-sdk. It already includes the hooks to work with this plugin.
 
 `www/cdv-plugin-fb-connect.js` is the JavaScript code for the plugin, this defines the JS API.
 
+`src/android` and `src/ios` contain the native code for the plugin for both Android and iOS platforms. They also include versions of the Android and iOS Facebook SDKs. These are used during automatic installation. During manual installation, you are encouraged to download the most recent versions of the Facebook SDKs for you projects. 
 
-# Getting Started
 
-## Android
+## PhoneGap Build
+
+If using this plugin on PhoneGap Build you can ignore the instructions below and go straight to the 
+PhoneGap Build documentation available [here] (https://build.phonegap.com/docs/plugins#facebookconnect).
+
+## Manual Android Installation
 
 1. [Create a basic Cordova Android application](http://docs.phonegap.com/en/2.5.0/guide_getting-started_android_index.md.html#Getting%20Started%20with%20Android).
  * NOTE: Min Target has to be set to 8. The plugin has an issue if you set your minimum target higher than that. You can edit this in your Android Manifest file. Set the Project Build Target to at least 11 if you see Android Manifest errors related to newer attributes that have been added in 2.2.0.
@@ -63,9 +73,9 @@ If you plan on rolling this out on Android, please note that you will need to [g
             <activity android:name="com.facebook.LoginActivity"
                   android:label="@string/app_name" />
 
-4. From the Cordova Facebook Plugin folder copy the src folder from `native/android/` folder into the root of your Cordova Android application. It should merge with the existing src folder.
+4. From the Cordova Facebook Plugin folder copy ConnectPlugin.java from `src/android/` folder into the root of your Cordova Android application into `src/org/apache/cordova/facebook/`. You may have to create that directory path in your project. 
 
-5. From the Cordova Facebook Plugin folder copy the `www/cdv-plugin-fb-connect.js`, `lib/facebook_js_sdk.js` and `example/HackBook/` files into your application's `assets/www` folder. Overwrite the existing index.html file.
+5. From the Cordova Facebook Plugin folder copy the `www/cdv-plugin-fb-connect.js`, `www/facebook_js_sdk.js` and `example/HackBook/` files into your application's `assets/www` folder. Overwrite the existing index.html file.
 
 6. Replace your appId in the new index.html file. Leave the quotes.
 
@@ -73,7 +83,7 @@ Now you are ready to create your application! Check out the `example` folder for
 
 You can run the application from either the command line (`ant clean && ant debug install`) or from Eclipse.
 
-## iOS (Mac OS X)
+## Manual iOS Installation (Mac OS X)
 
 NOTE 1: If you are having problems with SBJSON conflicts, download the latest version of git clone the latest cordova-ios code, build the installer, and run the installer to get updated!
 
@@ -97,7 +107,7 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 8. Click on your project's icon (the root element) in Project Navigator, select your **Project**, then the **Build Settings** tab, search for **Other Linker Flags**.
 9. Add the value **-lsqlite3.0**
 10. Add the value **-ObjC**
-11. From the **Cordova Facebook Plugin** folder copy the file **lib/facebook_js_sdk.js** into the **www** directory in Xcode.
+11. From the **Cordova Facebook Plugin** folder copy the file **www/facebook_js_sdk.js** into the **www** directory in Xcode.
 12. Click on your project's icon (the root element) in Project Navigator, select your **Target**, then the **Build Phases** tab, then the **Link Binary With Libraries** option.
 13. Add the **Social.framework** framework. Make it an optional framework to support pre iOS6 apps.
 14. Add the **Accounts.framework** framework. Make it an optional framework to support pre iOS6 apps.
@@ -105,7 +115,7 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 
 ### Add the Cordova Facebook Plugin
 
-1. From the **Cordova Facebook Plugin** folder copy the contents of the **native/ios** folder into your app in Xcode (usually in the **Plugins** folder group). Make sure it is added as a "group" (yellow folder)
+1. From the **Cordova Facebook Plugin** folder copy FacebookConnectPlugin.h and FacebookConnectPlugin.m from the **src** folder into your app in Xcode (usually in the **Plugins** folder group). Make sure it is added as a "group" (yellow folder)
 2. Find the `config.xml` file in the project navigator and add a new entry as a child to the plugin tag:
 
     <plugin name="org.apache.cordova.facebook.Connect" value="FacebookConnectPlugin" />
@@ -157,5 +167,15 @@ Make sure you add the scheme to your [PROJECTNAME]-Info.plist (located as one of
 &lt;/array&gt;
 </pre>
 
+## Automatic Installation
+This plugin is based on [plugman](https://git-wip-us.apache.org/repos/asf?p=cordova-plugman.git;a=summary). To install it to your app, simply execute plugman as follows; Still a little buggy and does not include the latest Facebook SDKs.
+
+	plugman --platform [PLATFORM] --project [TARGET-PATH] --plugin [PLUGIN-PATH] APP_ID="[APP_ID]"
+	
+	where
+		[PLATFORM] = ios or android
+		[TARGET-PATH] = path to folder containing your phonegap project
+		[PLUGIN-PATH] = path to folder containing this plugin
+		[APP_ID] = Your APP_ID as registered on Facebook
 
 
