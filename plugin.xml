@@ -57,7 +57,7 @@
         <plugins-plist key="org.apache.cordova.facebook.Connect" string="FacebookConnectPlugin" />
         
         <!-- Cordova >= 2.3 -->
-        <config-file target="config.xml" parent="/cordova/plugins">
+        <config-file target="config.xml" parent="plugins">
             <plugin name="org.apache.cordova.facebook.Connect" value="FacebookConnectPlugin"/>
         </config-file>
         
