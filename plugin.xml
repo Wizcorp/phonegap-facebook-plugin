@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="com.phonegap.facebook"
+    version="0.2.1">
+
+    <name>Facebook Connect</name>
+
+    <asset src="www/cdv-plugin-fb-connect.js" target="cdv-plugin-fb-connect.js" />
+    <asset src="www/facebook_js_sdk.js" target="facebook_js_sdk.js" />
+    
+    <access origin="m.facebook.com" />
+    <access origin="graph.facebook.com" />
+    <access origin="api.facebook.com" />
+    <access origin="*.fbcdn.net" />
+    <access origin="*.akamaihd.net" />
+    
+    <preference name="APP_ID" />
+    
+    <engines>
+      <engine name="cordova" version=">=2.1.0" />
+    </engines>
+    
+    <!-- android -->
+    <platform name="android">
+
+        <config-file target="res/xml/config.xml" parent="/cordova/plugins">
+            <plugin name="org.apache.cordova.facebook.Connect" value="org.apache.cordova.facebook.ConnectPlugin"/>
+        </config-file>
+        
+        <!-- res files -->
+        <source-file src="facebook/res/drawable/close.png" target-dir="res/drawable" />
+        <source-file src="facebook/res/drawable/facebook_icon.png" target-dir="res/drawable" />
+        <source-file src="facebook/res/drawable-hdpi/close.png" target-dir="res/drawable-hdpi" />
+        <source-file src="facebook/res/drawable-hdpi/facebook_icon.png" target-dir="res/drawable-hdpi" />
+        <source-file src="facebook/res/drawable-ldpi/close.png" target-dir="res/drawable-ldpi" />
+        <source-file src="facebook/res/drawable-ldpi/facebook_icon.png" target-dir="res/drawable-ldpi" />
+        <source-file src="facebook/res/drawable-xhdpi/close.png" target-dir="res/drawable-xhdpi" />
+        
+        <!-- cordova plugin src files -->
+        <source-file src="ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
+        
+        <!-- facebook src files -->
+        <source-file src="facebook/AsyncFacebookRunner.java" target-dir="src/com/facebook/android" />
+        <source-file src="facebook/DialogError.java" target-dir="src/com/facebook/android" />
+        <source-file src="facebook/Facebook.java" target-dir="src/com/facebook/android" />
+        <source-file src="facebook/FacebookError.java" target-dir="src/com/facebook/android" />
+        <source-file src="facebook/FbDialog.java" target-dir="src/com/facebook/android" />
+        <source-file src="facebook/Util.java" target-dir="src/com/facebook/android" />
+         
+    </platform>
+    
+    <!-- ios -->
+    <platform name="ios">
+      
+        <!-- Cordova < 2.3 -->
+        <plugins-plist key="org.apache.cordova.facebook.Connect" string="FacebookConnectPlugin" />
+        
+        <!-- Cordova >= 2.3 -->
+        <config-file target="config.xml" parent="/cordova/plugins">
+            <plugin name="org.apache.cordova.facebook.Connect" value="FacebookConnectPlugin"/>
+        </config-file>
+        
+        <header-file src="FacebookConnectPlugin.h" target-dir="FacebookConnect" />
+        <source-file src="FacebookConnectPlugin.m" target-dir="FacebookConnect" />
+        <config-file target="*-Info.plist" parent="FacebookAppID">
+            <string>$APP_ID</string>
+        </config-file>
+        
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+          <array>
+            <dict>
+              <key>CFBundleTypeRole</key>
+              <string>None</string>
+              <key>CFBundleURLName</key>
+              <string>$PACKAGE_NAME</string>
+              <key>CFBundleURLSchemes</key>
+              <array>
+                <string>fb$APP_ID</string>
+              </array>
+            </dict>
+          </array>
+        </config-file>
+
+        <!-- facebook source files -->
+        <source-file src="facebook/Facebook.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBCacheDescriptor.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBCacheIndex.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBContentLink.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBDataDiskCache.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBDialog.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBError.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBFrictionlessRequestSettings.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBFriendPickerCacheDescriptor.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBFriendPickerViewController.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBGraphObject.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBGraphObjectPagingLoader.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBGraphObjectTableCell.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBGraphObjectTableDataSource.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBGraphObjectTableSelection.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBLogger.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBLoginDialog.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBLoginView.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBNativeDialogs.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBPlacePickerCacheDescriptor.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBPlacePickerViewController.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBProfilePictureView.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBRequest.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBRequestBody.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBRequestConnection.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBSession.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBSessionManualTokenCachingStrategy.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBSessionTokenCachingStrategy.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBSettings.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBTestSession.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBURLConnection.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBUserSettingsViewController.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBUtility.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/FBViewController.m" target-dir="FacebookConnect" />
+        
+        <!-- facebook header files -->
+        <header-file src="facebook/Facebook.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FacebookSDK.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBCacheDescriptor.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBCacheIndex.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBConnect.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBContentLink.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBDataDiskCache.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBDialog.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBError.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBFrictionlessRequestSettings.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBFriendPickerCacheDescriptor.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBFriendPickerViewController+Internal.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBFriendPickerViewController.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBGraphLocation.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBGraphObject.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBGraphObjectPagingLoader.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBGraphObjectTableCell.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBGraphObjectTableDataSource.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBGraphObjectTableSelection.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBGraphPlace.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBGraphUser.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBLogger.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBLoginDialog.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBLoginView.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBNativeDialogs.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBOpenGraphAction.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBPlacePickerCacheDescriptor.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBPlacePickerViewController+Internal.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBPlacePickerViewController.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBProfilePictureView.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBRequest.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBRequestBody.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBRequestConnection+Internal.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBRequestConnection.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBSDKVersion.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBSession+Internal.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBSession+Protected.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBSession.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBSessionManualTokenCachingStrategy.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBSessionTokenCachingStrategy.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBSettings+Internal.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBSettings.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBTestSession+Internal.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBTestSession.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBURLConnection.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBUserSettingsViewController.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBUtility.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBViewController+Internal.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/FBViewController.h" target-dir="FacebookConnect" />
+
+        <!-- JSON source files -->
+        <source-file src="facebook/JSON/FBSBJSON.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/JSON/FBSBJsonBase.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/JSON/FBSBJsonParser.m" target-dir="FacebookConnect" />
+        <source-file src="facebook/JSON/FBSBJsonWriter.m" target-dir="FacebookConnect" />
+        
+        <!-- JSON header files -->
+        <header-file src="facebook/JSON/FBSBJSON.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/JSON/FBSBJsonBase.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/JSON/FBSBJsonParser.h" target-dir="FacebookConnect" />
+        <header-file src="facebook/JSON/FBSBJsonWriter.h" target-dir="FacebookConnect" />
+        
+        <!-- facebook resource files -->
+        <resource-file src="facebook/resources/FacebookSDKResources.bundle"  />
+        <resource-file src="facebook/resources/FBUserSettingsViewResources.bundle" />
+        
+        <!-- frameworks -->
+        <framework src="libsqlite3.dylib" />
+        <framework src="Social.framework" weak="true" />
+        <framework src="Accounts.framework" weak="true" />
+        <framework src="AdSupport.framework" weak="true" />
+    </platform>
+</plugin>
