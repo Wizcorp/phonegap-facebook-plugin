@@ -52,9 +52,9 @@ If you plan on rolling this out on Android, please note that you will need to [g
 `src/android` and `src/ios` contain the native code for the plugin for both Android and iOS platforms. They also include versions of the Android and iOS Facebook SDKs. These are used during automatic installation. During manual installation, you are encouraged to download the most recent versions of the Facebook SDKs for you projects. 
 
 
-## PhoneGap Build
+## Adobe PhoneGap Build
 
-If using this plugin on PhoneGap Build you can ignore the instructions below and go straight to the 
+If using this plugin on Adobe PhoneGap Build you can ignore the instructions below and go straight to the 
 PhoneGap Build documentation available [here] (https://build.phonegap.com/docs/plugins#facebookconnect).
 
 ## Manual Android Installation
