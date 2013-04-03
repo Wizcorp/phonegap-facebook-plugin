@@ -61,6 +61,12 @@
                              
                          }
                      }];
+                }else {
+                    // Don't get user's info but trigger success callback
+                    // Send the plugin result. Wait for a successful fetch of user info.
+                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK 
+                                                                messageAsDictionary:[self responseObject]];
+                    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
                 }
             }
             break;
