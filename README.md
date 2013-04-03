@@ -107,25 +107,27 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 8. Click on your project's icon (the root element) in Project Navigator, select your **Project**, then the **Build Settings** tab, search for **Other Linker Flags**.
 9. Add the value **-lsqlite3.0**
 10. Add the value **-ObjC**
-11. From the **Cordova Facebook Plugin** folder copy the file **www/facebook_js_sdk.js** into the **www** directory in Xcode.
-12. Click on your project's icon (the root element) in Project Navigator, select your **Target**, then the **Build Phases** tab, then the **Link Binary With Libraries** option.
-13. Add the **Social.framework** framework. Make it an optional framework to support pre iOS6 apps.
-14. Add the **Accounts.framework** framework. Make it an optional framework to support pre iOS6 apps.
-15. Add the **AdSupport.framework** framework. Make it an optional framework to support pre iOS6 apps.
+11. Click on your project's icon (the root element) in Project Navigator, select your **Target**, then the **Build Phases** tab, then the **Link Binary With Libraries** option.
+12. Add the **Social.framework** framework. Make it an optional framework to support pre iOS6 apps.
+13. Add the **Accounts.framework** framework. Make it an optional framework to support pre iOS6 apps.
+14. Add the **AdSupport.framework** framework. Make it an optional framework to support pre iOS6 apps.
 
 ### Add the Cordova Facebook Plugin
 
-1. From the **Cordova Facebook Plugin** folder copy FacebookConnectPlugin.h and FacebookConnectPlugin.m from the **src** folder into your app in Xcode (usually in the **Plugins** folder group). Make sure it is added as a "group" (yellow folder)
-2. Find the `config.xml` file in the project navigator and add a new entry as a child to the plugin tag:
+1. Locate the **plugins** section of your Project Navigator and create a group "ios". Make sure it is added as a "group" (yellow folder)
+2. From the **Cordova Facebook Plugin** folder copy FacebookConnectPlugin.h and FacebookConnectPlugin.m from the **src** folder into the new group "ios".
+3. Find the `config.xml` file in the project navigator and add a new entry as a child to the plugin tag:
 
-    <plugin name="org.apache.cordova.facebook.Connect" value="FacebookConnectPlugin" />
+```xml
+<plugin name="org.apache.cordova.facebook.Connect" value="FacebookConnectPlugin" />
+```
 
-3. From the **Cordova Facebook Plugin** folder copy the contents of the **www** folder into the **www** directory in Xcode.
+4. From the **Cordova Facebook Plugin** folder copy the contents of the **www** folder into the **www** directory in Xcode.
 
 ### Run the included samples
 
-1. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, add a new entry. For the key, add **FacebookAppID**, and its value is your Facebook **APP_ID**
-2. Under the group **Supporting Files**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
+1. Under the group **Resources**, find your **[PROJECTNAME]-Info.plist**, add a new entry. For the key, add **FacebookAppID**, and its value is your Facebook **APP_ID**
+2. Under the group **Resources**, find your **[PROJECTNAME]-Info.plist**, right-click on the file and select **Open As -> Source Code**, add the **URL Scheme** from the section below (you will need your Facebook **APP_ID**)
 3. You can quickly test the examples by following the next instructions then mirror the same process for your app.
 4. From the **example** folder, copy either the contents of HackBook folder or the Simple folder into your **www** directory in Xcode. Overwrite the original index.html file in your project. For HackBook, overwrite the original css and js folders as well.
 5. Make sure the &lt;script&gt; tags are added and are correct in the index.html. This include a tag for cordova-2.5.0.js, facebook_js_sdk.js and cdv-plugin-fb-connect.js.
@@ -135,7 +137,7 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 
 ### iOS URL Whitelist
 
-The Facebook SDK will try to access various URLs, and their domains must be whitelisted in your config.xml under ExternalHosts.
+The Facebook SDK will try to access various URLs, and their domains must be whitelisted in your config.xml under **access**.
 
 You can either add each subdomain separately:
 
