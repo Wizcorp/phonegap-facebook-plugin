@@ -14,37 +14,37 @@ var meals = [
 	{
 		"id" : "cheeseburger",
 		"title" : "Cheeseburger",
-		"url" : "http://whispering-ravine-4547.herokuapp.com/repeater.php?fb%3Aapp_id=273476932664248+&og%3Atype=cordova%3Ameal+&og%3Atitle=Cheeseburger+&og%3Aimage=https%3A%2F%2Fwhispering-ravine-4547.herokuapp.com%2Fimages%2Fmeals%2Fcheeseburger-full.png&body=Cheeseburger"
+		"url" : "http://whispering-ravine-4547.herokuapp.com/cheeseburger.html"
 	},
 	{
 		"id" : "chinese",
 		"title" : "Chinese",
-		"url" : "http://whispering-ravine-4547.herokuapp.com/repeater.php?fb%3Aapp_id=273476932664248+&og%3Atype=cordova%3Ameal+&og%3Atitle=Chinese+&og%3Aimage=https%3A%2F%2Fwhispering-ravine-4547.herokuapp.com%2Fimages%2Fmeals%2Fchinese-full.png&body=Chinese"
+		"url" : "http://whispering-ravine-4547.herokuapp.com/chinese.html"
 	},
 	{
 		"id" : "french",
 		"title" : "French",
-		"url" : "http://whispering-ravine-4547.herokuapp.com/repeater.php?fb%3Aapp_id=273476932664248+&og%3Atype=cordova%3Ameal+&og%3Atitle=French+&og%3Aimage=https%3A%2F%2Fwhispering-ravine-4547.herokuapp.com%2Fimages%2Fmeals%2Ffrench-full.png&body=French"
+		"url" : "http://whispering-ravine-4547.herokuapp.com/french.html"
 	},
 	{
 		"id" : "hotdog",
 		"title" : "Hot Dog",
-		"url" : "http://whispering-ravine-4547.herokuapp.com/repeater.php?fb%3Aapp_id=273476932664248+&og%3Atype=cordova%3Ameal+&og%3Atitle=Hotdog+&og%3Aimage=https%3A%2F%2Fwhispering-ravine-4547.herokuapp.com%2Fimages%2Fmeals%2Fhotdog-full.png&body=Hotdog"
+		"url" : "http://whispering-ravine-4547.herokuapp.com/hotdog.html"
 	},
 	{
 		"id" : "indian",
 		"title" : "Indian",
-		"url" : "http://whispering-ravine-4547.herokuapp.com/repeater.php?fb%3Aapp_id=273476932664248+&og%3Atype=cordova%3Ameal+&og%3Atitle=Indian+&og%3Aimage=https%3A%2F%2Fwhispering-ravine-4547.herokuapp.com%2Fimages%2Fmeals%2Findian-full.png&body=Indian"
+		"url" : "http://whispering-ravine-4547.herokuapp.com/indian.html"
 	},
 	{
 		"id" : "italian",
 		"title" : "Italian",
-		"url" : "http://whispering-ravine-4547.herokuapp.com/repeater.php?fb%3Aapp_id=273476932664248+&og%3Atype=cordova%3Ameal+&og%3Atitle=Italian+&og%3Aimage=https%3A%2F%2Fwhispering-ravine-4547.herokuapp.com%2Fimages%2Fmeals%2Fitalian-full.png&body=Italian"
+		"url" : "http://whispering-ravine-4547.herokuapp.com/italian.html"
 	},
 	{
 		"id" : "pizza",
 		"title" : "Pizza",
-		"url" : "http://whispering-ravine-4547.herokuapp.com/repeater.php?fb%3Aapp_id=273476932664248+&og%3Atype=cordova%3Ameal+&og%3Atitle=Pizza+&og%3Aimage=https%3A%2F%2Fwhispering-ravine-4547.herokuapp.com%2Fimages%2Fmeals%2Fpizza-full.png&body=Pizza"
+		"url" : "http://whispering-ravine-4547.herokuapp.com/pizza.html"
 	},
 ];
 
