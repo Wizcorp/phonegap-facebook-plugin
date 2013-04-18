@@ -7,7 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+
 #import <FacebookSDK/FacebookSDK.h>
+//if using plugman, use the import below instead
+//#import "FacebookSDK.h"
 
 #import <Cordova/CDV.h>
 
