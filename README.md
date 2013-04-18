@@ -170,7 +170,7 @@ Make sure you add the scheme to your [PROJECTNAME]-Info.plist (located as one of
 </pre>
 
 ## Automatic Installation
-This plugin is based on [plugman](https://git-wip-us.apache.org/repos/asf?p=cordova-plugman.git;a=summary). To install it to your app, simply execute plugman as follows; Still a little buggy and does not include the latest Facebook SDKs.
+This plugin is based on [plugman](https://git-wip-us.apache.org/repos/asf?p=cordova-plugman.git;a=summary). To install it to your app, simply execute plugman as follows; It does not currently work with plugman at all. WORK IN PROGRESS 
 
 	plugman --platform [PLATFORM] --project [TARGET-PATH] --plugin [PLUGIN-PATH] APP_ID="[APP_ID]"
 	
