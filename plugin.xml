@@ -237,6 +237,11 @@ Also manually add this into your project's -Info.plist file, under /plist/dict:
 
 &lt;key&gt;FacebookAppID&lt;/key&gt;
 &lt;string&gt;$APP_ID&lt;/string&gt;
+
+Also, in FacebookConnectPlugin.h, replace:
+    #import &lt;FacebookSDK/FacebookSDK.h&gt;
+with:
+    #import "FacebookSDK.h"
         </info>
 
     </platform>
