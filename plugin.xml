@@ -215,5 +215,29 @@
         <framework src="Social.framework" weak="true" />
         <framework src="Accounts.framework" weak="true" />
         <framework src="AdSupport.framework" weak="true" />
+        
+<!-- info prints spaces verbatim, thus the spacing here -->
+        <info>
+You will have to manually add this into your project's -Info.plist file, under /plist/dict:
+  &lt;key&gt;CFBundleURLTypes&lt;/key&gt;
+  &lt;array&gt;
+	&lt;dict&gt;
+	  &lt;key&gt;CFBundleTypeRole&lt;/key&gt;
+	  &lt;string&gt;None&lt;/string&gt;
+	  &lt;key&gt;CFBundleURLName&lt;/key&gt;
+	  &lt;string&gt;$PACKAGE_NAME&lt;/string&gt;
+	  &lt;key&gt;CFBundleURLSchemes&lt;/key&gt;
+	  &lt;array&gt;
+		&lt;string&gt;fb$APP_ID&lt;/string&gt;
+	  &lt;/array&gt;
+	&lt;/dict&gt;
+  &lt;/array&gt;
+
+Also manually add this into your project's -Info.plist file, under /plist/dict:
+
+&lt;key&gt;FacebookAppID&lt;/key&gt;
+&lt;string&gt;$APP_ID&lt;/string&gt;
+        </info>
+
     </platform>
 </plugin>
