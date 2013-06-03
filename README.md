@@ -39,7 +39,7 @@ If you plan on rolling this out on Android, please note that you will need to [g
   |   |_FacebookConnectPlugin.m
   |   |_FacebookConnectPlugin.h
   |   |_facebook
-  ||_www
+  |_www
   |  |_cdv-plugin-fb-connect.js
   |  |_facebook_js_sdk.js
 </pre>
