@@ -7,8 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.cordova.api.Plugin;
-import org.apache.cordova.api.PluginResult;
+import org.apache.cordova.api.CallbackContext;
+import org.apache.cordova.api.CordovaPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +28,7 @@ import com.facebook.model.GraphUser;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
 
-public class ConnectPlugin extends Plugin {
+public class ConnectPlugin extends CordovaPlugin {
 	
 	private static final String FEED_DIALOG = "feed";
 	private static final String APPREQUESTS_DIALOG = "apprequests";
@@ -44,9 +44,6 @@ public class ConnectPlugin extends Plugin {
     public static final String SINGLE_SIGN_ON_DISABLED = "service_disabled";
     private final String TAG = "ConnectPlugin";
 
-    private String loginCallbackId = "";
-    private String dialogCallbackId = "";
-    
     private String applicationId;
     
     private String userId;
@@ -55,52 +52,40 @@ public class ConnectPlugin extends Plugin {
     private String method;
 
     @Override
-    public PluginResult execute(String action, JSONArray args, final String callbackId) {
-        PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
-        pr.setKeepCallback(true);
-
+    public boolean execute(String action, JSONArray args,
+			final CallbackContext callbackContext) throws JSONException {
         if (action.equals("init")) {
-            try {
-            	Log.d(TAG, "init: Initializing plugin.");
-            	
-            	// Get the Facebook App Id
-            	applicationId = args.getString(0);
-                
-            	// Save the callback Id, in the case that the user's session
-            	// is open and we can get user info
-            	this.loginCallbackId = callbackId;
-            	
-                // Open a session if we have one cached
-            	Session session = new Session.Builder(cordova.getActivity())
-        		.setApplicationId(applicationId)
-        		.build();
-            	if (session.getState() == SessionState.CREATED_TOKEN_LOADED) {
-            		Session.setActiveSession(session);
-            		// - Create the request
-                    Session.OpenRequest openRequest = new Session.OpenRequest(cordova.getActivity());
-                    // - Set the status change call back
-                    openRequest.setCallback(new Session.StatusCallback() {
-                    	@Override
-                        public void call(Session session, 
-                                         SessionState state,
-                                         Exception exception) {
-                    		onSessionStateChange(state, exception);
-                    	}
-                    });
-                    session.openForRead(openRequest); 
-            	}
+			Log.d(TAG, "init: Initializing plugin.");
+			
+			// Get the Facebook App Id
+			applicationId = args.getString(0);
+			
+			// Open a session if we have one cached
+			Session session = new Session.Builder(cordova.getActivity())
+			.setApplicationId(applicationId)
+			.build();
+			if (session.getState() == SessionState.CREATED_TOKEN_LOADED) {
+				Session.setActiveSession(session);
+				// - Create the request
+				Session.OpenRequest openRequest = new Session.OpenRequest(cordova.getActivity());
+				// - Set the status change call back
+				openRequest.setCallback(new Session.StatusCallback() {
+					@Override
+					public void call(Session session, 
+									 SessionState state,
+									 Exception exception) {
+						onSessionStateChange(state, exception, callbackContext);
+					}
+				});
+				session.openForRead(openRequest); 
+			}
 
-                // If we have a valid open session, get user's info
-                if (session != null && session.isOpened()) {
-                	// Call this method to initialize the session state info
-                	onSessionStateChange(session.getState(), null);
-                } else {
-                	return new PluginResult(PluginResult.Status.OK);
-                }
-            } catch (JSONException e) {              
-                e.printStackTrace();
-                return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. expected a string as the first arg.");
-            }
+			// If we have a valid open session, get user's info
+			if (session != null && session.isOpened()) {
+				// Call this method to initialize the session state info
+				onSessionStateChange(session.getState(), null, callbackContext);
+			}
+			return true;
         }
 
         else if (action.equals("login")) {
@@ -111,15 +96,10 @@ public class ConnectPlugin extends Plugin {
         	
         	// Get the permissions
         	String[] arrayPermissions = new String[args.length()];
-        	try {
-                for (int i=0; i<args.length(); i++) {
-                    arrayPermissions[i] = args.getString(i);
-                }
-            } catch (JSONException e1) {
-               
-                e1.printStackTrace();
-                return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. Expected a string array of permissions.");
-            }
+			for (int i=0; i<args.length(); i++) {
+				arrayPermissions[i] = args.getString(i);
+			}
+            
         	List<String> permissions = null;
         	if (arrayPermissions.length > 0) {
         		permissions = Arrays.asList(arrayPermissions);
@@ -185,7 +165,7 @@ public class ConnectPlugin extends Plugin {
                     public void call(Session session, 
                                      SessionState state,
                                      Exception exception) {
-                		onSessionStateChange(state, exception);
+                		onSessionStateChange(state, exception, callbackContext);
                 	}
                 });
                 // Set up the activity result callback to this class
@@ -193,27 +173,31 @@ public class ConnectPlugin extends Plugin {
                 // Can only ask for read permissions initially
                 session.openForRead(openRequest);              
         	}
+			return true;
         }
 
         else if (action.equals("logout")) {
         	
         	Session session = Session.getActiveSession();
-        	if (session != null) {
-        		if (session.isOpened()) {
-        			session.closeAndClearTokenInformation();
-        			userId = null;
-        			pr = new PluginResult(PluginResult.Status.OK, getResponse());
-        		} else {
-        			// Session not open
-        			pr = new PluginResult(PluginResult.Status.ERROR, "Session not open.");
-        		}
-        	} else {
-        		pr = new PluginResult(PluginResult.Status.ERROR, "No valid session found, must call init and login before logout.");
-        	}
+			if (session != null) {
+				if (session.isOpened()) {
+					session.closeAndClearTokenInformation();
+					userId = null;
+					callbackContext.success(getResponse());
+				} else {
+					// Session not open
+					callbackContext.error("Session not open.");
+				}
+			} else {
+				callbackContext
+						.error("No valid session found, must call init and login before logout.");
+			}
+			return true;
         }
 
         else if (action.equals("getLoginStatus")) {
-        	pr = new PluginResult(PluginResult.Status.OK, getResponse());
+        	callbackContext.success(getResponse());
+			return true;
         }
         
         else if (action.equals("showDialog")) {
@@ -255,7 +239,7 @@ public class ConnectPlugin extends Plugin {
         						me.cordova.getActivity(),
         						Session.getActiveSession(),
         						paramBundle))
-        						.setOnCompleteListener(new UIDialogListener(me))
+        						.setOnCompleteListener(new UIDialogListener(callbackContext))
         						.build();
         				feedDialog.show();
         			};
@@ -268,18 +252,19 @@ public class ConnectPlugin extends Plugin {
         						me.cordova.getActivity(),
         						Session.getActiveSession(),
         						paramBundle))
-        						.setOnCompleteListener(new UIDialogListener(me))
+        						.setOnCompleteListener(new UIDialogListener(callbackContext))
         						.build();
         				requestsDialog.show();
         			};
     			};
     			cordova.getActivity().runOnUiThread(runnable);
     		} else {
-    			pr = new PluginResult(PluginResult.Status.ERROR, "Unsupported dialog method.");
+    			callbackContext.error("Unsupported dialog method.");
     		}
+			return true;
         }
 
-        return pr;
+        return false;
     }
 
     @Override
@@ -324,11 +309,12 @@ public class ConnectPlugin extends Plugin {
         return new JSONObject();
     }
     
-    private void getUserInfo(final Session session) {
+    private void getUserInfo(final Session session,
+			final CallbackContext callbackContext) {
     	final ConnectPlugin me = this;
     	Runnable runnable = new Runnable() {
 			public void run() {
-				Request request = Request.newMeRequest(session, new RequestUserCallback(me));
+				Request request = Request.newMeRequest(session, new RequestUserCallback(me, callbackContext));
 				Request.executeBatchAsync(request);
 			};
 		};
@@ -338,12 +324,13 @@ public class ConnectPlugin extends Plugin {
     /*
      * Handles session state changes
      */
-    private void onSessionStateChange(SessionState state, Exception exception) {
+    private void onSessionStateChange(SessionState state, Exception exception,
+			CallbackContext callbackContext) {
     	final Session session = Session.getActiveSession();
     	// Check if the session is open
     	if (state.isOpened()) {
     		// Get user info
-    		getUserInfo(session);
+    		getUserInfo(session, callbackContext);
     	}
     }
     
@@ -359,11 +346,11 @@ public class ConnectPlugin extends Plugin {
     }
     
     class UIDialogListener implements OnCompleteListener {
-   	 final ConnectPlugin fba;
+		private final CallbackContext callbackContext;
 
-		public UIDialogListener(ConnectPlugin fba){
+		public UIDialogListener(CallbackContext callbackContext) {
 			super();
-			this.fba = fba;
+			this.callbackContext = callbackContext;
 		}
 
 		@Override
@@ -373,20 +360,20 @@ public class ConnectPlugin extends Plugin {
 				// User clicked "x"
 				if (exception instanceof FacebookOperationCanceledException) {
 					Log.d(TAG, "cancel");
-			           this.fba.success(new PluginResult(PluginResult.Status.NO_RESULT), 
-			        		   this.fba.dialogCallbackId);
+			        callbackContext.sendPluginResult(new PluginResult(
+							PluginResult.Status.NO_RESULT));
 				}
 				// Dialog error
 				else if (exception instanceof FacebookDialogException) {
 					Log.d(TAG, "other error");
-			           this.fba.error("Dialog error: " + exception.getMessage(), 
-			        		   this.fba.dialogCallbackId);
+			        callbackContext.error("Dialog error: "
+							+ exception.getMessage());
 				}
 				// Facebook error
 				else {
 					Log.d(TAG, "facebook error");
-			           this.fba.error("Facebook error: " + exception.getMessage(), 
-			        		   this.fba.dialogCallbackId);
+			        callbackContext.error("Facebook error: "
+							+ exception.getMessage());
 				}
 			} else {
 				// Handle a successful dialog:
@@ -404,11 +391,9 @@ public class ConnectPlugin extends Plugin {
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
-					this.fba.success(new PluginResult(PluginResult.Status.OK, response), 
-							this.fba.dialogCallbackId);
+					callbackContext.success(response);
 				} else {
-					this.fba.success(new PluginResult(PluginResult.Status.OK), 
-							this.fba.dialogCallbackId);
+					callbackContext.success();
 				}
 			}
 		}
@@ -416,10 +401,13 @@ public class ConnectPlugin extends Plugin {
     
     class RequestUserCallback implements Request.GraphUserCallback {
     	final ConnectPlugin fba;
+		private final CallbackContext context;
     	
-    	public RequestUserCallback(ConnectPlugin fba){
+    	public RequestUserCallback(ConnectPlugin fba,
+				CallbackContext callbackContext){
 			super();
 			this.fba = fba;
+			this.context = callbackContext;
 		}
     	
     	@Override
@@ -428,11 +416,8 @@ public class ConnectPlugin extends Plugin {
             	// Set the user id (for the response)
             	this.fba.userId = user.getId();
             }
-            // Create a new result with response data
-        	PluginResult result = new PluginResult(PluginResult.Status.OK,
-        			this.fba.getResponse());
-        	result.setKeepCallback(false);
-        	this.fba.success(result,this.fba.loginCallbackId);
+        	// Create a new result with response data
+			context.success(getResponse());
         }
     }
     
