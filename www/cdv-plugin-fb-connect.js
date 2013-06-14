@@ -24,7 +24,7 @@ CDV.FB = {
       console.log('Cordova Facebook Connect plugin initialized successfully.');
     }, (fail?fail:null), 'org.apache.cordova.facebook.Connect', 'init', [apiKey]);
   },
-  login: function(params, cb, fail) {
+  login: function(params, cb) {
     params = params || { scope: '' };
     cordova.exec(function(e) { // login
         if (e.authResponse && e.authResponse.expiresIn) {
@@ -36,14 +36,18 @@ CDV.FB = {
         localStorage.setItem('cdv_fb_session', JSON.stringify(e.authResponse));
         FB.Auth.setAuthResponse(e.authResponse, 'connected');
         if (cb) cb(e);
-    }, (fail?fail:null), 'org.apache.cordova.facebook.Connect', 'login', params.scope.split(',') );
+    }, function(e){
+        if (cb) cb(e);
+    }, 'org.apache.cordova.facebook.Connect', 'login', params.scope.split(',') );
   },
-  logout: function(cb, fail) {
+  logout: function(cb) {
     cordova.exec(function(e) {
       localStorage.removeItem('cdv_fb_session');
       FB.Auth.setAuthResponse(null, 'notConnected');
       if (cb) cb(e);
-    }, (fail?fail:null), 'org.apache.cordova.facebook.Connect', 'logout', []);
+    }, function(e){
+      if (cb) cb(e);
+    }, 'org.apache.cordova.facebook.Connect', 'logout', []);
   },
   getLoginStatus: function(cb, fail) {
     cordova.exec(function(e) {
