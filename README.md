@@ -111,6 +111,7 @@ Create a basic Cordova iOS application by following the [PhoneGap Getting Starte
 12. Add the **Social.framework** framework. Make it an optional framework to support pre iOS6 apps.
 13. Add the **Accounts.framework** framework. Make it an optional framework to support pre iOS6 apps.
 14. Add the **AdSupport.framework** framework. Make it an optional framework to support pre iOS6 apps.
+15. Add the **Security.framework** framework. Make it an optional framework to support pre iOS6 apps.
 
 ### Add the Cordova Facebook Plugin
 
@@ -153,7 +154,7 @@ Or you can allow all domains with (set to this by default):
 
 ### iOS URL Scheme
 
-Make sure you add the scheme to your [PROJECTNAME]-Info.plist (located as one of the files in your Xcode project), substitute [APP_ID] below to the appropriate values. This is to handle the re-direct from Mobile Safari or the Facebook app, after permission authorization.
+Make sure you add the scheme to your [PROJECTNAME]-Info.plist (located as one of the files in your Xcode project), substitute [APP_ID] below to the appropriate values (replace those brackets!). This is to handle the re-direct from Mobile Safari or the Facebook app, after permission authorization.
 
 * [**APP_ID**] is the Facebook app id given by Facebook
 
