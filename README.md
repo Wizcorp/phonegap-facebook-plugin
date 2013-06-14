@@ -19,29 +19,29 @@ If you plan on rolling this out on Android, please note that you will need to [g
 # Project Structure
 
 <pre>
-  |-example
-  |  `-Simple
-  |    `-index.html
-  |  `-HackBook
-  |    `-index.html
-  |    `-README
-  |    `-hackbook.manifest
-  |    `-img
-  |    `-css
-  |    `-js
-  |-test
-  |  `-pg-plugin-fb-connect-tests.js
-  |-src
-  |  `-android
-  |      `-ConnectPlugin.java
-  |      `-facebook
-  |  `-ios
-  |      `-FacebookConnectPlugin.m
-  |      `-FacebookConnectPlugin.h
-  |      `-facebook
-  |`-www
-  |  `-cdv-plugin-fb-connect.js
-  |  `-facebook_js_sdk.js
+  |_example
+  |  |_Simple
+  |  | |_index.html
+  |  |_HackBook
+  |    |_index.html
+  |    |_README
+  |    |_hackbook.manifest
+  |    |_img
+  |    |_css
+  |    |_js
+  |_test
+  | |_pg-plugin-fb-connect-tests.js
+  |_src
+  | |_android
+  | | |_ConnectPlugin.java
+  | | |_facebook
+  | |_ios
+  |   |_FacebookConnectPlugin.m
+  |   |_FacebookConnectPlugin.h
+  |   |_facebook
+  |_www
+  |  |_cdv-plugin-fb-connect.js
+  |  |_facebook_js_sdk.js
 </pre>
 
 
