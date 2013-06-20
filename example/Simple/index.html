@@ -95,7 +95,7 @@
             function login() {
                 FB.login(
                          function(response) {
-                         if (response.session) {
+                         if (response.status == 'connected') {
                          alert('logged in');
                          } else {
                          alert('not logged in');
