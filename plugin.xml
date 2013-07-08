@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="com.phonegap.facebook"
-    version="0.3.1">
+    id="com.phonegap.plugins.facebookconnect"
+    version="0.3.2">
 
     <name>Facebook Connect</name>
+    
     <description>
-      This is the official plugin for Facebook in Apache Cordova/PhoneGap!
+      &lt;p&gt;This is the official plugin for Facebook in Apache Cordova/PhoneGap!&lt;/p&gt;
       
-      The Facebook plugin for Apache Cordova allows you to use the same JavaScript code in your
+      &lt;p&gt;The Facebook plugin for Apache Cordova allows you to use the same JavaScript code in your
       Cordova application as you use in your web application. However, unlike in the browser, the
       Cordova application will use the native Facebook app to perform Single Sign On for the user.
       If this is not possible then the sign on will degrade gracefully using the standard dialog
-      based authentication.
+      based authentication.&lt;/p&gt;
     </description>
+    
+    <license>Apache 2.0</license>
     
     <asset src="www/cdv-plugin-fb-connect.js" target="cdv-plugin-fb-connect.js" />
     <asset src="www/facebook-js-sdk.js" target="facebook-js-sdk.js" />
