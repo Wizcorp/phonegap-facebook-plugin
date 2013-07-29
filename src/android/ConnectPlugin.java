@@ -21,7 +21,7 @@ import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 
-public class ConnectPlugin extends Plugin {
+public class ConnectPlugin extends CordovaPlugin {
 
     public static final String SINGLE_SIGN_ON_DISABLED = "service_disabled";
     private final String TAG = "ConnectPlugin";
