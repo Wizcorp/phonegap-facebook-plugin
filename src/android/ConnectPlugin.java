@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.cordova.api.CallbackContext;
 import org.apache.cordova.api.CordovaPlugin;
+import org.apache.cordova.api.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,10 +91,6 @@ public class ConnectPlugin extends CordovaPlugin {
 
         else if (action.equals("login")) {
         	
-        	// Save the callback Id, in the case that the user's session
-        	// is open and we can get user info
-        	this.loginCallbackId = callbackId;
-        	
         	// Get the permissions
         	String[] arrayPermissions = new String[args.length()];
 			for (int i=0; i<args.length(); i++) {
@@ -131,7 +128,7 @@ public class ConnectPlugin extends CordovaPlugin {
             		}
             	}
             	if (publishPermissions && readPermissions) {
-            		pr = new PluginResult(PluginResult.Status.ERROR, "Cannot ask for both read and publish permissions.");
+            		callbackContext.error("Cannot ask for both read and publish permissions.");
             	} else {
             		// Set up the new permissions request
                 	Session.NewPermissionsRequest newPermissionsRequest =  new Session.NewPermissionsRequest(cordova.getActivity(), 
@@ -230,7 +227,6 @@ public class ConnectPlugin extends CordovaPlugin {
     			}
     		}
     		this.paramBundle =  new Bundle(collect);
-    		this.dialogCallbackId = callbackId;
     		
     		if (this.method.equals(FEED_DIALOG)) {
     			Runnable runnable = new Runnable() {
