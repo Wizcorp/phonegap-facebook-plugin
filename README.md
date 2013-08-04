@@ -56,11 +56,11 @@ If you plan on rolling this out on Android, please note that you will need to [g
 
 If you are using this plugin on Adobe PhoneGap Build, make sure you have done all the things on this checklist:
 
-  * create a facebook app (see above)
-  * set the facebook app sandbox mode to "disabled"
-  * in the facebook app settings, set the Site URL (under Website with Facebook Login) to "http://localhost"
-  * if you plan on deploying the Android package, you must also enable this in the facebook app's settings, under "Native Android App" set the "package name" to the "widget" id attribute as specified in your phonegap/cordova config.xml, in the form com.aaa.bbb, also set the "class name" to the same value as the "package name" appending ".ProjectActivity".  For example, com.aaa.bbb.ProjectActivity, and enable the Facebook Login option.  Also you will need to generate the facebook key hash from the Android keystore. See more info [here] (https://developers.facebook.com/docs/getting-started/facebook-sdk-for-android/3.0/).
-  * in PhoneGap Buid, make sure your Android key is added to your application, and that it is unlocked.  You will need the passwords and the alias you used while creating the keystore.  See more info [here] (https://build.phonegap.com/docs/config-signing-android).
+  * Create a facebook app (see above)
+  * Set the facebook app sandbox mode to "disabled"
+  * In the facebook app settings, set the Site URL (under Website with Facebook Login) to `http://localhost`
+  * If you plan on deploying the Android package, you must also enable this in the facebook app's settings: under "Native Android App" set the "package name" to the "widget" id attribute as specified in your phonegap/cordova config.xml, in the form `com.aaa.bbb`, also set the "class name" to the same value as the "package name" appending ".ProjectActivity".  For example, `com.aaa.bbb.ProjectActivity`, and enable the Facebook Login option.  Finally you will need to generate an Android key if you don't already have one, and the corresponding facebook key hash from the Android keystore. See more info [here] (https://developers.facebook.com/docs/getting-started/facebook-sdk-for-android/3.0/).
+  * In PhoneGap Build, make sure your Android key is added to your application, and that it is unlocked.  You will need the passwords and the alias you used while creating the keystore in order to unlock.  See more info [here] (https://build.phonegap.com/docs/config-signing-android).
 
   
 Additional PhoneGap Build documentation available [here] (https://build.phonegap.com/docs/plugins#facebookconnect).
