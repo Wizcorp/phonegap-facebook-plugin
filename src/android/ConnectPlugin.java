@@ -273,8 +273,7 @@ public class ConnectPlugin extends Plugin {
             prefs.edit().putLong("access_expires", token_expires).commit();
             prefs.edit().putString("access_token", token).commit();
 
-          	Log.d(TAG, "authorized");
-            Log.d(TAG, values.toString());
+            Log.d(TAG, "authorized");
 
             Thread t = new Thread(new Runnable() {
                 public void run() {
