@@ -173,7 +173,7 @@ Make sure you add the scheme to your [PROJECTNAME]-Info.plist (located as one of
 ## Automatic Installation
 This plugin is based on [plugman](https://git-wip-us.apache.org/repos/asf?p=cordova-plugman.git;a=summary). To install it to your app, simply execute plugman as follows; It does not currently work with plugman at all. WORK IN PROGRESS 
 
-	plugman --platform [PLATFORM] --project [TARGET-PATH] --plugin [PLUGIN-PATH] APP_ID="[APP_ID]"
+	plugman install --platform [PLATFORM] --project [TARGET-PATH] --plugin [PLUGIN-PATH] --variable APP_ID="[APP_ID]" --variable APP_NAME="[APP_NAME]"
 	
 	where
 		[PLATFORM] = ios or android
