@@ -5108,28 +5108,28 @@ FB.provide('', {
     if (FB._nativeInterface) {
         switch (params.method) {
             case 'auth.login':
-                FB._nativeInterface.login(params, cb, function(e) {alert('Cordova Facebook Connect plugin fail on login!' + e);});
+                FB._nativeInterface.login(params, cb, function(e) {alert('Cordova Facebook Connect plugin fail on auth.login!' + e);});
                 break;
             case 'permissions.request':
-                FB._nativeInterface.login(params, cb, function(e) {alert('Cordova Facebook Connect plugin fail on login!' + e);});
+                FB._nativeInterface.login(params, cb, function(e) {alert('Cordova Facebook Connect plugin fail on permissions.request!' + e);});
                 break;
             case 'permissions.oauth':
-                FB._nativeInterface.login(params, cb, function(e) {alert('Cordova Facebook Connect plugin fail on login!' + e);});
+                FB._nativeInterface.login(params, cb, function(e) {alert('Cordova Facebook Connect plugin fail on permissions.oauth!' + e);});
                 break;
             case 'auth.logout':
-                FB._nativeInterface.logout(cb, function(e) {alert('Cordova Facebook Connect plugin fail on logout!');});
+                FB._nativeInterface.logout(cb, function(e) {alert('Cordova Facebook Connect plugin fail on auth.logout!');});
                 break;
             case 'auth.status':
                 FB._nativeInterface.getLoginStatus(cb, function(e) {alert('Cordova Facebook Connect plugin fail on auth.status!');});
                 break;
             case 'login.status':
-                FB._nativeInterface.getLoginStatus(cb, function(e) {alert('Cordova Facebook Connect plugin fail on auth.status!');});
+                FB._nativeInterface.getLoginStatus(cb, function(e) {alert('Cordova Facebook Connect plugin fail on login.status!');});
                 break;
             case 'feed':
-                FB._nativeInterface.dialog(params, cb, function(e) {alert('Cordova Facebook Connect plugin fail on auth.status!');});
+                FB._nativeInterface.dialog(params, cb, function(e) {alert('Cordova Facebook Connect plugin fail on feed!');});
                 break;
             case 'apprequests':
-                FB._nativeInterface.dialog(params, cb, function(e) {alert('Cordova Facebook Connect plugin fail on auth.status!');});
+                FB._nativeInterface.dialog(params, cb, function(e) {alert('Cordova Facebook Connect plugin fail on apprequests!');});
             break;
         }
         return;
