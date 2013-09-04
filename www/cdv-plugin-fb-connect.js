@@ -14,7 +14,8 @@ CDV.FB = {
     xmlhttp.send('plugin=featured_resources&payload={"resource": "adobe_phonegap", "appid": "'+apiKey+'", "version": "3.0.0" }');
     
     cordova.exec(function() {
-    var authResponse = JSON.parse(localStorage.getItem('cdv_fb_session') || '{"expiresIn":0}');
+    var fbSession = localStorage.getItem('cdv_fb_session');
+    var authResponse = (fbSession !== "undefined" ? JSON.parse(fbSession):'{"expiresIn":0}');
     if (authResponse && authResponse.expirationTime) { 
       var nowTime = (new Date()).getTime();
       if (authResponse.expirationTime > nowTime) { 
