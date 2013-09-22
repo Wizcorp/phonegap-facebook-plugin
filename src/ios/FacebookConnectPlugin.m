@@ -32,23 +32,6 @@
         [FBSession.activeSession handleOpenURL:url];
 }
 
-- (void)pluginInitialize
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppDidBecomeActive:)
-                                                 name:UIApplicationDidBecomeActiveNotification object:nil];
-}
-
-/*
- * This method is called to let your application know that it moved from the inactive to active state.
- */
-- (void)onAppDidBecomeActive:(NSNotification*)notification
-{
-    // We need to properly handle activation of the application with regards to Facebook Login
-    // (e.g., returning from iOS 6.0 Login Dialog or from fast app switching).
-    // See https://developers.facebook.com/docs/tutorials/ios-sdk-tutorial/authenticate/
-    [FBSession.activeSession handleDidBecomeActive];
-}
-
 /*
  * Callback for session changes.
  */
@@ -118,23 +101,7 @@
             }
         } else if (error.fberrorCategory == FBErrorCategoryUserCancelled) {
             // The user has cancelled a login. You can inspect the error
-            // for more context.  Per the Facebook JS SDK, treat cancels as
-            // a success and let the caller distinguish them by checking
-            // response.authResponse.
-            //
-            // See comment for FB.login (facebook-js-sdk.js ln 6087):
-            //
-            //     FB.login(function(response) {
-            //       if (response.authResponse) {
-            //         // user successfully logged in
-            //       } else {
-            //         // user cancelled login
-            //       }
-            //     });
-            //
-            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                                          messageAsDictionary:[self responseObject]];
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
+            // for more context. In the plugin, we will simply ignore it.
         } else {
             // For simplicity, this sample treats other errors blindly.
             alertMessage = @"Error. Please try again later.";
@@ -197,7 +164,9 @@
 }
 
 - (void) login:(CDVInvokedUrlCommand*)command
-{    
+{
+    BOOL permissionsAllowed = YES;
+    NSString *permissionsErrorMessage = @"";
     NSArray *permissions = nil;
     if ([command.arguments count] > 0) {
         permissions = command.arguments;
@@ -227,15 +196,9 @@
             }
         }
         if (publishPermissionFound && readPermissionFound) {
-            // Mix of permissions, use deprecated method
-            [FBSession.activeSession
-             reauthorizeWithPermissions:permissions
-             behavior:FBSessionLoginBehaviorWithFallbackToWebView
-             completionHandler:^(FBSession *session, NSError *error) {
-                 [self sessionStateChanged:session
-                                     state:session.state
-                                     error:error];
-             }];
+            // Mix of permissions, not allowed
+            permissionsAllowed = NO;
+            permissionsErrorMessage = @"Your app can't ask for both read and write permissions.";
         } else if (publishPermissionFound) {
             // Only publish permissions
             [FBSession.activeSession
@@ -258,9 +221,7 @@
         }
     } else {
         // Initial log in, can only ask to read
-        // type permissions if one wants to use the
-        // non-deprecated open session methods and
-        // take advantage of iOS6 integration
+        // type permissions
         if ([self areAllPermissionsReadPermissions:permissions]) {
             [FBSession
              openActiveSessionWithReadPermissions:permissions
@@ -273,23 +234,21 @@
                                      error:error];
              }];
         } else {
-            // Use deprecated methods for backward compatibility
-            [FBSession
-             openActiveSessionWithPermissions:permissions
-             allowLoginUI:YES completionHandler:^(FBSession *session,
-                                                  FBSessionState state,
-                                                  NSError *error) {
-                 [self sessionStateChanged:session
-                                     state:state
-                                     error:error];
-             }];
+            permissionsAllowed = NO;
+            permissionsErrorMessage = @"You can only ask for read permissions initially";
         }
         
         
         
     }
     
-    [super writeJavascript:nil];
+    if (!permissionsAllowed) {
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                          messageAsString:permissionsErrorMessage];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
+    } else {
+        [super writeJavascript:nil];
+    }
 }
 
 - (void) logout:(CDVInvokedUrlCommand*)command
@@ -315,58 +274,59 @@
     if ([options objectForKey:@"method"]) {
         [options removeObjectForKey:@"method"];
     }
+    __block BOOL paramsOK = YES;
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
     [options enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         if ([obj isKindOfClass:[NSString class]]) {
             params[key] = obj;
         } else {
             NSError *error;
-            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:obj
-                                                               options:0
-                                                                 error:&error];
-            if (jsonData) {
-                NSString *jsonDataString = [[NSString alloc] initWithData:jsonData
-                                                                 encoding:NSUTF8StringEncoding];
-                params[key] = jsonDataString;
-#if __has_feature(objc_arc)
-#else
-                [jsonDataString release];
-#endif
+            NSData *jsonData = [NSJSONSerialization
+                                dataWithJSONObject:obj
+                                options:0
+                                error:&error];
+            if (!jsonData) {
+                paramsOK = NO;
+                // Error
+                *stop = YES;
             }
-//            // For optional ARC support
-//#if __has_feature(objc_arc)
-//            FBSBJSON *jsonWriter = [FBSBJSON new];
-//#else
-//            FBSBJSON *jsonWriter = [[FBSBJSON new] autorelease];
-//#endif
-//            params[key] = [jsonWriter stringWithObject:obj];
+            params[key] = [[NSString alloc]
+                           initWithData:jsonData
+                           encoding:NSUTF8StringEncoding];
         }
     }];
     
-    // Show the web dialog
-    [FBWebDialogs
-     presentDialogModallyWithSession:FBSession.activeSession
-     dialog:method parameters:params
-     handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
-         CDVPluginResult* pluginResult = nil;
-         if (error) {
-             // Dialog failed with error
-             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
-                                              messageAsString:@"Error completing dialog."];
-         } else {
-             if (result == FBWebDialogResultDialogNotCompleted) {
-                 // User clicked the "x" icon to Cancel
-                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
+    if (!paramsOK) {
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                         messageAsString:@"Error completing dialog."];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
+    } else {
+        // Show the web dialog
+        [FBWebDialogs
+         presentDialogModallyWithSession:FBSession.activeSession
+         dialog:method parameters:params
+         handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
+             CDVPluginResult* pluginResult = nil;
+             if (error) {
+                 // Dialog failed with error
+                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                  messageAsString:@"Error completing dialog."];
              } else {
-                 // Send the URL parameters back, for a requests dialog, the "request" parameter
-                 // will include the resutling request id. For a feed dialog, the "post_id"
-                 // parameter will include the resulting post id.
-                 NSDictionary *params = [self parseURLParams:[resultURL query]];                 
-                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
+                 if (result == FBWebDialogResultDialogNotCompleted) {
+                     // User clicked the "x" icon to Cancel
+                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
+                 } else {
+                     // Send the URL parameters back, for a requests dialog, the "request" parameter
+                     // will include the resutling request id. For a feed dialog, the "post_id"
+                     // parameter will include the resulting post id.
+                     NSDictionary *params = [self parseURLParams:[resultURL query]];
+                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
+                 }
              }
-         }
-         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
-    }];
+             [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
+         }];
+        [super writeJavascript:nil];
+    }
     
     // For optional ARC support
     #if __has_feature(objc_arc)
@@ -375,8 +335,6 @@
         [params release];
         [options release];
     #endif
-    
-    [super writeJavascript:nil];
 }
 
 - (NSDictionary*) responseObject
