@@ -62,9 +62,29 @@ PhoneGap Build documentation available [here] (https://build.phonegap.com/docs/p
 1. [Create a basic Cordova Android application](http://docs.phonegap.com/en/3.0.0/guide_platforms_android_index.md.html#Android%20Platform%20Guide).
  * NOTE: Min Target has to be set to 8. The plugin has an issue if you set your minimum target higher than that. You can edit this in your Android Manifest file. Set the Project Build Target to at least 11 if you see Android Manifest errors related to newer attributes that have been added in 2.2.0.
  
-2. In the Cordova Android application you will need to put the following in your `res/xml/config.xml` file as a child to the plugin tag: <pre>&lt;plugin name="org.apache.cordova.facebook.Connect" value="org.apache.cordova.facebook.ConnectPlugin" /&gt;</pre>
+2. In the Cordova Android application you will need to put the following in your `res/xml/config.xml` file as a child to the **widget** tag:
 
-3. You'll need to set up the Facebook SDK for Android:
+```xml
+<feature name="org.apache.cordova.facebook.Connect">
+    <param name="android-package" value="org.apache.cordova.facebook.ConnectPlugin" />
+</feature>
+```
+
+3. Configure the URL whitelist in the `res/xml/config.xml` file, by modifying or adding new **access** entries. You can either add each subdomain separately:
+
+* m.facebook.com
+* graph.facebook.com
+* api.facebook.com
+* \*.fbcdn.net
+* \*.akamaihd.net
+
+Or you can allow all domains with (set to this by default):
+
+```xml
+<access origin="*" />
+```
+
+4. You'll need to set up the Facebook SDK for Android:
   * [Install the Facebook SDK for Android and the Facebook APK](https://developers.facebook.com/docs/android/getting-started/facebook-sdk-for-android/)
   * [Import the Facebook SDK into Eclipse](https://developers.facebook.com/docs/android/getting-started/facebook-sdk-for-android/)
   * Link the Facebook SDK library to your project.  View the properties for the project, and navigate to the 'Android' tab. In the lower part of the dialog, click 'Add' and choose the 'FacebookSDK' project from the workspace.
@@ -73,11 +93,11 @@ PhoneGap Build documentation available [here] (https://build.phonegap.com/docs/p
             <activity android:name="com.facebook.LoginActivity"
                   android:label="@string/app_name" />
 
-4. From the Cordova Facebook Plugin folder copy ConnectPlugin.java from `src/android/` folder into the root of your Cordova Android application into `src/org/apache/cordova/facebook/`. You may have to create that directory path in your project. 
+5. From the Cordova Facebook Plugin folder copy ConnectPlugin.java from `src/android/` folder into the root of your Cordova Android application into `src/org/apache/cordova/facebook/`. You may have to create that directory path in your project. 
 
-5. From the Cordova Facebook Plugin folder copy the `www/cdv-plugin-fb-connect.js`, `www/facebook_js_sdk.js` and `example/HackBook/` files into your application's `assets/www` folder. Overwrite the existing index.html file.
+6. From the Cordova Facebook Plugin folder copy the `www/cdv-plugin-fb-connect.js`, `www/facebook-js-sdk.js` and `example/HackBook/` files into your application's `assets/www` folder. Overwrite the existing index.html file.
 
-6. Replace your appId in the new index.html file. Leave the quotes.
+7. Replace your appId in the new index.html file. Leave the quotes.
 
 Now you are ready to create your application! Check out the `example` folder for what the HTML, JS etc looks like.
 
@@ -126,7 +146,7 @@ Create a basic Cordova iOS application by following the [iOS Platform Guide](htt
 
 ### iOS URL Whitelist
 
-The Facebook SDK will try to access various URLs, and their domains must be whitelisted in your config.xml under **access**.
+The Facebook SDK will try to access various URLs, and their domains must be whitelisted in your config.xml as an **access** entry.
 
 You can either add each subdomain separately:
 
@@ -138,7 +158,9 @@ You can either add each subdomain separately:
 
 Or you can allow all domains with (set to this by default):
 
-* \*
+```xml
+<access origin="*" />
+```
 
 ### iOS URL Scheme
 
