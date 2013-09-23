@@ -63,7 +63,6 @@ PhoneGap Build documentation available [here] (https://build.phonegap.com/docs/p
  * NOTE: Min Target has to be set to 8. The plugin has an issue if you set your minimum target higher than that. You can edit this in your Android Manifest file. Set the Project Build Target to at least 11 if you see Android Manifest errors related to newer attributes that have been added in 2.2.0.
  
 2. In the Cordova Android application you will need to put the following in your `res/xml/config.xml` file as a child to the **widget** tag:
-
 ```xml
 <feature name="org.apache.cordova.facebook.Connect">
     <param name="android-package" value="org.apache.cordova.facebook.ConnectPlugin" />
@@ -79,7 +78,6 @@ PhoneGap Build documentation available [here] (https://build.phonegap.com/docs/p
 * \*.akamaihd.net
 
 Or you can allow all domains with (set to this by default):
-
 ```xml
 <access origin="*" />
 ```
@@ -124,7 +122,6 @@ Create a basic Cordova iOS application by following the [iOS Platform Guide](htt
 1. Locate the **plugins** section of your Project Navigator and create a group "ios". Make sure it is added as a "group" (yellow folder)
 2. From the **Cordova Facebook Plugin** folder copy FacebookConnectPlugin.h and FacebookConnectPlugin.m from the **src** folder into the new group "ios".
 3. Find the `config.xml` file in the project navigator and add a new entry as a child to the **widget** tag:
-
 ```xml
 <feature name="org.apache.cordova.facebook.Connect">
     <param name="ios-package" value="FacebookConnectPlugin" />
