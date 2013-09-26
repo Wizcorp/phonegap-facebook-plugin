@@ -33,15 +33,22 @@
 	  <preference name="APP_NAME" />
     
     <engines>
-      <engine name="cordova" version=">=2.3.0" />
+      <engine name="cordova" version=">=3.0.0" />
     </engines>
     
     <!-- android -->
     <platform name="android">
 
-        <config-file target="res/xml/config.xml" parent="plugins">
-            <plugin name="org.apache.cordova.facebook.Connect" value="org.apache.cordova.facebook.ConnectPlugin"/>
+        <config-file target="res/xml/config.xml" parent="/*">
+          <feature name="org.apache.cordova.facebook.Connect">
+              <param name="android-package" value="org.apache.cordova.facebook.ConnectPlugin" />
+          </feature>
         </config-file>
+        
+        <config-file target="AndroidManifest.xml" parent="application">
+          <activity android:name="com.facebook.LoginActivity" android:label="@string/app_name" />
+        </config-file>
+        
         
         <!-- res files -->
         <source-file src="src/android/facebook/res/drawable/close.png" target-dir="res/drawable" />
@@ -55,14 +62,7 @@
         <!-- cordova plugin src files -->
         <source-file src="src/android/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
         
-        <!-- facebook src files -->
-        <source-file src="src/android/facebook/AsyncFacebookRunner.java" target-dir="src/com/facebook/android" />
-        <source-file src="src/android/facebook/DialogError.java" target-dir="src/com/facebook/android" />
-        <source-file src="src/android/facebook/Facebook.java" target-dir="src/com/facebook/android" />
-        <source-file src="src/android/facebook/FacebookError.java" target-dir="src/com/facebook/android" />
-        <source-file src="src/android/facebook/FbDialog.java" target-dir="src/com/facebook/android" />
-        <source-file src="src/android/facebook/Util.java" target-dir="src/com/facebook/android" />
-         
+
     </platform>
     
     <!-- ios -->

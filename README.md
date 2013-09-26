@@ -34,7 +34,6 @@ If you plan on rolling this out on Android, please note that you will need to [g
   |_src
   | |_android
   | | |_ConnectPlugin.java
-  | | |_facebook
   | |_ios
   |   |_FacebookConnectPlugin.m
   |   |_FacebookConnectPlugin.h
@@ -49,7 +48,7 @@ If you plan on rolling this out on Android, please note that you will need to [g
 
 `www/cdv-plugin-fb-connect.js` is the JavaScript code for the plugin, this defines the JS API.
 
-`src/android` and `src/ios` contain the native code for the plugin for both Android and iOS platforms. They also include versions of the Android and iOS Facebook SDKs. These are used during automatic installation. During manual installation, you are encouraged to download the most recent versions of the Facebook SDKs for you projects. 
+`src/ios` contain the native code for the plugin for both Android and iOS platforms. They also include versions of the iOS Facebook SDK. These are used during automatic installation. During manual installation, you are encouraged to download the most recent versions of the Facebook SDKs for you projects.
 
 
 ## Adobe PhoneGap Build
@@ -84,8 +83,14 @@ Or you can allow all domains with (set to this by default):
 
 4. You'll need to set up the Facebook SDK for Android:
   * [Install the Facebook SDK for Android and the Facebook APK](https://developers.facebook.com/docs/android/getting-started/facebook-sdk-for-android/)
-  * [Import the Facebook SDK into Eclipse](https://developers.facebook.com/docs/android/getting-started/facebook-sdk-for-android/)
-  * Link the Facebook SDK library to your project.  View the properties for the project, and navigate to the 'Android' tab. In the lower part of the dialog, click 'Add' and choose the 'FacebookSDK' project from the workspace.
+  For Eclipse users:
+    * [Import the Facebook SDK into Eclipse](https://developers.facebook.com/docs/android/getting-started/facebook-sdk-for-android/)
+    * Link the Facebook SDK library to your project.  View the properties for the project, and navigate to the 'Android' tab. In the lower part of the dialog, click 'Add' and choose the 'FacebookSDK' project from the workspace.
+  For Ant users:
+    * Add a reference to SDK library to your project. In `project.properties` add:
+      android.library.reference.1=${fb_sdk.dir}
+    * Define the `fb_sdk.dir` variable in `local.properties` with the **relative** path to sources of 'FaceBookSDK':
+      fb_sdk.dir=../../../../../../Downloads/facebook-android-sdk-3.5/facebook
   * Add a new `com.facebook.LoginActivity` activity to your app to handle Facebook Login. Open up your `AndroidManifest.xml` file and add this additional activity:
 
             <activity android:name="com.facebook.LoginActivity"
@@ -178,7 +183,7 @@ Make sure you add the scheme to your [PROJECTNAME]-Info.plist (located as one of
 </pre>
 
 ## Automatic Installation
-This plugin is based on [plugman](https://git-wip-us.apache.org/repos/asf?p=cordova-plugman.git;a=summary). To install it to your app, simply execute plugman as follows; It does not currently work with plugman at all. WORK IN PROGRESS 
+This plugin is based on [plugman](https://git-wip-us.apache.org/repos/asf?p=cordova-plugman.git;a=summary). To install it to your app, simply execute plugman as follows; It works with plugman for Android, but You'll need to set up the Facebook SDK for Android manually (step 4). WORK IN PROGRESS 
 
 	plugman install --platform [PLATFORM] --project [TARGET-PATH] --plugin [PLUGIN-PATH] --variable APP_ID="[APP_ID]" --variable APP_NAME="[APP_NAME]"
 	
