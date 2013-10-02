@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 
+import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
@@ -33,9 +34,11 @@ public class ConnectPlugin extends CordovaPlugin {
     private String callbackId;
     private Bundle paramBundle;
     private String method;
+    private CallbackContext cbc;
 
     @Override
-    public PluginResult execute(String action, JSONArray args, final String callbackId) {
+    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) {
+    	cbc = callbackContext;
         PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
         pr.setKeepCallback(true);
 
@@ -70,15 +73,15 @@ public class ConnectPlugin extends CordovaPlugin {
                 }
 
                 if(facebook.isSessionValid() && this.userId != null) {
-                    return new PluginResult(PluginResult.Status.OK, this.getResponse());
+                	return resultToBoolean(new PluginResult(PluginResult.Status.OK, this.getResponse()));
                 }
                 else {
-                    return new PluginResult(PluginResult.Status.NO_RESULT);
+                    return resultToBoolean(new PluginResult(PluginResult.Status.NO_RESULT));
                 }
             } catch (JSONException e) {
                
                 e.printStackTrace();
-                return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. expected a string as the first arg.");
+                return resultToBoolean(new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. expected a string as the first arg."));
             }
         }
 
@@ -93,7 +96,7 @@ public class ConnectPlugin extends CordovaPlugin {
                 } catch (JSONException e1) {
                    
                     e1.printStackTrace();
-                    return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. Expected a string array of permissions.");
+                    return resultToBoolean(new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. Expected a string array of permissions."));
                 }
                 cordova.setActivityResultCallback(this);
 //                this.ctx.setActivityResultCallback(this);
@@ -186,7 +189,7 @@ public class ConnectPlugin extends CordovaPlugin {
         	
         }
 
-        return pr;
+        return resultToBoolean(pr);
     }
 
     @Override
@@ -226,6 +229,18 @@ public class ConnectPlugin extends CordovaPlugin {
         return new JSONObject();
     }
     
+    private boolean resultToBoolean(PluginResult res){
+    	if(res.getStatus()==PluginResult.Status.OK.ordinal()){
+    		return true;
+    	}else if(res.getStatus()==PluginResult.Status.NO_RESULT.ordinal()){
+    		return true;
+    	}else{
+    		return false;
+    	}
+		
+    	
+    }
+    
     class UIDialogListener implements DialogListener {
    	 final ConnectPlugin fba;
 
@@ -237,22 +252,26 @@ public class ConnectPlugin extends CordovaPlugin {
 		public void onComplete(Bundle values) {
 			//  Handle a successful dialog
 			Log.d(TAG,values.toString());
-			this.fba.success(new PluginResult(PluginResult.Status.OK), this.fba.callbackId);
+			cbc.success();
+			//this.fba.success(new PluginResult(PluginResult.Status.OK), this.fba.callbackId);
 		}
 
 		public void onFacebookError(FacebookError e) {
            Log.d(TAG, "facebook error");
-           this.fba.error("Facebook error: " + e.getMessage(), callbackId);
+           cbc.error("Facebook error: " + e.getMessage());
+           //this.fba.error("Facebook error: " + e.getMessage(), callbackId);
        }
 
        public void onError(DialogError e) {
            Log.d(TAG, "other error");
-           this.fba.error("Dialog error: " + e.getMessage(), this.fba.callbackId);
+           cbc.error("Dialog error: " + e.getMessage());
+           //this.fba.error("Dialog error: " + e.getMessage(), this.fba.callbackId);
        }
 
        public void onCancel() {
            Log.d(TAG, "cancel");
-           this.fba.error("Cancelled", this.fba.callbackId);
+           cbc.error("Cancelled");
+           //this.fba.error("Cancelled", this.fba.callbackId);
        }
 	}
 
@@ -281,7 +300,8 @@ public class ConnectPlugin extends CordovaPlugin {
                     try {
                         JSONObject o = new JSONObject(fba.facebook.request("/me"));
                         fba.userId = o.getString("id");
-                        fba.success(getResponse(), fba.callbackId);
+                        //fba.success(getResponse(), fba.callbackId);
+                        cbc.success(getResponse());
                     } catch (MalformedURLException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -299,17 +319,20 @@ public class ConnectPlugin extends CordovaPlugin {
 
         public void onFacebookError(FacebookError e) {
             Log.d(TAG, "facebook error");
-            this.fba.error("Facebook error: " + e.getMessage(), callbackId);
+            //this.fba.error("Facebook error: " + e.getMessage(), callbackId);
+            cbc.error("Facebook error: " + e.getMessage());
         }
 
         public void onError(DialogError e) {
             Log.d(TAG, "other error");
-            this.fba.error("Dialog error: " + e.getMessage(), this.fba.callbackId);
+            //this.fba.error("Dialog error: " + e.getMessage(), this.fba.callbackId);
+            cbc.error("Dialog error: " + e.getMessage());
         }
 
         public void onCancel() {
             Log.d(TAG, "cancel");
-            this.fba.error("Cancelled", this.fba.callbackId);
+            //this.fba.error("Cancelled", this.fba.callbackId);
+            cbc.error("Cancelled");
         }
     }
 }
