@@ -31,7 +31,6 @@ public class ConnectPlugin extends CordovaPlugin {
     private String userId;
     //used for dialog auth
     private String[] permissions = new String[] {};
-    private String callbackId;
     private Bundle paramBundle;
     private String method;
     private CallbackContext cbc;
@@ -101,7 +100,6 @@ public class ConnectPlugin extends CordovaPlugin {
                 cordova.setActivityResultCallback(this);
 //                this.ctx.setActivityResultCallback(this);
                 this.permissions = permissions;
-                this.callbackId = callbackId;
                 Runnable runnable = new Runnable() {
                     public void run() {
                         me.facebook.authorize(cordova.getActivity(), me.permissions, new AuthorizeListener(me));
@@ -175,7 +173,6 @@ public class ConnectPlugin extends CordovaPlugin {
         			}
         		}
         		this.paramBundle =  new Bundle(collect);
-        		this.callbackId = callbackId;
         		Runnable runnable = new Runnable() {
         			public void run() {
         				me.facebook.dialog (me.cordova.getActivity(), me.method , me.paramBundle , new UIDialogListener(me));
@@ -188,7 +185,6 @@ public class ConnectPlugin extends CordovaPlugin {
         	}
         	
         }
-
         return resultToBoolean(pr);
     }
 
@@ -231,10 +227,13 @@ public class ConnectPlugin extends CordovaPlugin {
     
     private boolean resultToBoolean(PluginResult res){
     	if(res.getStatus()==PluginResult.Status.OK.ordinal()){
+    		cbc.success(res.getMessage());
     		return true;
     	}else if(res.getStatus()==PluginResult.Status.NO_RESULT.ordinal()){
+    		cbc.error(res.getMessage());
     		return true;
     	}else{
+    		cbc.error(res.getMessage());
     		return false;
     	}
 		
