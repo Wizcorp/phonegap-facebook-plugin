@@ -32,6 +32,7 @@ CDV.FB = {
   login: function(params, cb, fail) {
     params = params || { scope: '' };
     cordova.exec(function(e) { // login
+		if(typeof e=='string') e = JSON.parse(e);
         if (e.authResponse && e.authResponse.expiresIn) {
           var expirationTime = e.authResponse.expiresIn === 0
           ? 0 
@@ -45,6 +46,7 @@ CDV.FB = {
   },
   logout: function(cb, fail) {
     cordova.exec(function(e) {
+	  if(typeof e=='string') e = JSON.parse(e);
       localStorage.removeItem('cdv_fb_session');
       FB.Auth.setAuthResponse(null, 'notConnected');
       if (cb) cb(e);
@@ -52,11 +54,13 @@ CDV.FB = {
   },
   getLoginStatus: function(cb, fail) {
     cordova.exec(function(e) {
+	  if(typeof e=='string') e = JSON.parse(e);
       if (cb) cb(e);
     }, (fail?fail:null), 'org.apache.cordova.facebook.Connect', 'getLoginStatus', []);
   },
   dialog: function(params, cb, fail) {
     cordova.exec(function(e) { // login
+	  if(typeof e=='string') e = JSON.parse(e);
       if (cb) cb(e);
                   }, (fail?fail:null), 'org.apache.cordova.facebook.Connect', 'showDialog', [params] );
   }
