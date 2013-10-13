@@ -38,16 +38,16 @@ If you plan on rolling this out on Android, please note that you will need to [g
   | |_ios
   |   |_FacebookConnectPlugin.m
   |   |_FacebookConnectPlugin.h
-  |   |_facebook
+  |   |_FacebookSDK.framework
   |_www
-  |  |_cdv-plugin-fb-connect.js
-  |  |_facebook_js_sdk.js
+  |  |_pg-plugin-fb-connect.js
+  |  |_facebook-connect-debug.js
 </pre>
 
 
-`www/facebook_js_sdk.js` is the modified facebook-js-sdk. It already includes the hooks to work with this plugin.
+`www/facebook-connect-debug.js` is the modified facebook-js-sdk. It already includes the hooks to work with this plugin.
 
-`www/cdv-plugin-fb-connect.js` is the JavaScript code for the plugin, this defines the JS API.
+`www/pg-plugin-fb-connect.js` is the JavaScript code for the plugin, this defines the JS API.
 
 `src/android` and `src/ios` contain the native code for the plugin for both Android and iOS platforms. They also include versions of the Android and iOS Facebook SDKs. These are used during automatic installation. During manual installation, you are encouraged to download the most recent versions of the Facebook SDKs for you projects. 
 
@@ -56,6 +56,75 @@ If you plan on rolling this out on Android, please note that you will need to [g
 
 If using this plugin on Adobe PhoneGap Build you can ignore the instructions below and go straight to the 
 PhoneGap Build documentation available [here] (https://build.phonegap.com/docs/plugins#facebookconnect).
+
+
+## Phonegap 3.1.0 Installation
+
+   
+**This is almost ready to install this plugin automagically. It still requires a few parts until a few bugs are fixed.**
+
+1. Installed the plugin using phonegap plugin tools
+
+
+```
+phonegap local plugin add https://github.com/mallzee/phonegap-facebook-plugin.git --variable APP_ID="[FB APP ID]" --variable APP_NAME="[FB APP NAME]"
+```
+    
+2. Add the FacebookSDK.framework to your project manually by dragging the FacebookSDK.framework folder on to your frameworks folder
+
+    *Requires the following to fixed before this can be automated*
+
+    http://stackoverflow.com/questions/18653413/how-to-copy-a-custom-ios-framework-using-plugin-xml-on-phonegap-3
+
+3. Replace the $APP_ID and $APP_NAME variables in your *-Info.plist with your equivalent set above (Not quite sure why this isn't working automatically at the moment) and be sure to check NSMainNibFile keys for blank strings as this will break the app on launch.
+
+    *Requires the following to fixed before this can be automated*
+
+    http://stackoverflow.com/questions/18618001/cordova-3-0-plugin-plist-config
+
+4. Add the following to your config.xml
+
+```
+<feature name="FacebookConnect">
+    <param name="ios-package" value="FacebookConnectPlugin" />
+</feature>
+```
+
+Thats it. This version mirrors the current web javascript sdk provided by Facebook. This makes life easy when you want to use the same code between your web version and phonegap. The Facebook SDK will be pulled in with your include of phonegap.js
+
+```JavaScript
+if (phonegap.isEnabled()) {
+  document.addEventListener('deviceready', function () {
+    FB.init({
+      appId: FBAPPID,                 // App ID from the app dashboard
+      channelUrl: '//localhost/channel.html',        // Channel file for x-domain comms
+      nativeInterface: CDV.FB,
+      status: true,
+      frictionlessRequests: true,
+      useCachedDialogs: false
+    });
+  }, false);
+} else {
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId: FBAPPID,                        // App ID from the app dashboard
+      channelUrl: 'http://localhost/channel.html', // Channel file for x-domain comms
+      status: true,                                 // Check Facebook Login status
+      frictionlessRequests: true,
+      useCachedDialogs: false
+    });
+  };
+
+  // Load the SDK asynchronously
+  (function(d, s, id){
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/all.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+}
+```
 
 ## Manual Android Installation
 
