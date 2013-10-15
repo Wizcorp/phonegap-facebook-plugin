@@ -43,6 +43,8 @@
  */
 - (void)onAppDidBecomeActive:(NSNotification*)notification
 {
+    [FBSettings setDefaultAppID:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"]];
+    [FBAppEvents activateApp];
     // We need to properly handle activation of the application with regards to Facebook Login
     // (e.g., returning from iOS 6.0 Login Dialog or from fast app switching).
     // See https://developers.facebook.com/docs/tutorials/ios-sdk-tutorial/authenticate/
