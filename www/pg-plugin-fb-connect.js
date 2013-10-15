@@ -3,7 +3,6 @@ var exec = require('cordova/exec');
 
 CDV = {
   init: function (apiKey, fail) {
-    console.log('CDV FB.init');
     // create the fb-root element if it doesn't exist
     if (!document.getElementById('fb-root')) {
       var elem = document.createElement('div');
@@ -33,16 +32,13 @@ CDV = {
             FB.Auth.setAuthResponse(authResponse, 'connected');
           }
         }
-        console.log('Cordova Facebook Connect plugin initialized successfully.');
       }, (fail ? fail : null), 'FacebookConnect', 'init', [apiKey]
     );
   },
 
   login: function (params, cb, fail) {
     params = params || { scope: '' };
-    console.log('CDV FB.login');
     exec(function (e) { // login
-      console.log('Login event', e, FB);
       if (e.authResponse && e.authResponse.expiresIn) {
         var expirationTime = e.authResponse.expiresIn === 0
           ? 0
@@ -55,23 +51,19 @@ CDV = {
   },
 
   logout: function (cb, fail) {
-    console.log('CDV FB.logout');
     exec(function (e) {
       localStorage.removeItem('cdv_fb_session');
-      //FB.Auth.setAuthResponse(null, 'notConnected');
       if (cb) cb(e);
     }, (fail ? fail : null), 'FacebookConnect', 'logout', []);
   },
 
   getLoginStatus: function (cb, fail) {
-    console.log('CDV FB.getLoginStatus');
     exec(function (e) {
       if (cb) cb(e);
     }, (fail ? fail : null), 'FacebookConnect', 'getLoginStatus', []);
   },
 
   dialog: function (params, cb, fail) {
-    console.log('CDV FB.dialog');
     exec(function (e) { // login
       if (cb) cb(e);
     }, (fail ? fail : null), 'FacebookConnect', 'showDialog', [params]);

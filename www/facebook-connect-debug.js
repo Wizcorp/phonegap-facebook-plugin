@@ -7686,20 +7686,16 @@ try {window.FB || (function(window) {
       // CORDOVA PATCH
       // If the nativeInterface arg is specified then call out to the nativeInterface
       // which uses the native app rather than using the iframe / popup web
-      console.log('FB Method', method);
       if (Runtime.getNativeInterface()) {
         NFB = Runtime.getNativeInterface();
         switch (method) {
           case 'auth.login':
-            console.log('FB auth.login')
             NFB.login(params, cb, function(e) {alert('Cordova Facebook Connect plugin fail on login!' + e);});
             break;
           case 'permissions.request':
-            console.log('FB permissions.request');
             NFB.login(params, cb, function(e) {alert('Cordova Facebook Connect plugin fail on login!' + e);});
             break;
           case 'permissions.oauth':
-            console.log('FB permissions.oauth');
             NFB.login(params, function(e) {
               // Take the auth response from the native request and set the javascript side to match it
               Auth.setAuthResponse(e.authResponse, 'connected');
@@ -8860,8 +8856,6 @@ try {window.FB || (function(window) {
       // CORDOVA PATCH
       if ('nativeInterface' in options) {
         Runtime.setNativeInterface(options.nativeInterface);
-        console.log('Native Interface found for PhoneGap', Runtime.getNativeInterface());
-        //Runtime.getNativeInterface().init(options.apiKey, function(e) {alert('Cordova Facebook Connect plugin fail on init!');});
       }
       // END PATCH
 
