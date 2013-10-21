@@ -184,6 +184,8 @@ public class ConnectPlugin extends CordovaPlugin {
         		pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before showDialog.");
         	}
         	
+        }else{
+        	return false;
         }
         return resultToBoolean(pr);
     }
@@ -228,13 +230,16 @@ public class ConnectPlugin extends CordovaPlugin {
     private boolean resultToBoolean(PluginResult res){
     	if(res.getStatus()==PluginResult.Status.OK.ordinal()){
     		cbc.success(res.getMessage());
+    		Log.v(TAG,"return exec success");
     		return true;
     	}else if(res.getStatus()==PluginResult.Status.NO_RESULT.ordinal()){
-    		cbc.error(res.getMessage());
+    		//cbc.error(res.getMessage()); # don't return anything if it's no result
+    		Log.v(TAG,"return exec no result error");
     		return true;
     	}else{
     		cbc.error(res.getMessage());
-    		return false;
+    		Log.v(TAG,"return exec error: "+res.getMessage());
+    		return true;
     	}
 		
     	
@@ -300,16 +305,23 @@ public class ConnectPlugin extends CordovaPlugin {
                         JSONObject o = new JSONObject(fba.facebook.request("/me"));
                         fba.userId = o.getString("id");
                         //fba.success(getResponse(), fba.callbackId);
+                        Log.d(TAG, "calling success");
                         cbc.success(getResponse());
                     } catch (MalformedURLException e) {
                         // TODO Auto-generated catch block
+                    	Log.d(TAG, "MalformedURLException");
                         e.printStackTrace();
+                        cbc.error(getResponse());
                     } catch (IOException e) {
                         // TODO Auto-generated catch block
+                    	Log.d(TAG, "IOException");
                         e.printStackTrace();
+                        cbc.error(getResponse());
                     } catch (JSONException e) {
                         // TODO Auto-generated catch block
+                    	Log.d(TAG, "JSONException");
                         e.printStackTrace();
+                        cbc.error(getResponse());
                     }
                 }
             });
