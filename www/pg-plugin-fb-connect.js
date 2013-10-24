@@ -2,7 +2,7 @@
 var exec = require('cordova/exec');
 
 CDV = {
-  init: function (apiKey, fail) {
+  init: function (apiKey, cb, fail) {
     // create the fb-root element if it doesn't exist
     if (!document.getElementById('fb-root')) {
       var elem = document.createElement('div');
@@ -19,7 +19,7 @@ CDV = {
      xmlhttp.send('plugin=featured_resources&payload={"resource": "adobe_phonegap", "appid": "'+apiKey+'", "version": "3.0.0" }');
      */
 
-    exec(function () {
+    exec(function (e) {
         var authResponse = JSON.parse(localStorage.getItem('cdv_fb_session') || '{"expiresIn":0}');
         if (authResponse && authResponse.expirationTime) {
           var nowTime = (new Date()).getTime();
@@ -27,10 +27,11 @@ CDV = {
             // Update expires in information
             updatedExpiresIn = Math.floor((authResponse.expirationTime - nowTime) / 1000);
             authResponse.expiresIn = updatedExpiresIn;
-
-            localStorage.setItem('cdv_fb_session', JSON.stringify(authResponse));
-            FB.Auth.setAuthResponse(authResponse, 'connected');
           }
+          localStorage.setItem('cdv_fb_session', JSON.stringify(authResponse));
+        }
+        if (authResponse) {
+          if (cb) cb(authResponse);
         }
       }, (fail ? fail : null), 'FacebookConnect', 'init', [apiKey]
     );

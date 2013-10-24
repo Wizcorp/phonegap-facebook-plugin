@@ -8815,8 +8815,9 @@ try {window.FB || (function(window) {
     FB.provide('Frictionless', Frictionless);
 
   },3);
-  __d("sdk.init",["sdk.Cookie","copyProperties","createArrayFrom","sdk.ErrorHandling","sdk.Event","Log","QueryString","sdk.Runtime"],function(global,require,requireDynamic,requireLazy,module,exports) {
+  __d("sdk.init",["sdk.Auth", "sdk.Cookie","copyProperties","createArrayFrom","sdk.ErrorHandling","sdk.Event","Log","QueryString","sdk.Runtime"],function(global,require,requireDynamic,requireLazy,module,exports) {
 
+    var Auth = require('sdk.Auth');
     var Cookie = require('sdk.Cookie');
     var copyProperties = require('copyProperties');
     var createArrayFrom = require('createArrayFrom');
@@ -8832,7 +8833,6 @@ try {window.FB || (function(window) {
         Log.warn(
           'FB.init has already been called - this could indicate a problem');
       }
-
 
       if (/number|string/.test(typeof options)) {
         Log.warn('FB.init called with invalid parameters');
@@ -8856,6 +8856,9 @@ try {window.FB || (function(window) {
       // CORDOVA PATCH
       if ('nativeInterface' in options) {
         Runtime.setNativeInterface(options.nativeInterface);
+        Runtime.getNativeInterface().init(appId, function(e) {
+          Auth.setAuthResponse(e.authResponse, 'connected');
+        }, function(e) { alert('Cordova Facebook Connect plugin failed on init' + e); });
       }
       // END PATCH
 
