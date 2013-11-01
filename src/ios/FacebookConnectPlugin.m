@@ -202,7 +202,11 @@
 {    
     NSArray *permissions = nil;
     if ([command.arguments count] > 0) {
-        permissions = command.arguments;
+        // sanitize permissions array
+        // remove empty strings
+        permissions = [command.arguments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+            return ![evaluatedObject isEqual:@""];
+        }]];
     }
     
     // save the callbackId for the login callback
