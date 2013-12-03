@@ -35,9 +35,12 @@
     </config-file>
 
     <engines>
-      <engine name="cordova" version=">=3.0.0" />
+      <engine name="cordova" version=">=3.1.0" />
     </engines>
-    
+
+    <preference name="APP_ID" />
+    <preference name="APP_NAME" />
+
     <!-- android -->
     <platform name="android">
 
@@ -106,6 +109,7 @@
 
         <!-- release facebook 3.8 framework>
         <source-file src="src/ios/FacebookSDK.framework" framework="true" /-->
+        <framework src="CoreGraphics.framework" />
 
         <!-- facebook header files >
         <header-file src="src/ios/FacebookSDK.framework/Versions/A/Headers/FacebookSDK.h" target-dir="facebook" />
