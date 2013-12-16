@@ -22,6 +22,7 @@
     <asset src="www/facebook-js-sdk.js" target="facebook-js-sdk.js" />
     
     <config-file target="config.xml" parent="/*">
+      <access origin="http://static.ak.facebook.com" />
       <access origin="https://m.facebook.com" />
       <access origin="https://graph.facebook.com" />
       <access origin="https://api.facebook.com" />
@@ -98,15 +99,14 @@
           </array>
         </config-file>
 
-        <!-- release facebook 3.5.2 framework -->
-        <source-file src="src/ios/frameworks/FacebookSDK-3.5.2-Release.a" framework="true" />
-        
-        <!-- debug facebook 3.5.2 framework  -->
-        <!-- <source-file src="src/ios/frameworks/FacebookSDK-3.5.2-Debug.a" framework="true" /> -->
+        <!-- release facebook 3.10 framework -->
+        <source-file src="src/ios/frameworks/FacebookSDK" framework="true" />
 
         <!-- facebook header files -->
+        <header-file src="src/ios/headers/FacebookSDK.h" target-dir="facebook" />
         <header-file src="src/ios/headers/FBAccessTokenData.h" target-dir="facebook" />
         <header-file src="src/ios/headers/FBAppCall.h" target-dir="facebook" />
+        <header-file src="src/ios/headers/FBAppEvents.h" target-dir="facebook" />
         <header-file src="src/ios/headers/FBAppLinkData.h" target-dir="facebook" />
         <header-file src="src/ios/headers/FBCacheDescriptor.h" target-dir="facebook" />
         <header-file src="src/ios/headers/FBDialogs.h" target-dir="facebook" />
@@ -138,11 +138,9 @@
         <header-file src="src/ios/headers/FBUserSettingsViewController.h" target-dir="facebook" />
         <header-file src="src/ios/headers/FBViewController.h" target-dir="facebook" />
         <header-file src="src/ios/headers/FBWebDialogs.h" target-dir="facebook" />
-        <header-file src="src/ios/headers/FacebookSDK.h" target-dir="facebook" />
         <header-file src="src/ios/headers/NSError+FBError.h" target-dir="facebook" />
-        
+
         <!-- facebook resource bundles -->
-        <resource-file src="src/ios/resources/FacebookSDKResources.bundle" />
         <resource-file src="src/ios/resources/FBUserSettingsViewResources.bundle" />
         
         <!-- system frameworks -->
