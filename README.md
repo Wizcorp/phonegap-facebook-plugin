@@ -55,7 +55,7 @@ If you plan on rolling this out on Android, please note that you will need to [g
 ## Adobe PhoneGap Build
 
 If using this plugin on Adobe PhoneGap Build you can ignore the instructions below and go straight to the 
-PhoneGap Build documentation available [here] (https://build.phonegap.com/docs/plugins#facebookconnect).
+PhoneGap Build documentation available [here] (https://build.phonegap.com/plugins/257).
 
 ## Manual Android Installation
 
