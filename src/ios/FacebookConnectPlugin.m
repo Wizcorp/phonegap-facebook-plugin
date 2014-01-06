@@ -71,8 +71,13 @@
             break;
         case FBSessionStateClosed:
         case FBSessionStateClosedLoginFailed:
-            [FBSession.activeSession closeAndClearTokenInformation];
-            self.userid = @"";
+                {
+                [FBSession.activeSession closeAndClearTokenInformation];
+                self.userid = @"";
+                CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                              messageAsDictionary:[self responseObject]];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
+                }
             break;
         default:
             break;
