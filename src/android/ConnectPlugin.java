@@ -240,7 +240,15 @@ public class ConnectPlugin extends CordovaPlugin {
         public void onComplete(Bundle values) {
             //  Handle a successful dialog
             Log.d(TAG,values.toString());
-            this.fba.cb.success();
+			try {
+				JSONObject response = new JSONObject();
+				for(String key : values.keySet()) {
+					response.put(key, values.getString(key));
+				}
+				this.fba.cb.success(response);
+			} catch (JSONException e) {
+					e.printStackTrace();
+			}
         }
 
         public void onFacebookError(FacebookError e) {
