@@ -69,7 +69,7 @@
 					   console.log("fdata: "+fdata);
                        response.data.forEach(function(item) {
                                              var d = document.createElement('div');
-                                             d.innerHTML = "<img src="+item.picture+"/>"+item.name;
+                                             d.innerHTML = "<img src="+item.picture.data.url+">"+item.name;
                                              data.appendChild(d);
                                              });
                        }
