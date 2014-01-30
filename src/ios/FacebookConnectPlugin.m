@@ -20,16 +20,35 @@
 
 @implementation FacebookConnectPlugin
 
+
+-(CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
+    NSLog(@"Init FacebookConnect Session");
+    self = (FacebookConnectPlugin *)[super initWithWebView:theWebView];
+    self.userid = @"";
+    
+    [FBSession openActiveSessionWithReadPermissions:nil
+                                       allowLoginUI:NO
+                                  completionHandler:^(FBSession *session,
+                                                      FBSessionState state,
+                                                      NSError *error) {
+                                      [self sessionStateChanged:session
+                                                          state:state
+                                                          error:error];
+                                  }];
+    return self;
+}
+
 /* This overrides CDVPlugin's method, which receives a notification when handleOpenURL is called on the main app delegate */
 - (void) handleOpenURL:(NSNotification*)notification
 {
-        NSURL* url = [notification object];
+    NSLog(@"handle url: %@", [notification object]);
+    NSURL* url = [notification object];
 
-        if (![url isKindOfClass:[NSURL class]]) {
+    if (![url isKindOfClass:[NSURL class]]) {
         return;
-        }
-    
-        [FBSession.activeSession handleOpenURL:url];
+    }
+
+    [FBSession.activeSession handleOpenURL:url];
 }
 
 /*
@@ -138,38 +157,27 @@
     return YES;
 }
 
-- (void) init:(CDVInvokedUrlCommand*)command
-{    
-    self.userid = @"";
-    
-    [FBSession openActiveSessionWithReadPermissions:nil
-                                   allowLoginUI:NO
-                              completionHandler:^(FBSession *session,
-                                                  FBSessionState state,
-                                                  NSError *error) {
-                                  [self sessionStateChanged:session
-                                                      state:state
-                                                      error:error];
-                              }];
-    
-    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-
 - (void) getLoginStatus:(CDVInvokedUrlCommand*)command
-{    
+{
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                   messageAsDictionary:[self responseObject]];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void) login:(CDVInvokedUrlCommand*)command
-{
+- (void)login:(CDVInvokedUrlCommand *)command {
     BOOL permissionsAllowed = YES;
     NSString *permissionsErrorMessage = @"";
     NSArray *permissions = nil;
     if ([command.arguments count] > 0) {
         permissions = command.arguments;
+    }
+    if (permissions == nil) {
+        // We need permissions
+        permissionsErrorMessage = @"No permissions specified at login";
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                          messageAsString:permissionsErrorMessage];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
     }
     
     // save the callbackId for the login callback
@@ -183,6 +191,7 @@
         // To mix both, we'll use deprecated methods
         BOOL publishPermissionFound = NO;
         BOOL readPermissionFound = NO;
+        
         for (NSString *p in permissions) {
             if ([self isPublishPermission:p]) {
                 publishPermissionFound = YES;
@@ -195,6 +204,7 @@
                 break;
             }
         }
+        
         if (publishPermissionFound && readPermissionFound) {
             // Mix of permissions, not allowed
             permissionsAllowed = NO;
@@ -237,9 +247,6 @@
             permissionsAllowed = NO;
             permissionsErrorMessage = @"You can only ask for read permissions initially";
         }
-        
-        
-        
     }
     
     if (!permissionsAllowed) {
@@ -314,10 +321,11 @@
              } else {
                  if (result == FBWebDialogResultDialogNotCompleted) {
                      // User clicked the "x" icon to Cancel
-                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
+                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                      messageAsString:@"User cancelled."];
                  } else {
                      // Send the URL parameters back, for a requests dialog, the "request" parameter
-                     // will include the resutling request id. For a feed dialog, the "post_id"
+                     // will include the resluting request id. For a feed dialog, the "post_id"
                      // parameter will include the resulting post id.
                      NSDictionary *params = [self parseURLParams:[resultURL query]];
                      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
