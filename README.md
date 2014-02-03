@@ -4,7 +4,10 @@ This is the official plugin for Facebook in Apache Cordova/PhoneGap!
 
 The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) allows you to use the same JavaScript code in your Cordova application as you use in your web application. However, unlike in the browser, the Cordova application will use the native Facebook app to perform Single Sign On for the user.  If this is not possible then the sign on will degrade gracefully using the standard dialog based authentication.
 
-* Supported on PhoneGap (Cordova) v3.0.0 and above.
+* Supported on PhoneGap (Cordova) v3.3.0 and above.
+* This plugin is build for
+	* iOS FacebookSDK 3.11.1
+	* Android FacebookSDK 3.6.0
 
 ## Facebook Requirements and Set-Up
 
@@ -178,14 +181,104 @@ Make sure you add the scheme to your [PROJECTNAME]-Info.plist (located as one of
 </pre>
 
 ## Automatic Installation
-This plugin is based on [plugman](https://git-wip-us.apache.org/repos/asf?p=cordova-plugman.git;a=summary). To install it to your app, simply execute plugman as follows; It does not currently work with plugman at all. WORK IN PROGRESS 
 
-	plugman install --platform [PLATFORM] --project [TARGET-PATH] --plugin [PLUGIN-PATH] --variable APP_ID="[APP_ID]" --variable APP_NAME="[APP_NAME]"
+This plugin is based on [plugman](https://git-wip-us.apache.org/repos/asf?p=cordova-plugman.git;a=summary). To install it to your app, execute the following (and replace variables where necessary)...
+
+### iOS
+
+
+	cordova create myApp
+
+	cd myApp/
+
+	cordova platform add ios
+
+	cordova -d plugin add /Users/your/path/here/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
+
+### Android
+
+	cordova create myApp
+
+	cd myApp/
+
+	cordova platform add android
+
+	cordova -d plugin add /Users/your/path/here/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
 	
-	where
-		[PLATFORM] = ios or android
-		[TARGET-PATH] = path to folder containing your phonegap project
-		[PLUGIN-PATH] = path to folder containing this plugin
-		[APP_ID] = Your APP_ID as registered on Facebook
+**Android requires an additional step which is to reference the FacebookSDK project as a library to your project.**
 
+Open your project in Eclipse (New > Project... Existing Android project from source), import everything (***see Img. 1***).
+
+![image](./android_setup_1.png) ***Img. 1***
+
+In Eclipse, right click your project folder in the left-had column. Select "Properties", select Android in the left column and in the right side of the window add FacebookSDK as a library (***see Img. 2***).
+
+![image](./android_setup_2.png) ***Img. 2***
+
+## JS API
+
+###facebookConnectPlugin.login(Function success, Function failure)
+
+Success function returns an Object like;
+
+	{
+		id: "634565435",
+		lastName: "bob"
+		...
+	}
+	
+Failure function returns an error String.
+
+###facebookConnectPlugin.logout(Function success, Function failure)
+
+###facebookConnectPlugin.getLoginStatus(Function success, Function failure)
+
+Success function returns a status String.
+
+###facebookConnectPlugin.showDialog(JSONObject options, Function success, Function failure)
+
+Example options:
+
+	{
+		method: "feed" | "apprequests"
+	}
+	
+Success function returns an Object with `postId` as String.
+Failure function returns an error String.
+
+## Sample JavaScript Code
+
+### Login
+
+In your `onDeviceReady` event add the following
+
+	var fbLoginSuccess = function (userData) {
+		alert("UserInfo: " + JSON.stringify(userData));
+	}
+
+	facebookConnectPlugin.login(["basic_info"], 
+        fbLoginSuccess, 
+        function (error) { alert("" + error) }
+    );
+    
+### Get Status & Post-to-wall
+
+For a more instructive example change the above `fbLoginSuccess` to;
+
+	var fbLoginSuccess = function (userData) {
+		alert("UserInfo: " + JSON.stringify(userData)); 
+    	facebookConnectPlugin.getLoginStatus( 
+    		function (status) { 
+    			alert("current status: " + JSON.stringify(status)); 
+    			
+    			var options = { method:"feed" }; 
+    			facebookConnectPlugin.showDialog(options, 
+    				function (result) {
+        				alert("Posted. " + JSON.stringify(result));				}, 
+        		function (e) {
+    				alert("Failed: " + e);
+    			});
+    		}
+    	);
+    };
 
