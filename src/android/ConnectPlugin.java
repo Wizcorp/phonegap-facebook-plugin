@@ -33,7 +33,7 @@ import com.facebook.widget.WebDialog.OnCompleteListener;
 
 public class ConnectPlugin extends CordovaPlugin {
 
-    private static final String PUBLISH_PERMISSION_PREFIX = "publish";
+	private static final String PUBLISH_PERMISSION_PREFIX = "publish";
     private static final String MANAGE_PERMISSION_PREFIX = "manage";
     @SuppressWarnings("serial")
 	private static final Set<String> OTHER_PUBLISH_PERMISSIONS = new HashSet<String>() {{
@@ -241,39 +241,39 @@ public class ConnectPlugin extends CordovaPlugin {
         	// Setup callback context
         	final OnCompleteListener dialogCallback = new OnCompleteListener() {
 
-				@Override
-				public void onComplete(Bundle values, FacebookException exception) {
-					String errMsg;
-					if (exception != null) {
-						// User clicked "x"
-						if (exception instanceof FacebookOperationCanceledException) {
-							errMsg = "User cancelled dialog";
-							Log.e(TAG, errMsg);
-					        showDialogContext.error(errMsg);
-						} else if (exception instanceof FacebookDialogException) {
-							// Dialog error
-							errMsg = "Dialog error: " + exception.getMessage();
-							Log.e(TAG, errMsg);
-							showDialogContext.error(errMsg);
-						} else {
-							// Facebook error
-							errMsg = "Facebook error: " + exception.getMessage();
-							Log.e(TAG, errMsg);
-							showDialogContext.error(errMsg);
-						}
-					} else {
-						// Handle a successful dialog:
-						// Send the URL parameters back, for a requests dialog, the "request" parameter
+        		@Override
+        		public void onComplete(Bundle values, FacebookException exception) {
+        			String errMsg;
+        			if (exception != null) {
+	        			// User clicked "x"
+	        			if (exception instanceof FacebookOperationCanceledException) {
+		        			errMsg = "User cancelled dialog";
+		        			Log.e(TAG, errMsg);
+		        			showDialogContext.error(errMsg);
+		        		} else if (exception instanceof FacebookDialogException) {
+			        		// Dialog error
+			        		errMsg = "Dialog error: " + exception.getMessage();
+			        		Log.e(TAG, errMsg);
+			        		showDialogContext.error(errMsg);
+			        	} else {
+				        	// Facebook error
+				        	errMsg = "Facebook error: " + exception.getMessage();
+				        	Log.e(TAG, errMsg);
+				        	showDialogContext.error(errMsg);
+				        }
+				    } else {
+					    // Handle a successful dialog:
+					    // Send the URL parameters back, for a requests dialog, the "request" parameter
 					    // will include the resulting request id. For a feed dialog, the "post_id"
 					    // parameter will include the resulting post id.
-						// Note: If the user clicks on the Cancel button, the parameter will be empty
-						if (values.size() > 0) {
-							JSONObject response = new JSONObject();
-							try {
-								Set<String> keys = values.keySet();
-								for (String key : keys) {
-									response.put(key, values.get(key));
-								}
+					    // Note: If the user clicks on the Cancel button, the parameter will be empty
+					    if (values.size() > 0) {
+						    JSONObject response = new JSONObject();
+						    try {
+						    	Set<String> keys = values.keySet();
+						    	for (String key : keys) {
+							    	response.put(key, values.get(key));
+							   	}
 							} catch (JSONException e) {
 								e.printStackTrace();
 							}
@@ -281,11 +281,11 @@ public class ConnectPlugin extends CordovaPlugin {
 						} else {
 							errMsg = "User cancelled dialog";
 							Log.e(TAG, errMsg);
-					        showDialogContext.error(errMsg);
+							showDialogContext.error(errMsg);
 						}
 					}
 				} 
-        	};
+			};
         	
         	if (this.method.equalsIgnoreCase("feed")) {
     			Runnable runnable = new Runnable() {
@@ -326,18 +326,18 @@ public class ConnectPlugin extends CordovaPlugin {
     	if (cordova != null) {
     		Request.newMeRequest(session, new Request.GraphUserCallback() {
     			
-				@Override
-				public void onCompleted(GraphUser user, Response response) {
-		        	// Create a new result with response data
-					if (loginContext != null) {
-						GraphObject graphObject = response.getGraphObject();
-						Log.d(TAG, "returning login object " + graphObject.getInnerJSONObject().toString());
-						loginContext.success(graphObject.getInnerJSONObject());
-						loginContext = null;
-					}
-				}
-		    }).executeAsync();
-    	}
+    			@Override
+    			public void onCompleted(GraphUser user, Response response) {
+    				// Create a new result with response data
+    				if (loginContext != null) {
+	    				GraphObject graphObject = response.getGraphObject();
+	    				Log.d(TAG, "returning login object " + graphObject.getInnerJSONObject().toString());
+	    				loginContext.success(graphObject.getInnerJSONObject());
+	    				loginContext = null;
+	    			}
+	    		}
+	    	}).executeAsync();
+	    }
     }
     
     /*

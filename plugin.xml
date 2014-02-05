@@ -22,11 +22,11 @@
     <asset src="www/facebook-js-sdk.js" target="facebook-js-sdk.js" />
     
     <config-file target="config.xml" parent="/*">
-		<access origin="https://m.facebook.com" />
-		<access origin="https://graph.facebook.com" />
-		<access origin="https://api.facebook.com" />
-		<access origin="https://*.fbcdn.net" />
-		<access origin="https://*.akamaihd.net" />
+	    <access origin="https://m.facebook.com" />
+	    <access origin="https://graph.facebook.com" />
+	    <access origin="https://api.facebook.com" />
+	    <access origin="https://*.fbcdn.net" />
+	    <access origin="https://*.akamaihd.net" />
     </config-file>
     
     <preference name="APP_ID" />
@@ -74,14 +74,13 @@
     
     <!-- ios -->
     <platform name="ios">
-      
-        <config-file target="config.xml" parent="/*">
-    		<feature name="FacebookConnectPlugin">
-				<param name="ios-package" value="FacebookConnectPlugin"/>
-				<param name="onload" value="true" />
-			</feature>
-			<plugin name="FacebookConnectPlugin" value="FacebookConnectPlugin"/>
-        </config-file>
+	    <config-file target="config.xml" parent="/*">
+		    <feature name="FacebookConnectPlugin">
+			    <param name="ios-package" value="FacebookConnectPlugin"/>
+			    <param name="onload" value="true" />
+		    </feature>
+		    <plugin name="FacebookConnectPlugin" value="FacebookConnectPlugin"/>
+	    </config-file>
 
         <header-file src="src/ios/FacebookConnectPlugin.h" />
         <source-file src="src/ios/FacebookConnectPlugin.m" />
