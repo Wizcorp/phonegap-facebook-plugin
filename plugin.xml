@@ -28,10 +28,7 @@
       <access origin="https://*.fbcdn.net" />
       <access origin="https://*.akamaihd.net" />
     </config-file>
-    
-    <preference name="APP_ID" />
-	<preference name="APP_NAME" />
-    
+
     <engines>
       <engine name="cordova" version=">=3.0.0" />
     </engines>
@@ -69,7 +66,9 @@
     
     <!-- ios -->
     <platform name="ios">
-      
+	<preference name="APP_ID" />
+	<preference name="APP_NAME" />
+
         <config-file target="config.xml" parent="/*">
             <feature name="org.apache.cordova.facebook.Connect">
                 <param name="ios-package" value="FacebookConnectPlugin" />
