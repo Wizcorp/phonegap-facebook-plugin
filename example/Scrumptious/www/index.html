@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Scrumptious" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/" />
+  <meta property="og:image" content="images/scrumptious_logo_large.png" />
+  <meta property="og:site_name" content="Scrumptious" />
+  <meta property="og:description" content="Scrumptious app" />
+  <meta property="fb:app_id" content="273476932664248" />
+
+  <title>Scrumptious</title>
+  <link rel="stylesheet"  href="css/jquery.mobile-1.2.0.css" />
+  <link rel="stylesheet"  href="css/base.css" />
+  <script src="js/jquery.js"></script>
+  <script src="js/jquery.mobile-1.2.0.js"></script>
+  <script src="js/mustache.js"></script>
+  <script src="js/main.js"></script>
+  <!-- cordova -->
+  <script type="text/javascript" src="phonegap.js"></script>
+  <!-- cordova facebook plugin -->
+  <script type="text/javascript" src="cdv-plugin-fb-connect.js"></script>
+  <!-- facebook js sdk -->
+  <script type="text/javascript" src="facebook-js-sdk.js"></script>
+  
+	
+</head>
+<body>
+	<!-- Facebook JavaScript -->
+	<div id="fb-root"></div>
+
+
+	<!-- Login page -->
+	<div data-role="page" id="login" class="type-home">
+		<div data-role="content">
+			<div id="login-header">
+				<img src="images/scrumptious_logo.png" alt="Scrumptious" /><span class="tagline">Scrumptious</span>
+			</div>
+			<div id="login-intro">
+				<p class="intro">To get started, login using Facebook</p></div>
+			</div>
+			<div class="login">
+                <a onclick="promptLogin()" class="login-button"> 
+                  <span>Login</span>
+                </a>
+            </div>
+		</div>
+	</div>
+	<!-- Main menu page -->
+	<div data-role="page" id="menu" class="type-menu">
+		<div data-role="header">
+      <div class="ui-bar ui-bar-a">
+
+        <span class="topnav-app">Scrumptious</span>
+
+        <span id="user-identity"></span>
+        <!-- menu trigger -->
+        <a data-icon="arrow-d" data-iconpos="notext" href="#menu" data-rel="popup" data-position-to="#menu-anchor" data-transition="slidedown" data-inline="true" class="ui-btn-right">Menu</a>
+      </div>
+		</div><!-- /header -->
+
+		<div data-role="content">
+      <!-- menu position helper -->
+      <div id="menu-anchor"></div>
+    <!-- menu content -->
+    <div id="menu" data-role="popup">
+      <ul data-role="listview" data-inset="true">
+        <li data-icon="false"><a id="logout" href="#login">Log Out</a></li>
+      </ul>
+    </div>
+
+      <div id="confirmation"></div>
+			<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="b">
+				<li><a href="#meals"><img src="images/action-eating.png" /> <h3>What are you eating?</h3><p id="select-meal">Select one</p></a></li>
+				<li><a href="#places" onclick="getNearby()"><img src="images/action-location.png" /> <h3>Where are you?</h3><p id="select-location">Select one</p></a></li>
+				<li><a href="#friends" onclick="getFriends()"><img src="images/action-people.png" /> <h3>With whom?</h3><p id="select-friends">Select friends</p></a></li>
+			</ul>
+		</div>
+		<div class="submit-button">
+		    <a id="announce" href="#" data-role="button" class="ui-disabled">Announce</a>
+	    </div>
+	</div>
+	<!-- Select a Meal page -->
+	<div data-role="page" id="meals" class="type-menu-drilldown">
+		<div data-role="header">
+			<a data-rel="back" data-icon="back">Back</a>
+			<h1>Select a Meal</h1>
+		</div>
+
+		<div data-role="content">
+			<ul data-role="listview" data-inset="false" data-theme="c" id="meal-list"></ul>
+		</div>
+	</div>
+	<!-- Details for a meal page -->
+	<div data-role="page" id="meal-details" class="type-meal-details">
+		<div data-role="header">
+			<a data-rel="back" data-icon="back">Back</a>
+			<h1>Meal</h1>
+		</div>
+
+		<div data-role="content">
+			<div id="selected_meal"></div>
+			<div class="submit-button">
+				<a id="detail-meal-select" href="#menu" data-role="button">Select</a>
+			</div>
+		</div>
+	</div>
+	<!-- Select a Place page -->
+	<div data-role="page" id="places" class="type-menu-drilldown">
+		<div data-role="header">
+			<a data-rel="back" data-icon="back">Back</a>
+			<h1>Nearby</h1>
+			<a id="places-done" href="#menu" class="ui-btn-right">Done</a>
+		</div>
+
+		<div data-role="content">
+			<ul data-role="listview" data-inset="false" data-theme="c" data-filter="true" id="places-list"></ul>
+		</div>
+	</div>
+	<!-- Select friends page -->
+	<div data-role="page" id="friends" class="type-menu-drilldown">
+		<div data-role="header">
+			<a data-rel="back" data-icon="back">Back</a>
+			<h1>Select Friends</h1>
+			<a id="friends-done" href="#menu" class="ui-btn-right">Done</a>
+		</div>
+
+		<div data-role="content">
+			<ul data-role="listview" data-inset="false" data-theme="c" data-filter="true" id="friends-list"></ul>
+		</div>
+	</div>
+
+
+    <script type="x-mustache-template" id="meal_list_tmpl">
+      {{#.}}
+      <li><a href="#meal-details" data-name="{{ title }}" data-transition="slide"><img src="images/meals/{{ id }}.png"></img>{{ title }}</a></li>
+      {{/.}}
+    </script>
+
+    <script type="x-mustache-template" id="selected_meal_tmpl">
+      <h3>{{ title }}</h3>
+      <br>
+      <img src="images/meals/{{ id }}-full.png"></img>
+      <br><br> 
+    </script>
+
+    <script type="x-mustache-template" id="places_list_tmpl">
+      {{#.}}
+      <li data-icon="false" data-name="{{ id }}"><a href="#" data-transition="slide"><img src="{{ picture.data.url }}"></img>{{ name }}</a></li>
+      {{/.}}
+    </script>
+
+    <script type="x-mustache-template" id="friends_list_tmpl">
+      {{#.}}
+      <li data-icon="false" data-name="{{ id }}"><a href="#" data-transition="slide"><img src="{{ picture.data.url }}"></img>{{ name }}</a></li>
+      {{/.}}
+    </script>
+    
+
+    <!-- Facebook JavaScript -->
+    <script type="text/javascript">
+         document.addEventListener('deviceready', function() {
+            // window.fbAsyncInit = function() {
+            console.log('here')
+              FB.init({
+                  appId: '273476932664248',
+                  nativeInterface: CDV.FB,
+                  status     : true, // check login status
+                  //cookie     : true, // enable cookies to allow the server to access the session
+                 // xfbml: true,
+                  useCachedDialogs: false
+              });
+              FB.Event.subscribe('auth.statusChange', handleStatusChange);
+              FB.getLoginStatus(handleStatusChange);
+          });
+    </script>
+
+</body>
+</html>

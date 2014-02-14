@@ -1,0 +1,342 @@
+<html xmlns:og="http://ogp.me/ns" xmlns:fb="http://www.facebook.com/2008/fbml" lang="en">
+<head>
+  <title>Hackbook</title>
+  <!-- See https://developers.facebook.com/docs/opengraph/ -->
+  <meta property="og:title" content="Hackbook for Mobile Web" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://apps.facebook.com/mobile-start/" />
+  <meta property="og:site_name" content="Hackbook for Mobile Web" />
+  <meta property="og:image" content="http://www.facebookmobileweb.com/hackbook/img/facebook_icon_large.png"/>
+  <meta property="fb:admins" content="20901205" />
+  
+  <!-- See http://developer.apple.com/library/safari/#documentation/appleapplications/reference/SafariHTMLRef/Articles/MetaTags.html -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  
+  <!-- See https://developer.apple.com/library/safari/#documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html -->
+  <link rel="apple-touch-icon" href="http://www.facebookmobileweb.com/hackbook/img/iphone_icon.png" />
+  <link rel="apple-touch-startup-image" href="http://www.facebookmobileweb.com/hackbook/img/iphone_splash.png" />
+  <link rel="apple-touch-icon-precomposed" href="http://www.facebookmobileweb.com/hackbook/img/iphone_icon.png" />
+  
+  <!-- See http://davidbcalhoun.com/2010/viewport-metatag for information on the viewport tag. -->
+  <meta name="viewport" content="initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+  
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body>
+  <!-- This initializes the Facebook JS SDK. -->
+  <div id="fb-root"></div>
+  
+  <div id="header">
+    <div id="back-link" onclick="openPage('root')"><div id="back">&lt; Back</div></div>
+    <div id="title">Title</div>
+
+    <div id="right-block">
+      <div class="show_when_not_connected">
+        <a onclick="promptLogin()" class="login-button"> 
+          <span>Login</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <div id="action">
+    <div id="loading-icon"></div>
+  
+    <div id="msg"></div>
+  </div>
+  
+  <!-- Page: Homepage -->
+  <div id="page-root" class="page">
+      <div class="show_when_connected">
+        <div id="welcome"><img id="user-picture" /><br /><span id="user-name"></span></div>
+      </div>
+
+     <ul>
+        <li class="menu-item" onclick="openPage('Login');">Login and Permissions</li>
+        <li class="menu-item" onclick="openPage('Requests');">Requests</li>
+        <li class="menu-item" onclick="openPage('News-Feed');">News Feed</li>
+        <li class="menu-item" onclick="openPage('Graph-API');">Graph API</li>
+        <!--<li class="menu-item" onclick="openPage('Credits');" id="credits-button">Credits</li>-->
+        <!-- <li class="menu-item" onclick="openPage('Social-Plugins');">Social Plugins</li> --> 
+    </ul>
+    <div id="like-button"><fb:like url="http://www.cnn.com/" width="275"></fb:like></div>
+  </div>
+  
+  <!-- Page: Login and Permissions -->
+  <div id="page-Login" class="page"> 
+    <p id="main-desc">
+      Facebook Platform uses the OAuth 2.0 protocol for logging a user into your app.
+      The Login button in the top right of this app, shown when you're logged out, is a good example.<br /><br />
+      <strong>Check out the mobile web app tutorial at <a href="http://developers.facebook.com/docs/mobile/web/build//">developers.facebook.com/docs/mobile/web/build/</a></strong>
+    </p>
+      
+    <div class="section">
+      <div class="show_when_not_connected">
+        <h1>Logging the user in</h1>
+        <p>
+          If a user visit your site directly, you will need to ask them to login with Facebook.
+        </p>
+      </div>
+      <div class="show_when_connected">
+        <h1>Logging the user out</h1>
+        <p>
+          You should include a button to enable the user to log out.  Also, you can include a button so that the user can uninstall your app.
+        </p>
+      </div>
+      
+      <div class="show_when_not_connected">
+        <div id="login_button" class="button" onclick="promptLogin()" />Login using Facebook</div>
+      </div>
+      <div class="show_when_connected">
+        <div id="login_button" class="button" onclick="logout()" />Logout</div>
+        <div id="login_button" class="button" onclick="uninstallApp()" />Uninstall app</div>
+      </div>
+    </div>
+  
+    <div class="section">
+      <h1>Asking for extended permissions</h1>
+      <p>
+        If your app needs more than this basic information to function, you must request specific permissions from the user.
+        For example, you might prompt the user to grant access to their Likes in order to recommend related content for them.
+      </p>
+
+      <div id="disabled_perm_user_likes">
+        <div id="extended_permission_button" class="button button-requires-connect" onclick="promptPermission('user_likes')" />Grant the 'user_likes' permission</div>
+      
+        <div class="info-requires-connect">You need to login before you can use this functionality.</div>
+      </div>
+      <div id="enabled_perm_user_likes">
+        <div class="show_when_connected">
+          <p>
+            You've already granted the user_likes permission previously so the button isn't shown.
+          </p>
+      </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Page: Requests -->
+  <div id="page-Requests" class="page"> 
+    <p id="main-desc">
+      Requests allows the user to invite their friends to the app, or to re-engage their friends so they come back to your app.  
+      Friends receive requests in Notifications on Facebook.
+      <br /><br />
+      <strong>Check out the mobile web app tutorial at <a href="http://developers.facebook.com/docs/mobile/web/build//">developers.facebook.com/docs/mobile/web/build/</a></strong>
+    </p>
+    
+    <div class="section">
+      <h1>Request</h1>
+      <p>
+        If you show the request dialog with no friend suggestions, it will automatically show friends that are using your app, as well as friends that have already used your app.
+      </p>
+      <div id="request_button" class="button" onclick="sendRequestBoth()" />Send request</div>
+    </div>
+    
+    <div class="section">
+      <h1>Invite friends not using app</h1>
+      <p>
+        The user can invite their friends that have not started using your application yet.  This will help grow your mobile website virally.
+      </p>
+      
+      <div id="request_button" class="button button-requires-connect" onclick="sendRequestInvite()" />Send invite</div>
+      
+      <div class="info-requires-connect">You need to login before you can use this functionality.</div>
+    </div>
+    
+    <div class="section">
+      <h1>Request to app friends</h1>
+      <p>
+        If a friend of the active user needs to take an action in your mobile web app, you can prompt them to send a request.  
+        This can be used for re-engagement, like telling a friend it's their turn in a board game.
+      </p>
+      <div id="request_button" class="button button-requires-connect" onclick="sendRequest()" />Send request</div>
+      
+      <div class="info-requires-connect">You need to login before you can use this functionality.</div>
+    </div>
+    
+    <div class="section">
+      <h1>Request to targeted friend</h1>
+      <p>
+        If the user's friends need to take an action in your mobile website, you can prompt them to send a request.  
+        This can be used for things like telling a friend it is their turn in a board game.
+      </p>
+      <div id="request_button" class="button button-requires-connect" onclick="sendRequestSingle()" />Send request</div>
+      
+      <div class="info-requires-connect">You need to login before you can use this functionality.</div>
+    </div>
+  </div>
+  
+  <!-- Page: News Feed -->
+  <div id="page-News-Feed" class="page"> 
+    <p id="main-desc">
+      Your app can prompt users to share on their own wall or their friend's wall.  
+      <br /><br />
+      <strong>Check out the mobile web app tutorial at <a href="http://developers.facebook.com/docs/mobile/web/build//">developers.facebook.com/docs/mobile/web/build/</a></strong>
+    </p>
+    
+    <div class="section">
+      <h1>Publishing to the user's wall</h1>
+      <p>
+        This allows a user to post something to their own Wall, which means it will also appear in all of their friends' News Feeds on Facebook.
+      </p>
+      
+      <div id="publish_button" class="button" onclick="publishStory()" />Publish to your wall</div>
+    </div>
+    
+    <div class="section">
+      <h1>Publish to a friend's wall</h1>
+      <p>
+        This allows a user to post something to their friend's Wall, which means it will also appear in all of their mutual friends' News Feeds on Facebook.
+      </p>
+      
+      <div id="publish_button" class="button button-requires-connect" onclick="publishStoryFriend()" />Publish to friend's wall</div>
+      
+      <div class="info-requires-connect">You need to login before you can use this functionality.</div>
+    </div>
+  </div>
+  
+  <!-- Page: Graph API -->
+  <div id="page-Graph-API" class="page"> 
+    <p id="main-desc">
+      The Graph API enables you to read and write data to Facebook.
+      You can utilize what the user has liked, friends, photos, events, as well as most of the data that's available on Facebook.<br /><br />
+      <strong>Check out the mobile web app tutorial at <a href="http://developers.facebook.com/docs/mobile/web/build//">developers.facebook.com/docs/mobile/web/build/</a></strong>
+    </p>
+    
+    <div class="section">
+      <h1>Get user's basic information</h1>
+      <p>
+        You can fetch the user's profile picture and name in order to personalize the experience for them.
+      </p>
+      
+      <div id="user-info"></div>
+  
+      <div class="button button-requires-connect" onclick="getUserBasicInfo();hideButton(this);" />Get your information</div>
+      
+      <div class="info-requires-connect">You need to login before you can use this functionality.</div>
+    </div>
+    
+    <div class="section">
+      <h1>Get user's friends</h1>
+      <p>
+        To make your mobile web app social, you can fetch their friends' information like profile pictures and names.
+      </p>
+      
+      <div id="user-friends"></div>
+      
+      <div class="button button-requires-connect" onclick="getUserFriends();hideButton(this);" />Get your friends</div>
+      
+      <div class="info-requires-connect">You need to login before you can use this functionality.</div>
+      
+    </div>
+    
+    <div class="section">
+      <h1>Get user's recent check-ins</h1>
+      <p>
+        You can fetch fetch their previous Facebook Places check-ins.
+      </p>
+      
+      <div id="checkins"></div>
+  
+      <div id="disabled_perm_user_status">
+          <div class="button button-requires-connect" onclick="promptPermission('user_status')" />Grant check-in permission</div>
+          
+          <div class="info-requires-connect">You need to login before you can use this functionality.</div>
+      </div>
+        
+      <div id="enabled_perm_user_status">
+          <div class="button button-requires-connect" onclick="getCheckIns();hideButton(this);"/>Get past check-ins</div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h1>Check the user into a place</h1>
+      <p>
+        You can fetch Places near the user's current location and check the user in.
+      </p>
+       
+      <div id="locations-nearby"></div>
+  
+      <div id="disabled_perm_publish_checkins">
+        <div class="button button-requires-connect" onclick="promptPermission('publish_checkins')" />Grant publish check-in permission</div>
+        
+        <div class="info-requires-connect">You need to login before you can use this functionality.</div>
+      </div>
+      
+      <div id="enabled_perm_publish_checkins">
+        <div class="button button-requires-connect" onclick="getNearby();hideButton(this);" />Find nearby locations</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Page: Credits -->
+  <div id="page-Credits" class="page"> 
+    <p id="main-desc">
+      Your app or game can prompt the user to pay for a virtual good by using Credits.
+      <br /><br />
+      <strong>Check out the mobile web app tutorial at <a href="http://developers.facebook.com/docs/mobile/web/build//">developers.facebook.com/docs/mobile/web/build/</a></strong>
+    </p>
+    
+    <div class="section">
+      <h1>Prompting the user to pay</h1>
+      <p>
+        This allows the user to pay for a virtual good in your app or game.
+      </p>
+      
+      <div id="publish_button" class="button" onclick="sendPay()" />Prompt to Pay</div>
+    </div>
+  </div>
+  
+  <!-- Page: Social Plugins -->
+  <div id="page-Social-Plugins" class="page"> 
+    <p id="main-desc">
+      Social plugins lets a user see what their friends have liked, commented on or shared on sites across the web.
+      Currently, the only social plugin that's available is the Like button. More coming soon.<br /><br />
+      <strong>Check out the mobile web app tutorial at <a href="http://developers.facebook.com/docs/mobile/web/build//">developers.facebook.com/docs/mobile/web/build/</a></strong>
+    </p>
+      
+    <div class="section">
+      <h1>Like button</h1>
+      <p>
+        <fb:like></fb:like>
+      </p>
+    </div>
+  </div>
+ 
+ <div id="deviceready"></div>
+ 
+  <script type="text/javascript" src="phonegap.js"></script>
+  <script type="text/javascript" src="js/index.js"></script>
+  <!-- cordova facebook plugin -->
+  <script src="cdv-plugin-fb-connect.js"></script>
+  <!-- facebook js sdk -->
+  <script src="facebook-js-sdk.js"></script> 
+  
+  <!--<script src="js/_config.js"></script>-->
+  <script src="js/ui.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/feed.js"></script>
+  <script src="js/graph_api.js"></script>
+  <script src="js/requests.js"></script>
+  <!--<script src="js/credits.js"></script>-->
+  
+  <script>
+      // Initialize the Facebook SDK
+      document.addEventListener('deviceready', function() {
+          FB.init({
+              appId: 'appid',
+              nativeInterface: CDV.FB,
+              useCachedDialogs: false
+          });
+      
+          FB.getLoginStatus(handleStatusChange);
+      
+          authUser();
+          updateAuthElements();
+      });
+  </script>
+  
+</body>
+</html>
