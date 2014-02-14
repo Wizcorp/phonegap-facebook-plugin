@@ -211,7 +211,7 @@ public class ConnectPlugin extends CordovaPlugin {
               "\"expiresIn\": \""+expiresIn+"\","+
               "\"session_key\": true,"+
               "\"sig\": \"...\","+
-              "\"userId\": \""+this.userId+"\""+
+              "\"userID\": \""+this.userId+"\""+
             "}"+
           "}";
         } else {
