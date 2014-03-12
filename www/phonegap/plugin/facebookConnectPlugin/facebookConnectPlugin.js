@@ -25,7 +25,11 @@ var facebookConnectPlugin = {
 	    
 	logout: function(s, f) {
 	    cordova.exec(s, f, "FacebookConnectPlugin", "logout", []);
-	}
+	},
+	
+	api: function(graphPath, permissions, s, f) {
+            cordova.exec(s, f, "FacebookConnectPlugin", "graphApi", [graphPath, permissions]);
+        }
 	    	    
 };
 
