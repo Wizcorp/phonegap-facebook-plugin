@@ -41,7 +41,7 @@ CDV.FB = {
         localStorage.setItem('cdv_fb_session', JSON.stringify(e.authResponse));
         FB.Auth.setAuthResponse(e.authResponse, 'connected');
         if (cb) cb(e);
-    }, (fail?fail:null), 'org.apache.cordova.facebook.Connect', 'login', params.scope.split(',') );
+    }, (fail?fail:null), 'org.apache.cordova.facebook.Connect', 'login', (params.scope ? params.scope.split(',') : []) );
   },
   logout: function(cb, fail) {
     cordova.exec(function(e) {
