@@ -34,7 +34,7 @@ public class ConnectPlugin extends CordovaPlugin {
     private CallbackContext cb;
     private Bundle paramBundle;
     private String method;
-
+    
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
@@ -58,17 +58,19 @@ public class ConnectPlugin extends CordovaPlugin {
                     this.facebook.setAccessExpires(expires);
                       try {
                         JSONObject o = new JSONObject(this.facebook.request("/me"));
-                        this.userId = o.getString("id");
+                        
+                        if(!isError(o, prefs)){
+                        	this.userId = o.getString("id");
+                        }
+                        
+                  
                     } catch (MalformedURLException e) {
-                       
-                        e.printStackTrace();
+                        handleError(prefs, e);
                     } catch (IOException e) {
-                       
-                        e.printStackTrace();
+                    	handleError(prefs, e);
                     } catch (JSONException e) {
-                       
-                        e.printStackTrace();
-                    }
+                    	handleError(prefs, e);
+                    } 
                 }
 
                 if(facebook.isSessionValid() && this.userId != null) {
@@ -80,7 +82,6 @@ public class ConnectPlugin extends CordovaPlugin {
                     return true;
                 }
             } catch (JSONException e) {
-               
                 e.printStackTrace();
                 cb.error("Invalid JSON args used. expected a string as the first arg.");
                 return true;
@@ -116,19 +117,17 @@ public class ConnectPlugin extends CordovaPlugin {
 
         else if (action.equals("logout")) {
             if (facebook != null) {
+            	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.cordova.getActivity());
                 try {
                     facebook.logout(cordova.getActivity());
 
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.cordova.getActivity());
                     prefs.edit().putLong("access_expires", -1).commit();
                     prefs.edit().putString("access_token", null).commit();
                 } catch (MalformedURLException e) {
-                   
-                    e.printStackTrace();
+                	handleError(prefs, e);
                     pr = new PluginResult(PluginResult.Status.MALFORMED_URL_EXCEPTION, "Error logging out.");
                 } catch (IOException e) {
-                   
-                    e.printStackTrace();
+                	handleError(prefs, e);
                     pr = new PluginResult(PluginResult.Status.IO_EXCEPTION, "Error logging out.");
                 }
                 pr = new PluginResult(PluginResult.Status.OK, getResponse());
@@ -240,16 +239,7 @@ public class ConnectPlugin extends CordovaPlugin {
         public void onComplete(Bundle values) {
             //  Handle a successful dialog
             Log.d(TAG,values.toString());
-            JSONObject response = new JSONObject();;
-            try {
-                for(String key : values.keySet()) {
-                    response.put(key, values.getString(key));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } finally {
-                this.fba.cb.success(response);
-            }
+            this.fba.cb.success();
         }
 
         public void onFacebookError(FacebookError e) {
@@ -281,7 +271,7 @@ public class ConnectPlugin extends CordovaPlugin {
 
             String token = this.fba.facebook.getAccessToken();
             long token_expires = this.fba.facebook.getAccessExpires();
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.fba.cordova.getActivity());
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.fba.cordova.getActivity());
             prefs.edit().putLong("access_expires", token_expires).commit();
             prefs.edit().putString("access_token", token).commit();
 
@@ -291,17 +281,15 @@ public class ConnectPlugin extends CordovaPlugin {
                 public void run() {
                     try {
                         JSONObject o = new JSONObject(fba.facebook.request("/me"));
+                        Log.d(TAG, o.toString());
                         fba.userId = o.getString("id");
                         fba.cb.success(getResponse());
                     } catch (MalformedURLException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    	handleError(prefs, e);
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    	handleError(prefs, e);
                     } catch (JSONException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    	handleError(prefs, e);
                     }
                 }
             });
@@ -322,5 +310,40 @@ public class ConnectPlugin extends CordovaPlugin {
             Log.d(TAG, "cancel");
             this.fba.cb.error("Cancelled");
         }
+    }
+    
+    protected boolean isError(JSONObject o, SharedPreferences prefs) {
+    	try {
+    		// its not an error if we can't get the error property?
+    		// org.json.JSONException: No value for error
+    		try {
+    			o.get("error");
+    		} catch (JSONException e) {
+    			return false;
+    		}
+    		if(o.get("error") != null) {
+				handleError(prefs);
+			    return true;
+			}
+			
+		} catch (JSONException e) {
+			handleError(prefs, e);
+			return true;
+		}
+    	return false;
+    }
+    protected void handleError(SharedPreferences prefs){
+    	handleError(prefs, null);
+    }
+    protected void handleError(SharedPreferences prefs, Exception e){
+    	// invalid auth
+		this.facebook.setAccessToken(null);
+	    this.facebook.setAccessExpires(-1);
+	    prefs.edit().putLong("access_expires", -1).commit();
+	    prefs.edit().putString("access_token", null).commit();
+	    
+	    if(e != null) {
+	    	e.printStackTrace();
+	    }
     }
 }
