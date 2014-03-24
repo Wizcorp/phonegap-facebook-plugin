@@ -124,7 +124,7 @@ Create a basic Cordova iOS application by following the [iOS Platform Guide](htt
 
 1. Locate the **plugins** section of your Project Navigator and create a group "ios". Make sure it is added as a "group" (yellow folder)
 2. From the **Cordova Facebook Plugin** folder copy FacebookConnectPlugin.h and FacebookConnectPlugin.m from the **src** folder into the new group "ios".
-3. Find the `config.xml` file in the project navigator and add a new entry as a child to the **widget** tag:
+3. Find the `config.xml` file in the project navigator and add a new entry as a child to the `plugin` tag:
 ```xml
 <feature name="org.apache.cordova.facebook.Connect">
     <param name="ios-package" value="FacebookConnectPlugin" />
