@@ -124,7 +124,7 @@ Create a basic Cordova iOS application by following the [iOS Platform Guide](htt
 
 1. Locate the **plugins** section of your Project Navigator and create a group "ios". Make sure it is added as a "group" (yellow folder)
 2. From the **Cordova Facebook Plugin** folder copy FacebookConnectPlugin.h and FacebookConnectPlugin.m from the **src** folder into the new group "ios".
-3. Find the `config.xml` file in the project navigator and add a new entry as a child to the **widget** tag:
+3. Find the `config.xml` file in the project navigator and add a new entry as a child to the `plugin` tag:
 ```xml
 <feature name="org.apache.cordova.facebook.Connect">
     <param name="ios-package" value="FacebookConnectPlugin" />
@@ -235,7 +235,7 @@ Failure function returns an error String.
 
 Success function returns a status String.
 
-###facebookConnectPlugin.showDialog(JSONObject options, Function success, Function failure)
+###facebookConnectPlugin.showDialog(Object options, Function success, Function failure)
 
 Example options:
 
@@ -245,6 +245,28 @@ Example options:
 	
 Success function returns an Object with `postId` as String.
 Failure function returns an error String.
+
+###facebookConnectPlugin.api(String requestPath, Array permissions, Func success, Func failure) 
+
+####[currently iOS only!]
+
+Allows access to the Facebook Graph API. This API allows for additional permission because, unlike login, the Graph API can accept multiple permissions.
+
+Example permissions:
+
+	["basic_info", "user_birthday"]
+	
+Success function returns an Object.
+
+Failure function returns an error String.
+
+**Note: "In order to make calls to the Graph API on behalf of a user, the user has to be logged into your app using Facebook login."**
+
+For more information see:
+
+- Calling the Graph API - [https://developers.facebook.com/docs/ios/graph](https://developers.facebook.com/docs/ios/graph)
+- Graph Explorer - [https://developers.facebook.com/tools/explorer](https://developers.facebook.com/tools/explorer)
+- Graph API - [https://developers.facebook.com/docs/graph-api/](https://developers.facebook.com/docs/graph-api/)
 
 ## Sample JavaScript Code
 
@@ -282,3 +304,20 @@ For a more instructive example change the above `fbLoginSuccess` to;
     	);
     };
 
+### Getting A User's Birthday
+
+Using the graph api this is a very simple task: [currently iOS only!]
+
+	facebookConnectPlugin.api("<user-id>/?fields=id,email", ["user_birthday"], 
+		function (result) {
+			alert("Result: " + JSON.stringify(result));
+			/* alerts:
+				{
+					"id": "000000123456789",
+					"email": "myemail@example.com"
+				}
+			*/
+		}, 
+		function (error) { 
+			alert("Failed: " + e); 
+		});
