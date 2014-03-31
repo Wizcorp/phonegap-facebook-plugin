@@ -354,10 +354,8 @@
     self.graphCallbackId = command.callbackId;
     
     NSString *graphPath = [command argumentAtIndex:0];
-    NSString *permissionString = [command argumentAtIndex:1];
-    NSArray *permissionsNeeded = [permissionString componentsSeparatedByString:@","];
-    
-    
+    NSArray *permissionsNeeded = [command argumentAtIndex:1];
+
     [FBRequestConnection
      startWithGraphPath: @"/me/permissions"
      completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
