@@ -319,5 +319,5 @@ Using the graph api this is a very simple task: [currently iOS only!]
 			*/
 		}, 
 		function (error) { 
-			alert("Failed: " + e); 
+			alert("Failed: " + error); 
 		});
