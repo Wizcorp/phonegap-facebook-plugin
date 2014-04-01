@@ -15,21 +15,41 @@
 @property (strong, nonatomic) NSString *userid;
 @property (strong, nonatomic) NSString* loginCallbackId;
 @property (strong, nonatomic) NSString* dialogCallbackId;
+@property (strong, nonatomic) NSString* graphCallbackId;
 
 @end
 
 @implementation FacebookConnectPlugin
 
+
+-(CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
+    NSLog(@"Init FacebookConnect Session");
+    self = (FacebookConnectPlugin *)[super initWithWebView:theWebView];
+    self.userid = @"";
+    
+    [FBSession openActiveSessionWithReadPermissions:nil
+                                       allowLoginUI:NO
+                                  completionHandler:^(FBSession *session,
+                                                      FBSessionState state,
+                                                      NSError *error) {
+                                      [self sessionStateChanged:session
+                                                          state:state
+                                                          error:error];
+                                  }];
+    return self;
+}
+
 /* This overrides CDVPlugin's method, which receives a notification when handleOpenURL is called on the main app delegate */
 - (void) handleOpenURL:(NSNotification*)notification
 {
-        NSURL* url = [notification object];
+    NSLog(@"handle url: %@", [notification object]);
+    NSURL* url = [notification object];
 
-        if (![url isKindOfClass:[NSURL class]]) {
+    if (![url isKindOfClass:[NSURL class]]) {
         return;
-        }
-    
-        [FBSession.activeSession handleOpenURL:url];
+    }
+
+    [FBSession.activeSession handleOpenURL:url];
 }
 
 /*
@@ -138,38 +158,27 @@
     return YES;
 }
 
-- (void) init:(CDVInvokedUrlCommand*)command
-{    
-    self.userid = @"";
-    
-    [FBSession openActiveSessionWithReadPermissions:nil
-                                   allowLoginUI:NO
-                              completionHandler:^(FBSession *session,
-                                                  FBSessionState state,
-                                                  NSError *error) {
-                                  [self sessionStateChanged:session
-                                                      state:state
-                                                      error:error];
-                              }];
-    
-    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-
 - (void) getLoginStatus:(CDVInvokedUrlCommand*)command
-{    
+{
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                   messageAsDictionary:[self responseObject]];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void) login:(CDVInvokedUrlCommand*)command
-{
+- (void)login:(CDVInvokedUrlCommand *)command {
     BOOL permissionsAllowed = YES;
     NSString *permissionsErrorMessage = @"";
     NSArray *permissions = nil;
     if ([command.arguments count] > 0) {
         permissions = command.arguments;
+    }
+    if (permissions == nil) {
+        // We need permissions
+        permissionsErrorMessage = @"No permissions specified at login";
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                          messageAsString:permissionsErrorMessage];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
     }
     
     // save the callbackId for the login callback
@@ -183,6 +192,7 @@
         // To mix both, we'll use deprecated methods
         BOOL publishPermissionFound = NO;
         BOOL readPermissionFound = NO;
+        
         for (NSString *p in permissions) {
             if ([self isPublishPermission:p]) {
                 publishPermissionFound = YES;
@@ -195,6 +205,7 @@
                 break;
             }
         }
+        
         if (publishPermissionFound && readPermissionFound) {
             // Mix of permissions, not allowed
             permissionsAllowed = NO;
@@ -237,9 +248,6 @@
             permissionsAllowed = NO;
             permissionsErrorMessage = @"You can only ask for read permissions initially";
         }
-        
-        
-        
     }
     
     if (!permissionsAllowed) {
@@ -314,10 +322,11 @@
              } else {
                  if (result == FBWebDialogResultDialogNotCompleted) {
                      // User clicked the "x" icon to Cancel
-                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
+                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                      messageAsString:@"User cancelled."];
                  } else {
                      // Send the URL parameters back, for a requests dialog, the "request" parameter
-                     // will include the resutling request id. For a feed dialog, the "post_id"
+                     // will include the resluting request id. For a feed dialog, the "post_id"
                      // parameter will include the resulting post id.
                      NSDictionary *params = [self parseURLParams:[resultURL query]];
                      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
@@ -335,6 +344,84 @@
         [params release];
         [options release];
     #endif
+}
+
+- (void) graphApi:(CDVInvokedUrlCommand *)command
+{
+    
+    
+    // Save the callback ID
+    self.graphCallbackId = command.callbackId;
+    
+    NSString *graphPath = [command argumentAtIndex:0];
+    NSArray *permissionsNeeded = [command argumentAtIndex:1];
+
+    [FBRequestConnection
+     startWithGraphPath: @"/me/permissions"
+     completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+         
+         if (!error){
+             // These are the current permissions the user has:
+             NSDictionary *currentPermissions= [(NSArray *)[result data] objectAtIndex:0];
+             
+             // We will store here the missing permissions that we will have to request
+             NSMutableArray *requestPermissions = [[NSMutableArray alloc] initWithArray:@[]];
+             
+             // Check if all the permissions we need are present in the user's current permissions
+             // If they are not present add them to the permissions to be requested
+             for (NSString *permission in permissionsNeeded){
+                 if (![currentPermissions objectForKey:permission]){
+                     [requestPermissions addObject:permission];
+                 }
+             }
+             
+             // If we have permissions to request
+             if ([requestPermissions count] > 0){
+                 // Ask for the missing permissions
+                 [FBSession.activeSession
+                  requestNewReadPermissions:requestPermissions
+                  completionHandler:^(FBSession *session, NSError *error) {
+                      if (!error) {
+                          // Permission granted
+                          NSLog(@"new permissions %@", [FBSession.activeSession permissions]);
+                          // We can request the user information
+                          [self makeGraphCall:graphPath];
+                      } else {
+                          // An error occurred, we need to handle the error
+                          // See: https://developers.facebook.com/docs/ios/errors
+                      }
+                  }];
+             } else {
+                 // Permissions are present
+                 // We can request the user information
+                 [self makeGraphCall:graphPath];
+             }
+             
+         } else {
+             // An error occurred, we need to handle the error
+             // See: https://developers.facebook.com/docs/ios/errors
+         }
+     }];
+}
+
+- (void) makeGraphCall:(NSString *)graphPath
+{
+    
+    NSLog(@"Graph Path = %@", graphPath);
+    [FBRequestConnection
+     startWithGraphPath: graphPath
+     completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+         CDVPluginResult* pluginResult = nil;
+         if (!error) {
+             NSDictionary *response = (NSDictionary *) result;
+             
+             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:response];
+         } else {
+             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                              messageAsString:[error localizedDescription]];
+         }
+         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.graphCallbackId];
+     }];
 }
 
 - (NSDictionary*) responseObject
