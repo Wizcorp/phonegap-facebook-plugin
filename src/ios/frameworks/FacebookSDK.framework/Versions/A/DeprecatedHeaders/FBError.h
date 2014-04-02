@@ -118,11 +118,6 @@ typedef enum FBErrorCode {
      The operation failed because the session is currently busy reconnecting.
     */
     FBErrorSessionReconnectInProgess,
-
-    /*!
-     Reserved for future use.
-    */
-    FBErrorOperationDisallowedForRestrictedTreament,
 } FBErrorCode;
 
 /*!
