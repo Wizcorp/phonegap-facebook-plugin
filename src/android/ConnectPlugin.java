@@ -94,7 +94,10 @@ public class ConnectPlugin extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 
-        if (action.equals("login")) {
+        if (action.equals("init")) {
+        	return true;
+        }
+        else if (action.equals("login")) {
         	Log.d(TAG, "login FB");
         	// Get the permissions
         	String[] arrayPermissions = new String[args.length()];
