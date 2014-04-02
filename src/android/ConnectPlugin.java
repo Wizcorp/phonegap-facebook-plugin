@@ -1,314 +1,365 @@
 package org.apache.cordova.facebook;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
-import org.apache.cordova.api.Plugin;
-import org.apache.cordova.api.PluginResult;
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.CordovaInterface;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.facebook.android.DialogError;
-import com.facebook.android.Facebook;
-import com.facebook.android.Facebook.DialogListener;
-import com.facebook.android.FacebookError;
+import com.facebook.FacebookDialogException;
+import com.facebook.FacebookException;
+import com.facebook.FacebookOperationCanceledException;
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.model.GraphObject;
+import com.facebook.model.GraphUser;
+import com.facebook.widget.WebDialog;
+import com.facebook.widget.WebDialog.OnCompleteListener;
 
-public class ConnectPlugin extends Plugin {
+public class ConnectPlugin extends CordovaPlugin {
 
-    public static final String SINGLE_SIGN_ON_DISABLED = "service_disabled";
+	private static final String PUBLISH_PERMISSION_PREFIX = "publish";
+    private static final String MANAGE_PERMISSION_PREFIX = "manage";
+    @SuppressWarnings("serial")
+	private static final Set<String> OTHER_PUBLISH_PERMISSIONS = new HashSet<String>() {{
+        add("ads_management");
+        add("create_event");
+        add("rsvp_event");
+    }};
     private final String TAG = "ConnectPlugin";
 
-    private Facebook facebook;
-    private String userId;
-    //used for dialog auth
-    private String[] permissions = new String[] {};
-    private String callbackId;
+    private String applicationId = null;
+    private CallbackContext loginContext = null;
+    private CallbackContext showDialogContext = null;
     private Bundle paramBundle;
     private String method;
 
     @Override
-    public PluginResult execute(String action, JSONArray args, final String callbackId) {
-        PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
-        pr.setKeepCallback(true);
-
-        if (action.equals("init")) {
-            try {
-                String appId = args.getString(0);
-
-                facebook = new Facebook(appId);
-
-                Log.d(TAG, "init: Initializing plugin.");
-
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(cordova.getActivity());
-                String access_token = prefs.getString("access_token", null);
-                Long expires = prefs.getLong("access_expires", -1);
-
-                if (access_token != null && expires != -1) {
-                    this.facebook.setAccessToken(access_token);
-                    this.facebook.setAccessExpires(expires);
-                	  try {
-                        JSONObject o = new JSONObject(this.facebook.request("/me"));
-                        this.userId = o.getString("id");
-                    } catch (MalformedURLException e) {
-                       
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                       
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                       
-                        e.printStackTrace();
-                    }
-                }
-
-                if(facebook.isSessionValid() && this.userId != null) {
-                    return new PluginResult(PluginResult.Status.OK, this.getResponse());
-                }
-                else {
-                    return new PluginResult(PluginResult.Status.NO_RESULT);
-                }
-            } catch (JSONException e) {
-               
-                e.printStackTrace();
-                return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. expected a string as the first arg.");
-            }
-        }
-
-        else if (action.equals("login")) {
-            if (facebook != null) {
-            	final ConnectPlugin me = this;
-                String[] permissions = new String[args.length()];
-                try {
-                    for (int i=0; i<args.length(); i++) {
-                        permissions[i] = args.getString(i);
-                    }
-                } catch (JSONException e1) {
-                   
-                    e1.printStackTrace();
-                    return new PluginResult(PluginResult.Status.ERROR, "Invalid JSON args used. Expected a string array of permissions.");
-                }
-                cordova.setActivityResultCallback(this);
-//                this.ctx.setActivityResultCallback(this);
-                this.permissions = permissions;
-                this.callbackId = callbackId;
-                Runnable runnable = new Runnable() {
-                    public void run() {
-                        me.facebook.authorize(cordova.getActivity(), me.permissions, new AuthorizeListener(me));
-                    };
-                };
-                cordova.getActivity().runOnUiThread(runnable);
-//                this.ctx.runOnUiThread(runnable);
-            } else {
-                pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before login.");
-            }
-        }
-
-        else if (action.equals("logout")) {
-            if (facebook != null) {
-                try {
-                    facebook.logout(cordova.getActivity());
-
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.cordova.getActivity());
-                    prefs.edit().putLong("access_expires", -1).commit();
-                    prefs.edit().putString("access_token", null).commit();
-                } catch (MalformedURLException e) {
-                   
-                    e.printStackTrace();
-                    pr = new PluginResult(PluginResult.Status.MALFORMED_URL_EXCEPTION, "Error logging out.");
-                } catch (IOException e) {
-                   
-                    e.printStackTrace();
-                    pr = new PluginResult(PluginResult.Status.IO_EXCEPTION, "Error logging out.");
-                }
-                pr = new PluginResult(PluginResult.Status.OK, getResponse());
-            } else {
-                pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before logout.");
-            }
-        }
-
-        else if (action.equals("getLoginStatus")) {
-            if (facebook != null) {
-                pr = new PluginResult(PluginResult.Status.OK, getResponse());
-            } else {
-                pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before getLoginStatus.");
-            }
-        }
-        
-        else if (action.equals("showDialog")) {
-        	if (facebook != null) {
-        		Bundle collect = new Bundle();
-        		JSONObject params = null;
-        		try {
-        			params = args.getJSONObject(0);
-        		} catch (JSONException e) {
-        			params = new JSONObject();
-        		}
-        		
-        		final ConnectPlugin me = this;
-        		Iterator<?> iter = params.keys();
-        		while (iter.hasNext()) {
-        			String key = (String) iter.next();
-        			if (key.equals("method")) {
-        				try {
-        					this.method = params.getString(key);
-        				} catch (JSONException e) {
-        					Log.w(TAG, "Nonstring method parameter provided to dialog");
-        				}
-        			} else {
-        				try {
-        					collect.putString(key, params.getString(key));
-        				} catch (JSONException e) {
-        					// Need to handle JSON parameters
-        					Log.w(TAG, "Nonstring parameter provided to dialog discarded");
-        				}
-        			}
-        		}
-        		this.paramBundle =  new Bundle(collect);
-        		this.callbackId = callbackId;
-        		Runnable runnable = new Runnable() {
-        			public void run() {
-        				me.facebook.dialog (me.cordova.getActivity(), me.method , me.paramBundle , new UIDialogListener(me));
-        			};
-        		};
-        		cordova.getActivity().runOnUiThread(runnable);
-//        		this.ctx.runOnUiThread(runnable);
-        	} else {
-        		pr = new PluginResult(PluginResult.Status.ERROR, "Must call init before showDialog.");
-        	}
-        	
-        }
-
-        return pr;
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+    	
+    	int appResId = cordova.getActivity().getResources().getIdentifier("fb_app_id", "string", cordova.getActivity().getPackageName());
+    	applicationId = cordova.getActivity().getString(appResId);
+    	
+        // Set up the activity result callback to this class
+    	cordova.setActivityResultCallback(this);
+    	
+    	// Open a session if we have one cached
+		Session session = new Session.Builder(cordova.getActivity())
+			.setApplicationId(applicationId)
+			.build();
+		if (session.getState() == SessionState.CREATED_TOKEN_LOADED) {
+			Session.setActiveSession(session);
+			// - Create the request
+			Session.OpenRequest openRequest = new Session.OpenRequest(cordova.getActivity());
+			// - Set the status change call back
+			openRequest.setCallback(new Session.StatusCallback() {
+				@Override
+				public void call(Session session, SessionState state, Exception exception) {
+					onSessionStateChange(state, exception);
+				}
+			});
+			session.openForRead(openRequest); 
+		}
+		
+		// If we have a valid open session, get user's info
+		if (session != null && session.isOpened()) {
+			// Call this method to initialize the session state info
+			onSessionStateChange(session.getState(), null);
+		}
+    	super.initialize(cordova, webView);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        facebook.authorizeCallback(requestCode, resultCode, data);
-    }
-
-    public JSONObject getResponse() {
-    	String response;
-    	if (facebook.isSessionValid()) {
-    		long expiresTimeInterval = facebook.getAccessExpires() - System.currentTimeMillis();
-    		long expiresIn = (expiresTimeInterval > 0) ? expiresTimeInterval : 0;
-    		response = "{"+
-            "\"status\": \"connected\","+
-            "\"authResponse\": {"+
-              "\"accessToken\": \""+facebook.getAccessToken()+"\","+
-              "\"expiresIn\": \""+expiresIn+"\","+
-              "\"session_key\": true,"+
-              "\"sig\": \"...\","+
-              "\"userId\": \""+this.userId+"\""+
-            "}"+
-          "}";
-    	} else {
-    		response = "{"+
-            "\"status\": \"unknown\""+
-          "}";
-    	}
-
-        try {
-            return new JSONObject(response);
-        } catch (JSONException e) {
-           
-            e.printStackTrace();
-        }
-        return new JSONObject();
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {   	
+    	super.onActivityResult(requestCode, resultCode, intent);
+    	Log.d(TAG, "activity result in plugin");
+    	Session.getActiveSession().onActivityResult(cordova.getActivity(), requestCode, resultCode, intent);
     }
     
-    class UIDialogListener implements DialogListener {
-   	 final ConnectPlugin fba;
+    @Override
+    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 
-		public UIDialogListener(ConnectPlugin fba){
-			super();
-			this.fba = fba;
-		}
-
-		public void onComplete(Bundle values) {
-			//  Handle a successful dialog
-			Log.d(TAG,values.toString());
-			this.fba.success(new PluginResult(PluginResult.Status.OK), this.fba.callbackId);
-		}
-
-		public void onFacebookError(FacebookError e) {
-           Log.d(TAG, "facebook error");
-           this.fba.error("Facebook error: " + e.getMessage(), callbackId);
-       }
-
-       public void onError(DialogError e) {
-           Log.d(TAG, "other error");
-           this.fba.error("Dialog error: " + e.getMessage(), this.fba.callbackId);
-       }
-
-       public void onCancel() {
-           Log.d(TAG, "cancel");
-           this.fba.error("Cancelled", this.fba.callbackId);
-       }
-	}
-
-    class AuthorizeListener implements DialogListener {
-        final ConnectPlugin fba;
-
-        public AuthorizeListener(ConnectPlugin fba){
-            super();
-            this.fba = fba;
-        }
-
-        public void onComplete(Bundle values) {
-            //  Handle a successful login
-
-            String token = this.fba.facebook.getAccessToken();
-            long token_expires = this.fba.facebook.getAccessExpires();
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.fba.cordova.getActivity());
-            prefs.edit().putLong("access_expires", token_expires).commit();
-            prefs.edit().putString("access_token", token).commit();
-
-            Log.d(TAG, "authorized");
-
-            Thread t = new Thread(new Runnable() {
-                public void run() {
+        if (action.equals("login")) {
+        	Log.d(TAG, "login FB");
+        	// Get the permissions
+        	String[] arrayPermissions = new String[args.length()];
+			for (int i=0; i<args.length(); i++) {
+				arrayPermissions[i] = args.getString(i);
+			}
+            
+        	List<String> permissions = null;
+        	if (arrayPermissions.length > 0) {
+        		permissions = Arrays.asList(arrayPermissions);
+        	}
+        	
+        	// Get the currently active session
+            Session session = Session.getActiveSession();
+        	
+        	// Set a pending callback to cordova
+        	loginContext = callbackContext;
+        	PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
+        	pr.setKeepCallback(true);
+        	loginContext.sendPluginResult(pr);
+        	
+            // Check if the active session is open
+            if (session != null && session.isOpened()) {
+            	// Reauthorize flow
+            	boolean publishPermissions = false;
+            	boolean readPermissions = false;
+            	// Figure out if this will be a read or publish reauthorize
+            	if (permissions == null) {
+            		// No permissions, read
+            		readPermissions = true;
+            	}
+            	// Loop through the permissions to see what
+            	// is being requested
+            	for (String permission : arrayPermissions) {
+            		if (isPublishPermission(permission)) {
+            			publishPermissions = true;
+            		} else {
+            			readPermissions = true;
+            		}
+            		// Break if we have a mixed bag, as this is an error
+            		if (publishPermissions && readPermissions) {
+            			break;
+            		}
+            	}
+            	
+            	if (publishPermissions && readPermissions) {
+            		callbackContext.error("Cannot ask for both read and publish permissions.");
+            	} else {
+            		// Set up the new permissions request
+                	Session.NewPermissionsRequest newPermissionsRequest =  new Session.NewPermissionsRequest(cordova.getActivity(), 
+                			permissions);
+                	// Set up the activity result callback to this class
+                	cordova.setActivityResultCallback(this);
+                	// Check for write permissions, the default is read (empty)
+                	if (publishPermissions) {
+                		// Request new publish permissions
+                		session.requestNewPublishPermissions(newPermissionsRequest);
+                	} else {
+                		// Request new read permissions
+                		session.requestNewReadPermissions(newPermissionsRequest);
+                	}
+            	}
+            } else {
+        		// Initial login, build a new session open request.
+            	
+            	// - Create a new session and set the application ID
+        		session = new Session.Builder(cordova.getActivity())
+        		.setApplicationId(applicationId)
+        		.build();
+        		Session.setActiveSession(session);
+                // - Create the request
+                Session.OpenRequest openRequest = new Session.OpenRequest(cordova.getActivity());
+                // - Set the permissions
+                openRequest.setPermissions(permissions);
+                // - Set the status change call back
+                openRequest.setCallback(new Session.StatusCallback() {
+                	@Override
+                    public void call(Session session, 
+                                     SessionState state,
+                                     Exception exception) {
+                		onSessionStateChange(state, exception);
+                	}
+                });
+                           	
+                // Can only ask for read permissions initially
+                session.openForRead(openRequest);
+            }
+            return true;
+        } else if (action.equals("logout")) {
+        	
+        	Session session = Session.getActiveSession();
+			if (session != null) {
+				if (session.isOpened()) {
+					session.closeAndClearTokenInformation();
+					callbackContext.success();
+				} else {
+					// Session not open
+					callbackContext.error("Session not open.");
+				}
+			} else {
+				callbackContext
+						.error("No valid session found, must call init and login before logout.");
+			}
+			return true;
+        } else if (action.equals("getLoginStatus")) {
+        	callbackContext.success(Session.getActiveSession().getState().toString());
+        	return true;
+        } else if (action.equals("showDialog")) {
+            Bundle collect = new Bundle();
+            JSONObject params = null;
+            try {
+                params = args.getJSONObject(0);
+            } catch (JSONException e) {
+                params = new JSONObject();
+            }
+            
+            final ConnectPlugin me = this;
+            Iterator<?> iter = params.keys();
+            while (iter.hasNext()) {
+                String key = (String) iter.next();
+                if (key.equals("method")) {
                     try {
-                        JSONObject o = new JSONObject(fba.facebook.request("/me"));
-                        fba.userId = o.getString("id");
-                        fba.success(getResponse(), fba.callbackId);
-                    } catch (MalformedURLException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        this.method = params.getString(key);
                     } catch (JSONException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        Log.w(TAG, "Nonstring method parameter provided to dialog");
+                    }
+                } else {
+                    try {
+                        collect.putString(key, params.getString(key));
+                    } catch (JSONException e) {
+                        // Need to handle JSON parameters
+                        Log.w(TAG, "Nonstring parameter provided to dialog discarded");
                     }
                 }
-            });
-            t.start();
-        }
+            }
+            this.paramBundle =  new Bundle(collect);
 
-        public void onFacebookError(FacebookError e) {
-            Log.d(TAG, "facebook error");
-            this.fba.error("Facebook error: " + e.getMessage(), callbackId);
-        }
+        	// Begin by sending a callback pending notice to Cordova
+        	showDialogContext = callbackContext;
+        	PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
+        	pr.setKeepCallback(true);
+        	showDialogContext.sendPluginResult(pr);
 
-        public void onError(DialogError e) {
-            Log.d(TAG, "other error");
-            this.fba.error("Dialog error: " + e.getMessage(), this.fba.callbackId);
-        }
+        	// Setup callback context
+        	final OnCompleteListener dialogCallback = new OnCompleteListener() {
 
-        public void onCancel() {
-            Log.d(TAG, "cancel");
-            this.fba.error("Cancelled", this.fba.callbackId);
-        }
+        		@Override
+        		public void onComplete(Bundle values, FacebookException exception) {
+        			String errMsg;
+        			if (exception != null) {
+	        			// User clicked "x"
+	        			if (exception instanceof FacebookOperationCanceledException) {
+		        			errMsg = "User cancelled dialog";
+		        			Log.e(TAG, errMsg);
+		        			showDialogContext.error(errMsg);
+		        		} else if (exception instanceof FacebookDialogException) {
+			        		// Dialog error
+			        		errMsg = "Dialog error: " + exception.getMessage();
+			        		Log.e(TAG, errMsg);
+			        		showDialogContext.error(errMsg);
+			        	} else {
+				        	// Facebook error
+				        	errMsg = "Facebook error: " + exception.getMessage();
+				        	Log.e(TAG, errMsg);
+				        	showDialogContext.error(errMsg);
+				        }
+				    } else {
+					    // Handle a successful dialog:
+					    // Send the URL parameters back, for a requests dialog, the "request" parameter
+					    // will include the resulting request id. For a feed dialog, the "post_id"
+					    // parameter will include the resulting post id.
+					    // Note: If the user clicks on the Cancel button, the parameter will be empty
+					    if (values.size() > 0) {
+						    JSONObject response = new JSONObject();
+						    try {
+						    	Set<String> keys = values.keySet();
+						    	for (String key : keys) {
+							    	response.put(key, values.get(key));
+							   	}
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							showDialogContext.success(response);
+						} else {
+							errMsg = "User cancelled dialog";
+							Log.e(TAG, errMsg);
+							showDialogContext.error(errMsg);
+						}
+					}
+				} 
+			};
+        	
+        	if (this.method.equalsIgnoreCase("feed")) {
+    			Runnable runnable = new Runnable() {
+        			public void run() {
+        				WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(
+        						me.cordova.getActivity(),
+        						Session.getActiveSession(),
+        						paramBundle))
+								.setOnCompleteListener(dialogCallback)
+        						.build();
+        				feedDialog.show();
+        			};
+        			
+    			};
+    			cordova.getActivity().runOnUiThread(runnable);
+    		} else if (this.method.equalsIgnoreCase("apprequests")) {
+    			Runnable runnable = new Runnable() {
+        			public void run() {
+        				WebDialog requestsDialog = (new WebDialog.RequestsDialogBuilder(
+        						me.cordova.getActivity(),
+        						Session.getActiveSession(),
+        						paramBundle))
+        						.setOnCompleteListener(dialogCallback)
+        						.build();
+        				requestsDialog.show();
+        			};
+    			};
+    			cordova.getActivity().runOnUiThread(runnable);
+    		} else {
+    			callbackContext.error("Unsupported dialog method.");
+    		}
+            return true;
+        }        
+        return false;
+    }
+    
+    private void getUserInfo(final Session session) {
+    	if (cordova != null) {
+    		Request.newMeRequest(session, new Request.GraphUserCallback() {
+    			
+    			@Override
+    			public void onCompleted(GraphUser user, Response response) {
+    				// Create a new result with response data
+    				if (loginContext != null) {
+	    				GraphObject graphObject = response.getGraphObject();
+	    				Log.d(TAG, "returning login object " + graphObject.getInnerJSONObject().toString());
+	    				loginContext.success(graphObject.getInnerJSONObject());
+	    				loginContext = null;
+	    			}
+	    		}
+	    	}).executeAsync();
+	    }
+    }
+    
+    /*
+     * Handles session state changes
+     */
+    private void onSessionStateChange(SessionState state, Exception exception) {
+    	final Session session = Session.getActiveSession();
+    	// Check if the session is open
+    	if (state.isOpened()) {
+    		// Get user info
+    		getUserInfo(session);
+    	}
+    }
+    
+    /*
+     * Checks for publish permissions
+     */
+    private boolean isPublishPermission(String permission) {
+        return permission != null &&
+                (permission.startsWith(PUBLISH_PERMISSION_PREFIX) ||
+                        permission.startsWith(MANAGE_PERMISSION_PREFIX) ||
+                        OTHER_PUBLISH_PERMISSIONS.contains(permission));
+
     }
 }

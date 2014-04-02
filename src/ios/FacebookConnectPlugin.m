@@ -15,38 +15,41 @@
 @property (strong, nonatomic) NSString *userid;
 @property (strong, nonatomic) NSString* loginCallbackId;
 @property (strong, nonatomic) NSString* dialogCallbackId;
+@property (strong, nonatomic) NSString* graphCallbackId;
 
 @end
 
 @implementation FacebookConnectPlugin
 
+
+-(CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
+    NSLog(@"Init FacebookConnect Session");
+    self = (FacebookConnectPlugin *)[super initWithWebView:theWebView];
+    self.userid = @"";
+    
+    [FBSession openActiveSessionWithReadPermissions:nil
+                                       allowLoginUI:NO
+                                  completionHandler:^(FBSession *session,
+                                                      FBSessionState state,
+                                                      NSError *error) {
+                                      [self sessionStateChanged:session
+                                                          state:state
+                                                          error:error];
+                                  }];
+    return self;
+}
+
 /* This overrides CDVPlugin's method, which receives a notification when handleOpenURL is called on the main app delegate */
 - (void) handleOpenURL:(NSNotification*)notification
 {
-        NSURL* url = [notification object];
+    NSLog(@"handle url: %@", [notification object]);
+    NSURL* url = [notification object];
 
-        if (![url isKindOfClass:[NSURL class]]) {
+    if (![url isKindOfClass:[NSURL class]]) {
         return;
-        }
-    
-        [FBSession.activeSession handleOpenURL:url];
-}
+    }
 
-- (void)pluginInitialize
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppDidBecomeActive:)
-                                                 name:UIApplicationDidBecomeActiveNotification object:nil];
-}
-
-/*
- * This method is called to let your application know that it moved from the inactive to active state.
- */
-- (void)onAppDidBecomeActive:(NSNotification*)notification
-{
-    // We need to properly handle activation of the application with regards to Facebook Login
-    // (e.g., returning from iOS 6.0 Login Dialog or from fast app switching).
-    // See https://developers.facebook.com/docs/tutorials/ios-sdk-tutorial/authenticate/
-    [FBSession.activeSession handleDidBecomeActive];
+    [FBSession.activeSession handleOpenURL:url];
 }
 
 /*
@@ -118,23 +121,7 @@
             }
         } else if (error.fberrorCategory == FBErrorCategoryUserCancelled) {
             // The user has cancelled a login. You can inspect the error
-            // for more context.  Per the Facebook JS SDK, treat cancels as
-            // a success and let the caller distinguish them by checking
-            // response.authResponse.
-            //
-            // See comment for FB.login (facebook-js-sdk.js ln 6087):
-            //
-            //     FB.login(function(response) {
-            //       if (response.authResponse) {
-            //         // user successfully logged in
-            //       } else {
-            //         // user cancelled login
-            //       }
-            //     });
-            //
-            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                                          messageAsDictionary:[self responseObject]];
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
+            // for more context. In the plugin, we will simply ignore it.
         } else {
             // For simplicity, this sample treats other errors blindly.
             alertMessage = @"Error. Please try again later.";
@@ -171,36 +158,27 @@
     return YES;
 }
 
-- (void) init:(CDVInvokedUrlCommand*)command
-{    
-    self.userid = @"";
-    
-    [FBSession openActiveSessionWithReadPermissions:nil
-                                   allowLoginUI:NO
-                              completionHandler:^(FBSession *session,
-                                                  FBSessionState state,
-                                                  NSError *error) {
-                                  [self sessionStateChanged:session
-                                                      state:state
-                                                      error:error];
-                              }];
-    
-    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-
 - (void) getLoginStatus:(CDVInvokedUrlCommand*)command
-{    
+{
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                   messageAsDictionary:[self responseObject]];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void) login:(CDVInvokedUrlCommand*)command
-{    
+- (void)login:(CDVInvokedUrlCommand *)command {
+    BOOL permissionsAllowed = YES;
+    NSString *permissionsErrorMessage = @"";
     NSArray *permissions = nil;
     if ([command.arguments count] > 0) {
         permissions = command.arguments;
+    }
+    if (permissions == nil) {
+        // We need permissions
+        permissionsErrorMessage = @"No permissions specified at login";
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                          messageAsString:permissionsErrorMessage];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
     }
     
     // save the callbackId for the login callback
@@ -214,6 +192,7 @@
         // To mix both, we'll use deprecated methods
         BOOL publishPermissionFound = NO;
         BOOL readPermissionFound = NO;
+        
         for (NSString *p in permissions) {
             if ([self isPublishPermission:p]) {
                 publishPermissionFound = YES;
@@ -226,16 +205,11 @@
                 break;
             }
         }
+        
         if (publishPermissionFound && readPermissionFound) {
-            // Mix of permissions, use deprecated method
-            [FBSession.activeSession
-             reauthorizeWithPermissions:permissions
-             behavior:FBSessionLoginBehaviorWithFallbackToWebView
-             completionHandler:^(FBSession *session, NSError *error) {
-                 [self sessionStateChanged:session
-                                     state:session.state
-                                     error:error];
-             }];
+            // Mix of permissions, not allowed
+            permissionsAllowed = NO;
+            permissionsErrorMessage = @"Your app can't ask for both read and write permissions.";
         } else if (publishPermissionFound) {
             // Only publish permissions
             [FBSession.activeSession
@@ -258,9 +232,7 @@
         }
     } else {
         // Initial log in, can only ask to read
-        // type permissions if one wants to use the
-        // non-deprecated open session methods and
-        // take advantage of iOS6 integration
+        // type permissions
         if ([self areAllPermissionsReadPermissions:permissions]) {
             [FBSession
              openActiveSessionWithReadPermissions:permissions
@@ -273,23 +245,18 @@
                                      error:error];
              }];
         } else {
-            // Use deprecated methods for backward compatibility
-            [FBSession
-             openActiveSessionWithPermissions:permissions
-             allowLoginUI:YES completionHandler:^(FBSession *session,
-                                                  FBSessionState state,
-                                                  NSError *error) {
-                 [self sessionStateChanged:session
-                                     state:state
-                                     error:error];
-             }];
+            permissionsAllowed = NO;
+            permissionsErrorMessage = @"You can only ask for read permissions initially";
         }
-        
-        
-        
     }
     
-    [super writeJavascript:nil];
+    if (!permissionsAllowed) {
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                          messageAsString:permissionsErrorMessage];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
+    } else {
+        [super writeJavascript:nil];
+    }
 }
 
 - (void) logout:(CDVInvokedUrlCommand*)command
@@ -315,58 +282,60 @@
     if ([options objectForKey:@"method"]) {
         [options removeObjectForKey:@"method"];
     }
+    __block BOOL paramsOK = YES;
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
     [options enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         if ([obj isKindOfClass:[NSString class]]) {
             params[key] = obj;
         } else {
             NSError *error;
-            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:obj
-                                                               options:0
-                                                                 error:&error];
-            if (jsonData) {
-                NSString *jsonDataString = [[NSString alloc] initWithData:jsonData
-                                                                 encoding:NSUTF8StringEncoding];
-                params[key] = jsonDataString;
-#if __has_feature(objc_arc)
-#else
-                [jsonDataString release];
-#endif
+            NSData *jsonData = [NSJSONSerialization
+                                dataWithJSONObject:obj
+                                options:0
+                                error:&error];
+            if (!jsonData) {
+                paramsOK = NO;
+                // Error
+                *stop = YES;
             }
-//            // For optional ARC support
-//#if __has_feature(objc_arc)
-//            FBSBJSON *jsonWriter = [FBSBJSON new];
-//#else
-//            FBSBJSON *jsonWriter = [[FBSBJSON new] autorelease];
-//#endif
-//            params[key] = [jsonWriter stringWithObject:obj];
+            params[key] = [[NSString alloc]
+                           initWithData:jsonData
+                           encoding:NSUTF8StringEncoding];
         }
     }];
     
-    // Show the web dialog
-    [FBWebDialogs
-     presentDialogModallyWithSession:FBSession.activeSession
-     dialog:method parameters:params
-     handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
-         CDVPluginResult* pluginResult = nil;
-         if (error) {
-             // Dialog failed with error
-             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
-                                              messageAsString:@"Error completing dialog."];
-         } else {
-             if (result == FBWebDialogResultDialogNotCompleted) {
-                 // User clicked the "x" icon to Cancel
-                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
+    if (!paramsOK) {
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                         messageAsString:@"Error completing dialog."];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
+    } else {
+        // Show the web dialog
+        [FBWebDialogs
+         presentDialogModallyWithSession:FBSession.activeSession
+         dialog:method parameters:params
+         handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
+             CDVPluginResult* pluginResult = nil;
+             if (error) {
+                 // Dialog failed with error
+                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                  messageAsString:@"Error completing dialog."];
              } else {
-                 // Send the URL parameters back, for a requests dialog, the "request" parameter
-                 // will include the resutling request id. For a feed dialog, the "post_id"
-                 // parameter will include the resulting post id.
-                 NSDictionary *params = [self parseURLParams:[resultURL query]];                 
-                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
+                 if (result == FBWebDialogResultDialogNotCompleted) {
+                     // User clicked the "x" icon to Cancel
+                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                      messageAsString:@"User cancelled."];
+                 } else {
+                     // Send the URL parameters back, for a requests dialog, the "request" parameter
+                     // will include the resluting request id. For a feed dialog, the "post_id"
+                     // parameter will include the resulting post id.
+                     NSDictionary *params = [self parseURLParams:[resultURL query]];
+                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:params];
+                 }
              }
-         }
-         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
-    }];
+             [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
+         }];
+        [super writeJavascript:nil];
+    }
     
     // For optional ARC support
     #if __has_feature(objc_arc)
@@ -375,8 +344,84 @@
         [params release];
         [options release];
     #endif
+}
+
+- (void) graphApi:(CDVInvokedUrlCommand *)command
+{
     
-    [super writeJavascript:nil];
+    
+    // Save the callback ID
+    self.graphCallbackId = command.callbackId;
+    
+    NSString *graphPath = [command argumentAtIndex:0];
+    NSArray *permissionsNeeded = [command argumentAtIndex:1];
+
+    [FBRequestConnection
+     startWithGraphPath: @"/me/permissions"
+     completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+         
+         if (!error){
+             // These are the current permissions the user has:
+             NSDictionary *currentPermissions= [(NSArray *)[result data] objectAtIndex:0];
+             
+             // We will store here the missing permissions that we will have to request
+             NSMutableArray *requestPermissions = [[NSMutableArray alloc] initWithArray:@[]];
+             
+             // Check if all the permissions we need are present in the user's current permissions
+             // If they are not present add them to the permissions to be requested
+             for (NSString *permission in permissionsNeeded){
+                 if (![currentPermissions objectForKey:permission]){
+                     [requestPermissions addObject:permission];
+                 }
+             }
+             
+             // If we have permissions to request
+             if ([requestPermissions count] > 0){
+                 // Ask for the missing permissions
+                 [FBSession.activeSession
+                  requestNewReadPermissions:requestPermissions
+                  completionHandler:^(FBSession *session, NSError *error) {
+                      if (!error) {
+                          // Permission granted
+                          NSLog(@"new permissions %@", [FBSession.activeSession permissions]);
+                          // We can request the user information
+                          [self makeGraphCall:graphPath];
+                      } else {
+                          // An error occurred, we need to handle the error
+                          // See: https://developers.facebook.com/docs/ios/errors
+                      }
+                  }];
+             } else {
+                 // Permissions are present
+                 // We can request the user information
+                 [self makeGraphCall:graphPath];
+             }
+             
+         } else {
+             // An error occurred, we need to handle the error
+             // See: https://developers.facebook.com/docs/ios/errors
+         }
+     }];
+}
+
+- (void) makeGraphCall:(NSString *)graphPath
+{
+    
+    NSLog(@"Graph Path = %@", graphPath);
+    [FBRequestConnection
+     startWithGraphPath: graphPath
+     completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+         CDVPluginResult* pluginResult = nil;
+         if (!error) {
+             NSDictionary *response = (NSDictionary *) result;
+             
+             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:response];
+         } else {
+             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                              messageAsString:[error localizedDescription]];
+         }
+         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.graphCallbackId];
+     }];
 }
 
 - (NSDictionary*) responseObject
