@@ -54,8 +54,7 @@ public class LoginActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int id = this.getResources().getIdentifier("com_facebook_login_activity_layout", "layout", this.getPackageName());
-        setContentView(id);
+        setContentView(R.layout.com_facebook_login_activity_layout);
 
         if (savedInstanceState != null) {
             callingPackage = savedInstanceState.getString(SAVED_CALLING_PKG_KEY);
