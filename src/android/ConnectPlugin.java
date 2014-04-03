@@ -407,6 +407,13 @@ public class ConnectPlugin extends CordovaPlugin {
 				}
 			}
 		};
+		
+		//If you're using the paging URLs they will be URLEncoded, let's decode them.
+		try {
+			graphPath = URLDecoder.decode(graphPath, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 
 		String[] urlParts = graphPath.split("\\?");
 		String graphAction = urlParts[0];
