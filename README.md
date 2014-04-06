@@ -286,6 +286,7 @@ In your `onDeviceReady` event add the following
 ### Get access token
 
 If you need the Facebook access token (for example, for validating the login on server side), do:
+
 	var fbLoginSuccess = function (userData) {
 		alert("UserInfo: " + JSON.stringify(userData));
 		facebookConnectPlugin.getAccessToken(function(token) {
