@@ -26,6 +26,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import com.facebook.android.BuildConfig;
+import com.facebook.internal.AttributionIdentifiers;
 import com.facebook.internal.Utility;
 import com.facebook.model.GraphObject;
 import com.facebook.internal.Validate;
@@ -36,6 +37,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Allows some customization of sdk behavior.
@@ -49,6 +51,7 @@ public final class Settings {
     private static volatile String appVersion;
     private static final String FACEBOOK_COM = "facebook.com";
     private static volatile String facebookDomain = FACEBOOK_COM;
+    private static AtomicLong onProgressThreshold = new AtomicLong(65536);
 
     private static final int DEFAULT_CORE_POOL_SIZE = 5;
     private static final int DEFAULT_MAXIMUM_POOL_SIZE = 128;
@@ -342,7 +345,7 @@ public final class Settings {
             if (context == null || applicationId == null) {
                 throw new IllegalArgumentException("Both context and applicationId must be non-null");
             }
-            String attributionId = Settings.getAttributionId(context.getContentResolver());
+            AttributionIdentifiers identifiers = AttributionIdentifiers.getAttributionIdentifiers(context);
             SharedPreferences preferences = context.getSharedPreferences(ATTRIBUTION_PREFERENCES, Context.MODE_PRIVATE);
             String pingKey = applicationId+"ping";
             String jsonKey = applicationId+"json";
@@ -358,9 +361,9 @@ public final class Settings {
             publishParams.setProperty(ANALYTICS_EVENT, MOBILE_INSTALL_EVENT);
 
             Utility.setAppEventAttributionParameters(publishParams,
-                    attributionId,
+                    identifiers,
                     Utility.getHashedDeviceAndAppID(context, applicationId),
-                    !getLimitEventAndDataUsage(context));
+                    getLimitEventAndDataUsage(context));
             publishParams.setProperty(AUTO_PUBLISH, isAutoPublish);
             publishParams.setProperty("application_package_name", context.getPackageName());
 
@@ -382,10 +385,9 @@ public final class Settings {
                 } else {
                     return new Response(null, null, graphObject, true);
                 }
-            } else if (attributionId == null) {
-                throw new FacebookException("No attribution id returned from the Facebook application");
+            } else if (identifiers.getAndroidAdvertiserId() == null && identifiers.getAttributionId() == null) {
+                throw new FacebookException("No attribution id available to send to server.");
             } else {
-
                 if (!Utility.queryAppSettings(applicationId, false).supportsAttribution()) {
                     throw new FacebookException("Install attribution has been disabled on the server.");
                 }
@@ -497,5 +499,22 @@ public final class Settings {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("limitEventUsage", limitEventUsage);
         editor.commit();
+    }
+
+    /**
+     * Gets the threshold used to report progress on requests.
+     */
+    public static long getOnProgressThreshold() {
+        return onProgressThreshold.get();
+    }
+
+    /**
+     * Sets the threshold used to report progress on requests. Note that the value will be read when the
+     * request is started and can not be changed during a request (or batch) execution.
+     *
+     * @param threshold The number of bytes progressed to force a callback.
+     */
+    public static void setOnProgressThreshold(long threshold) {
+        onProgressThreshold.set(threshold);
     }
 }
