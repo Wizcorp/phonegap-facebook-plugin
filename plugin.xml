@@ -48,7 +48,7 @@
     <platform name="android">
         
         <config-file target="config.xml" parent="/*">
-            <feature name="FacebookConnectPlugin">
+            <feature name="org.apache.cordova.facebook.Connect">
                 <param name="android-package" value="org.apache.cordova.facebook.ConnectPlugin" />
             </feature>
         </config-file>
@@ -75,7 +75,7 @@
     <!-- ios -->
     <platform name="ios">
 	    <config-file target="config.xml" parent="/*">
-		    <feature name="FacebookConnectPlugin">
+		    <feature name="org.apache.cordova.facebook.Connect">
 			    <param name="ios-package" value="FacebookConnectPlugin"/>
 			    <param name="onload" value="true" />
 		    </feature>
