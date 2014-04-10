@@ -282,6 +282,24 @@ In your `onDeviceReady` event add the following
         fbLoginSuccess, 
         function (error) { alert("" + error) }
     );
+
+### Get access token
+
+If you need the Facebook access token (for example, for validating the login on server side), do:
+
+	var fbLoginSuccess = function (userData) {
+		alert("UserInfo: " + JSON.stringify(userData));
+		facebookConnectPlugin.getAccessToken(function(token) {
+			alert("Token: " + token);
+		}, function(err) {
+			alert("Could not get access token: " + err);
+		});
+	}
+
+	facebookConnectPlugin.login(["basic_info"], 
+        fbLoginSuccess, 
+        function (error) { alert("" + error) }
+    );
     
 ### Get Status & Post-to-wall
 
