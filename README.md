@@ -93,16 +93,20 @@ Or you can allow all domains with (set to this by default):
 
             <activity android:name="com.facebook.LoginActivity"
                   android:label="@string/app_name" />
+                  
+5. After checking out the Cordova Facebook plugin switch to tag 0.4.2, the current master is not compatible to this HOWTO.
+   ```git checkout 0.4.2```
 
-5. From the Cordova Facebook Plugin folder copy ConnectPlugin.java from `src/android/` folder into the root of your Cordova Android application into `src/org/apache/cordova/facebook/`. You may have to create that directory path in your project. 
+6. From the Cordova Facebook Plugin folder copy ConnectPlugin.java from `src/android/` folder into the root of your Cordova Android application into `src/org/apache/cordova/facebook/`. You may have to create that directory path in your project. 
 
-6. From the Cordova Facebook Plugin folder copy the `www/cdv-plugin-fb-connect.js`, `www/facebook-js-sdk.js` and `example/HackBook/` files into your application's `assets/www` folder. Overwrite the existing index.html file.
+7. From the Cordova Facebook Plugin folder copy the `www/cdv-plugin-fb-connect.js`, `www/facebook-js-sdk.js` and `example/HackBook/` files into your application's `assets/www` folder. Overwrite the existing index.html file.
 
-7. Replace your appId in the new index.html file. Leave the quotes.
+8. Replace your appId in the new index.html file. Leave the quotes.
 
 Now you are ready to create your application! Check out the `example` folder for what the HTML, JS etc looks like.
 
 You can run the application from either the command line (`ant clean && ant debug install`) or from Eclipse.
+If you are building the appliation using phonegap build, you might have to move the contents of the Facebook SDK bin/res/crunch folder to bin/res and delete the crunch folder, else the build might not work.
 
 ## Manual iOS Installation (Mac OS X)
 
