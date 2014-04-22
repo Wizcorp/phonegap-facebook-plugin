@@ -201,8 +201,23 @@ public class ConnectPlugin extends CordovaPlugin {
 				callbackContext.error("No valid session found, must call init and login before logout.");
 			}
 			return true;
+<<<<<<< HEAD
 		} else if (action.equals("getLoginStatus")) {
-			callbackContext.success(getResponse());
+			callbackContext.success(Session.getActiveSession().getState().toString());
+			return true;
+		} else if (action.equals("getAccessToken")) {
+			Session session = Session.getActiveSession();
+			if (session != null) {
+				if (session.isOpened()) {
+					callbackContext.success(session.getAccessToken());
+				} else {
+					// Session not open
+					callbackContext.error("Session not open.");
+				}
+			} else {
+				callbackContext
+					.error("No valid session found, must call init and login before logout.");
+			}
 			return true;
 		} else if (action.equals("showDialog")) {
 			Bundle collect = new Bundle();
