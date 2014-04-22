@@ -201,7 +201,6 @@ public class ConnectPlugin extends CordovaPlugin {
 				callbackContext.error("No valid session found, must call init and login before logout.");
 			}
 			return true;
-<<<<<<< HEAD
 		} else if (action.equals("getLoginStatus")) {
 			callbackContext.success(Session.getActiveSession().getState().toString());
 			return true;
