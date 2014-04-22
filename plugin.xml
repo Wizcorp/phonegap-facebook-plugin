@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="com.phonegap.plugins.facebookconnect"
-    version="0.5.0">
+    version="0.5.1">
 
     <name>Facebook Connect</name>
     
@@ -21,16 +21,8 @@
     <asset src="www/cdv-plugin-fb-connect.js" target="cdv-plugin-fb-connect.js" />
     <asset src="www/facebook-js-sdk.js" target="facebook-js-sdk.js" />
     
-    <config-file target="config.xml" parent="/*">
-	    <access origin="https://m.facebook.com" />
-	    <access origin="https://graph.facebook.com" />
-	    <access origin="https://api.facebook.com" />
-	    <access origin="https://*.fbcdn.net" />
-	    <access origin="https://*.akamaihd.net" />
-    </config-file>
-    
     <preference name="APP_ID" />
-	<preference name="APP_NAME" />
+    <preference name="APP_NAME" />
     
     <engines>
     	<!-- Requires > 3.3.* because of the custom Framework tag for iOS [CB-5238] -->
@@ -47,10 +39,15 @@
     <!-- android -->
     <platform name="android">
         
-        <config-file target="config.xml" parent="/*">
+        <config-file target="res/xml/config.xml" parent="/*">
             <feature name="FacebookConnectPlugin">
                 <param name="android-package" value="org.apache.cordova.facebook.ConnectPlugin" />
             </feature>
+            <access origin="https://m.facebook.com" />
+	        <access origin="https://graph.facebook.com" />
+	        <access origin="https://api.facebook.com" />
+	        <access origin="https://*.fbcdn.net" />
+	        <access origin="https://*.akamaihd.net" />
         </config-file>
         
         <source-file src="src/android/facebook/res/values/facebookconnect.xml" target-dir="res/values" />
@@ -80,6 +77,11 @@
 			    <param name="onload" value="true" />
 		    </feature>
 		    <plugin name="FacebookConnectPlugin" value="FacebookConnectPlugin"/>
+		    <access origin="https://m.facebook.com" />
+	        <access origin="https://graph.facebook.com" />
+	        <access origin="https://api.facebook.com" />
+	        <access origin="https://*.fbcdn.net" />
+	        <access origin="https://*.akamaihd.net" />
 	    </config-file>
 
         <header-file src="src/ios/FacebookConnectPlugin.h" />
