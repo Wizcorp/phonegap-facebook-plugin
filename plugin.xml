@@ -18,8 +18,13 @@
     
     <license>Apache 2.0</license>
     
-    <asset src="www/cdv-plugin-fb-connect.js" target="cdv-plugin-fb-connect.js" />
-    <asset src="www/facebook-js-sdk.min.js" target="facebook-js-sdk.min.js" />
+    <js-module src="www/cdv-plugin-fb-connect.js" name="cdv-plugin-fb-connect">
+        <clobbers target="cdv-plugin-fb-connect" />
+    </js-module>
+
+    <js-module src="www/facebook-js-sdk.min.js" name="facebook-js-sdk.min">
+        <clobbers target="facebook-js-sdk.min" />
+    </js-module>
     
     <config-file target="config.xml" parent="/*">
       <access origin="http://static.ak.facebook.com" />
