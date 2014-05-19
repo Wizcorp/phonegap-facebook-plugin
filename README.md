@@ -24,7 +24,7 @@ If you plan on rolling this out on Android, please note that you will need to [g
 
 `src/android` and `src/ios` contain the native code for the plugin for both Android and iOS platforms. They also include versions of the Android and iOS Facebook SDKs. These are used during automatic installation.
 
-#### NOTICE: The following files are deprecated!
+#### NOTICE: The following files are being deprecated!
 
 `www/facebook-js-sdk.js` is the modified facebook-js-sdk. It already includes the hooks to work with this plugin.
 
@@ -32,7 +32,7 @@ If you plan on rolling this out on Android, please note that you will need to [g
 
 ## Adobe PhoneGap Build
 
-If using this plugin on Adobe PhoneGap Build you can ignore the instructions below and go straight to the 
+If using this plugin on Adobe PhoneGap Build you can ignore the instructions below and go straight to the
 PhoneGap Build documentation available [here] (https://build.phonegap.com/plugins/257).
 
 ## Manual Installation
@@ -76,7 +76,7 @@ To install the plugin in your app, execute the following (replace variables wher
 	cordova platform add android
 
 	cordova -d plugin add /Users/your/path/here/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
-	
+
 **Android requires an additional step which is to reference the FacebookSDK project as a library to your project.**
 
 Open your project in Eclipse (New > Project... Existing Android project from source), import everything (***see Img. 1***).
@@ -98,7 +98,7 @@ Success function returns an Object like;
 		lastName: "bob"
 		...
 	}
-	
+
 Failure function returns an error String.
 
 ###facebookConnectPlugin.logout(Function success, Function failure)
@@ -114,18 +114,18 @@ Example options:
 	{
 		method: "feed" | "apprequests"
 	}
-	
+
 Success function returns an Object with `postId` as String.
 Failure function returns an error String.
 
-###facebookConnectPlugin.api(String requestPath, Array permissions, Func success, Func failure) 
+###facebookConnectPlugin.api(String requestPath, Array permissions, Func success, Func failure)
 
 Allows access to the Facebook Graph API. This API allows for additional permission because, unlike login, the Graph API can accept multiple permissions.
 
 Example permissions:
 
 	["basic_info", "user_birthday"]
-	
+
 Success function returns an Object.
 
 Failure function returns an error String.
@@ -148,8 +148,8 @@ In your `onDeviceReady` event add the following
 		alert("UserInfo: " + JSON.stringify(userData));
 	}
 
-	facebookConnectPlugin.login(["basic_info"], 
-        fbLoginSuccess, 
+	facebookConnectPlugin.login(["basic_info"],
+        fbLoginSuccess,
         function (error) { alert("" + error) }
     );
 
@@ -166,25 +166,25 @@ If you need the Facebook access token (for example, for validating the login on 
 		});
 	}
 
-	facebookConnectPlugin.login(["basic_info"], 
-        fbLoginSuccess, 
+	facebookConnectPlugin.login(["basic_info"],
+        fbLoginSuccess,
         function (error) { alert("" + error) }
     );
-    
+
 ### Get Status & Post-to-wall
 
 For a more instructive example change the above `fbLoginSuccess` to;
 
 	var fbLoginSuccess = function (userData) {
-		alert("UserInfo: " + JSON.stringify(userData)); 
-    	facebookConnectPlugin.getLoginStatus( 
-    		function (status) { 
-    			alert("current status: " + JSON.stringify(status)); 
-    			
-    			var options = { method:"feed" }; 
-    			facebookConnectPlugin.showDialog(options, 
+		alert("UserInfo: " + JSON.stringify(userData));
+    	facebookConnectPlugin.getLoginStatus(
+    		function (status) {
+    			alert("current status: " + JSON.stringify(status));
+
+    			var options = { method:"feed" };
+    			facebookConnectPlugin.showDialog(options,
     				function (result) {
-        				alert("Posted. " + JSON.stringify(result));				}, 
+        				alert("Posted. " + JSON.stringify(result));				},
         		function (e) {
     				alert("Failed: " + e);
     			});
@@ -196,7 +196,7 @@ For a more instructive example change the above `fbLoginSuccess` to;
 
 Using the graph api this is a very simple task: [currently iOS only!]
 
-	facebookConnectPlugin.api("<user-id>/?fields=id,email", ["user_birthday"], 
+	facebookConnectPlugin.api("<user-id>/?fields=id,email", ["user_birthday"],
 		function (result) {
 			alert("Result: " + JSON.stringify(result));
 			/* alerts:
@@ -205,7 +205,7 @@ Using the graph api this is a very simple task: [currently iOS only!]
 					"email": "myemail@example.com"
 				}
 			*/
-		}, 
-		function (error) { 
-			alert("Failed: " + error); 
+		},
+		function (error) {
+			alert("Failed: " + error);
 		});
