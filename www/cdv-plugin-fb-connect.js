@@ -30,7 +30,9 @@ CDV.FB = {
     }, (fail?fail:null), 'org.apache.cordova.facebook.Connect', 'init', [apiKey]);
   },
   login: function(params, cb, fail) {
-    params = params || { scope: '' };
+    params = params || {scope: ''};
+    params.scope = params.scope || '';
+    
     cordova.exec(function(e) { // login
         if (e.authResponse && e.authResponse.expiresIn) {
           var expirationTime = e.authResponse.expiresIn === 0
