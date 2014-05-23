@@ -14,7 +14,7 @@ function publishStory() {
     description: 'Check out Hackbook for Mobile Web to learn how you can make your web apps social using Facebook Platform.',
     link: 'http://apps.facebook.com/mobile-start/',
     picture: 'http://www.facebookmobileweb.com/hackbook/img/facebook_icon_large.png',
-    actions: [{ name: 'Get Started', link: 'http://apps.facebook.com/mobile-start/' }],
+    actions: [{ name: 'Get Started', link: 'http://apps.facebook.com/mobile-start/' }]
   }, 
   function(response) {
     console.log('publishStory UI response: ', response);
