@@ -15,20 +15,39 @@ The Facebook SDK (both native and JavaScript) is changing independent of this pl
 
 To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an APP_ID (https://developers.facebook.com/apps).
 
+#### iOS
 If you plan on rolling this out on iOS, please note that you will need to ensure that you have properly set up your Native iOS App settings on the [Facebook App Dashboard](http://developers.facebook.com/apps). Please see the [Getting Started with the Facebook SDK](https://developers.facebook.com/docs/ios/getting-started/): Create a Facebook App section, for more details on this.
 
+#### Android
 If you plan on rolling this out on Android, please note that you will need to [generate a hash of your Android key(s) and submit those to the Developers page on Facebook](https://developers.facebook.com/docs/android/getting-started/facebook-sdk-for-android/) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
 
+#### Web App
+`www/js/facebookConnectPlugin.js` contains the JavaScript SDK and API file. The API matches as close as possible to the native APIs.
 
-`www/phonegap/plugin/facebookConnectPlugin/` contains the JavaScript API file.
+## Example Apps
 
-`src/android` and `src/ios` contain the native code for the plugin for both Android and iOS platforms. They also include versions of the Android and iOS Facebook SDKs. These are used during automatic installation.
+`platforms/android` and `platforms/ios` contain example projects and all the native code for the plugin for both Android and iOS platforms. They also include versions of the Android and iOS Facebook SDKs. These are used during automatic installation.
 
-#### NOTICE: The following files are being deprecated!
+#### Setup Android Example
 
-`www/facebook-js-sdk.js` is the modified facebook-js-sdk. It already includes the hooks to work with this plugin.
+Configure the project with your FB app id in the `res/values/facebookconnect.xml` file. For example:
 
-`www/cdv-plugin-fb-connect.js` is the JavaScript code for the plugin, this defines the JS API.
+```xml
+<resources>
+    <string name="fb_app_id">123456789</string>
+    <string name="fb_app_name">TEST</string>
+</resources>
+```
+
+#### Setup iOS Example
+
+- Change **FacebookAppID** in project *-info.plist
+- Change URL scheme to `fb<YOUR APPID>` e.g. `fb123456789`
+
+#### Setup Web App Example
+
+Host the `www` folder on a server and configure your Facebook dashboard correctly to test the Web APIs. Most people use [Parse](https://parse.com/) for easy testing.
+
 
 ## Adobe PhoneGap Build
 
@@ -90,6 +109,8 @@ In Eclipse, right click your project folder in the left-had column. Select "Prop
 ## JavaScript API
 
 ###facebookConnectPlugin.login(Function success, Function failure)
+
+**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY**
 
 Success function returns an Object like;
 
