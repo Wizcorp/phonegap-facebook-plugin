@@ -110,6 +110,8 @@ In Eclipse, right click your project folder in the left-had column. Select "Prop
 
 ###facebookConnectPlugin.login(Function success, Function failure)
 
+**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY**
+
 Success function returns an Object like;
 
 	{
