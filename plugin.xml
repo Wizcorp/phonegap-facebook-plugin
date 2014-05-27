@@ -18,9 +18,6 @@
     
     <license>Apache 2.0</license>
     
-    <asset src="www/cdv-plugin-fb-connect.js" target="cdv-plugin-fb-connect.js" />
-    <asset src="www/facebook-js-sdk.js" target="facebook-js-sdk.js" />
-    
     <preference name="APP_ID" />
     <preference name="APP_NAME" />
     
@@ -50,7 +47,7 @@
 	        <access origin="https://*.akamaihd.net" />
         </config-file>
         
-        <source-file src="src/android/facebook/res/values/facebookconnect.xml" target-dir="res/values" />
+        <source-file src="platforms/android/res/values/facebookconnect.xml" target-dir="res/values" />
         <config-file target="res/values/facebookconnect.xml" parent="/*">
             <string name="fb_app_id">$APP_ID</string>
             <string name="fb_app_name">$APP_NAME</string>
@@ -62,10 +59,10 @@
         </config-file>
 
         <!-- copy Facebook Lib project -->
-        <source-file src="src/android/facebook/FacebookLib" target-dir="./" />
+        <source-file src="platforms/android/FacebookLib" target-dir="./" />
         
         <!-- cordova plugin src files -->
-        <source-file src="src/android/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
+        <source-file src="platforms/android/src/org/apache/cordova/facebook/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
          
     </platform>
     
@@ -84,8 +81,8 @@
 	        <access origin="https://*.akamaihd.net" />
 	    </config-file>
 
-        <header-file src="src/ios/FacebookConnectPlugin.h" />
-        <source-file src="src/ios/FacebookConnectPlugin.m" />
+        <header-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/FacebookConnectPlugin.h" />
+        <source-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/FacebookConnectPlugin.m" />
 
         <config-file target="*-Info.plist" parent="FacebookAppID">
             <string>$APP_ID</string>
@@ -107,7 +104,7 @@
         </config-file>
 
         <!-- Facebook framework -->
-        <framework src="src/ios/frameworks/FacebookSDK.framework" custom="true" />
+        <framework src="platforms/ios/FacebookSDK.framework" custom="true" />
                 
         <!-- System frameworks -->
         <framework src="libsqlite3.dylib" />

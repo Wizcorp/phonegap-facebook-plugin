@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="fb_app_id">123456789</string>
+    <string name="fb_app_name">TEST</string>
+</resources>
