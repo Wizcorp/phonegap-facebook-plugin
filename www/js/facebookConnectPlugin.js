@@ -73,13 +73,19 @@ if (!window.cordova) {
         },
         // Attach this to a UI element, this requires user interaction.
         login: function (permissions, s, f) {
+            // JS SDK takes an object here but the native SDKs use array.
+            var permissionObj = {};
+            if (permissions && permissions.length > 0) {
+                permissionObj.scope = permissions.toString();
+            }
+            
             FB.login(function (response) {
                 if (response.authResponse) {
                     s(response);
                 } else {
                     f(response.status);
                 }
-            }, permissions);
+            }, permissionObj);
         },
 
         getAccessToken: function (s, f) {
