@@ -6,8 +6,8 @@ The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) a
 
 * Supported on PhoneGap (Cordova) v3.3.0 and above.
 * This plugin is build for
-	* iOS FacebookSDK 3.11.1
-	* Android FacebookSDK 3.6.0
+	* iOS FacebookSDK 3.13.0
+	* Android FacebookSDK 3.8.0
 
 ## Facebook Requirements and Set-Up
 
@@ -52,49 +52,49 @@ If you plan on rolling this out on Android, please note that you will need to [g
 
 `www/cdv-plugin-fb-connect.js` is the JavaScript code for the plugin, this defines the JS API.
 
-`src/android` and `src/ios` contain the native code for the plugin for both Android and iOS platforms. They also include versions of the Android and iOS Facebook SDKs. These are used during automatic installation. During manual installation, you are encouraged to download the most recent versions of the Facebook SDKs for you projects. 
+`src/android` and `src/ios` contain the native code for the plugin for both Android and iOS platforms. They also include versions of the Android and iOS Facebook SDKs. These are used during automatic installation. During manual installation, you are encouraged to download the most recent versions of the Facebook SDKs for you projects.
 
 
 ## Adobe PhoneGap Build
 
-If using this plugin on Adobe PhoneGap Build you can ignore the instructions below and go straight to the 
+If using this plugin on Adobe PhoneGap Build you can ignore the instructions below and go straight to the
 PhoneGap Build documentation available [here] (https://build.phonegap.com/plugins/257).
 
 ## Manual Android Installation
 
 1. [Create a basic Cordova Android application](http://docs.phonegap.com/en/3.0.0/guide_platforms_android_index.md.html#Android%20Platform%20Guide).
  * NOTE: Min Target has to be set to 8. The plugin has an issue if you set your minimum target higher than that. You can edit this in your Android Manifest file. Set the Project Build Target to at least 11 if you see Android Manifest errors related to newer attributes that have been added in 2.2.0.
- 
+
 2. In the Cordova Android application you will need to put the following in your `res/xml/config.xml` file as a child to the **widget** tag:
-```xml
-<feature name="org.apache.cordova.facebook.Connect">
-    <param name="android-package" value="org.apache.cordova.facebook.ConnectPlugin" />
-</feature>
-```
+
+    ```xml
+    <feature name="org.apache.cordova.facebook.Connect">
+        <param name="android-package" value="org.apache.cordova.facebook.ConnectPlugin" />
+    </feature>
+    ```
 
 3. Configure the URL whitelist in the `res/xml/config.xml` file, by modifying or adding new **access** entries. You can either add each subdomain separately:
+    * m.facebook.com
+    * graph.facebook.com
+    * api.facebook.com
+    * \*.fbcdn.net
+    * \*.akamaihd.net
 
-* m.facebook.com
-* graph.facebook.com
-* api.facebook.com
-* \*.fbcdn.net
-* \*.akamaihd.net
-
-Or you can allow all domains with (set to this by default):
-```xml
-<access origin="*" />
-```
+    Or you can allow all domains with (set to this by default):
+    ```xml
+    <access origin="*" />
+    ```
 
 4. You'll need to set up the Facebook SDK for Android:
-  * [Install the Facebook SDK for Android and the Facebook APK](https://developers.facebook.com/docs/android/getting-started/facebook-sdk-for-android/)
-  * [Import the Facebook SDK into Eclipse](https://developers.facebook.com/docs/android/getting-started/facebook-sdk-for-android/)
-  * Link the Facebook SDK library to your project.  View the properties for the project, and navigate to the 'Android' tab. In the lower part of the dialog, click 'Add' and choose the 'FacebookSDK' project from the workspace.
-  * Add a new `com.facebook.LoginActivity` activity to your app to handle Facebook Login. Open up your `AndroidManifest.xml` file and add this additional activity:
+    * [Install the Facebook SDK for Android and the Facebook APK](https://developers.facebook.com/docs/android/getting-started/facebook-sdk-for-android/)
+    * [Import the Facebook SDK into Eclipse](https://developers.facebook.com/docs/android/getting-started/facebook-sdk-for-android/)
+    * Link the Facebook SDK library to your project.  View the properties for the project, and navigate to the 'Android' tab. In the lower part of the dialog, click 'Add' and choose the 'FacebookSDK' project from the workspace.
+    * Add a new `com.facebook.LoginActivity` activity to your app to handle Facebook Login. Open up your `AndroidManifest.xml` file and add this additional activity:
 
-            <activity android:name="com.facebook.LoginActivity"
-                  android:label="@string/app_name" />
+    <activity android:name="com.facebook.LoginActivity"
+          android:label="@string/app_name" />
 
-5. From the Cordova Facebook Plugin folder copy ConnectPlugin.java from `src/android/` folder into the root of your Cordova Android application into `src/org/apache/cordova/facebook/`. You may have to create that directory path in your project. 
+5. From the Cordova Facebook Plugin folder copy ConnectPlugin.java from `src/android/` folder into the root of your Cordova Android application into `src/org/apache/cordova/facebook/`. You may have to create that directory path in your project.
 
 6. From the Cordova Facebook Plugin folder copy the `www/cdv-plugin-fb-connect.js`, `www/facebook-js-sdk.js` and `example/HackBook/` files into your application's `assets/www` folder. Overwrite the existing index.html file.
 
@@ -125,11 +125,12 @@ Create a basic Cordova iOS application by following the [iOS Platform Guide](htt
 1. Locate the **plugins** section of your Project Navigator and create a group "ios". Make sure it is added as a "group" (yellow folder)
 2. From the **Cordova Facebook Plugin** folder copy FacebookConnectPlugin.h and FacebookConnectPlugin.m from the **src** folder into the new group "ios".
 3. Find the `config.xml` file in the project navigator and add a new entry as a child to the `plugin` tag:
-```xml
-<feature name="org.apache.cordova.facebook.Connect">
-    <param name="ios-package" value="FacebookConnectPlugin" />
-</feature>
-```
+
+    ```xml
+    <feature name="org.apache.cordova.facebook.Connect">
+        <param name="ios-package" value="FacebookConnectPlugin" />
+    </feature>
+    ```
 
 4. From the **Cordova Facebook Plugin** folder copy the contents of the **www** folder into the **www** directory in Xcode.
 
@@ -204,7 +205,7 @@ This plugin is based on [plugman](https://git-wip-us.apache.org/repos/asf?p=cord
 	cordova platform add android
 
 	cordova -d plugin add /Users/your/path/here/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
-	
+
 **Android requires an additional step which is to reference the FacebookSDK project as a library to your project.**
 
 Open your project in Eclipse (New > Project... Existing Android project from source), import everything (***see Img. 1***).
@@ -226,7 +227,7 @@ Success function returns an Object like;
 		lastName: "bob"
 		...
 	}
-	
+
 Failure function returns an error String.
 
 ###facebookConnectPlugin.logout(Function success, Function failure)
@@ -242,11 +243,11 @@ Example options:
 	{
 		method: "feed" | "apprequests"
 	}
-	
+
 Success function returns an Object with `postId` as String.
 Failure function returns an error String.
 
-###facebookConnectPlugin.api(String requestPath, Array permissions, Func success, Func failure) 
+###facebookConnectPlugin.api(String requestPath, Array permissions, Func success, Func failure)
 
 ####[currently iOS only!]
 
@@ -255,7 +256,7 @@ Allows access to the Facebook Graph API. This API allows for additional permissi
 Example permissions:
 
 	["basic_info", "user_birthday"]
-	
+
 Success function returns an Object.
 
 Failure function returns an error String.
@@ -278,8 +279,8 @@ In your `onDeviceReady` event add the following
 		alert("UserInfo: " + JSON.stringify(userData));
 	}
 
-	facebookConnectPlugin.login(["basic_info"], 
-        fbLoginSuccess, 
+	facebookConnectPlugin.login(["basic_info"],
+        fbLoginSuccess,
         function (error) { alert("" + error) }
     );
 
@@ -296,25 +297,25 @@ If you need the Facebook access token (for example, for validating the login on 
 		});
 	}
 
-	facebookConnectPlugin.login(["basic_info"], 
-        fbLoginSuccess, 
+	facebookConnectPlugin.login(["basic_info"],
+        fbLoginSuccess,
         function (error) { alert("" + error) }
     );
-    
+
 ### Get Status & Post-to-wall
 
 For a more instructive example change the above `fbLoginSuccess` to;
 
 	var fbLoginSuccess = function (userData) {
-		alert("UserInfo: " + JSON.stringify(userData)); 
-    	facebookConnectPlugin.getLoginStatus( 
-    		function (status) { 
-    			alert("current status: " + JSON.stringify(status)); 
-    			
-    			var options = { method:"feed" }; 
-    			facebookConnectPlugin.showDialog(options, 
+		alert("UserInfo: " + JSON.stringify(userData));
+    	facebookConnectPlugin.getLoginStatus(
+    		function (status) {
+    			alert("current status: " + JSON.stringify(status));
+
+    			var options = { method:"feed" };
+    			facebookConnectPlugin.showDialog(options,
     				function (result) {
-        				alert("Posted. " + JSON.stringify(result));				}, 
+        				alert("Posted. " + JSON.stringify(result));				},
         		function (e) {
     				alert("Failed: " + e);
     			});
@@ -326,7 +327,7 @@ For a more instructive example change the above `fbLoginSuccess` to;
 
 Using the graph api this is a very simple task: [currently iOS only!]
 
-	facebookConnectPlugin.api("<user-id>/?fields=id,email", ["user_birthday"], 
+	facebookConnectPlugin.api("<user-id>/?fields=id,email", ["user_birthday"],
 		function (result) {
 			alert("Result: " + JSON.stringify(result));
 			/* alerts:
@@ -335,7 +336,7 @@ Using the graph api this is a very simple task: [currently iOS only!]
 					"email": "myemail@example.com"
 				}
 			*/
-		}, 
-		function (error) { 
-			alert("Failed: " + error); 
+		},
+		function (error) {
+			alert("Failed: " + error);
 		});

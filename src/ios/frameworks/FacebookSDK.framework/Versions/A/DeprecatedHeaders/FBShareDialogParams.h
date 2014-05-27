@@ -44,7 +44,8 @@
 @property (nonatomic, copy) NSString *description;
 
 /*! @abstract The link to a thumbnail to associate with the post. Is only used
- if the link is non-nil. Only "http" or "https" schemes are supported.*/
+ if the link is non-nil. Only "http" or "https" schemes are supported. Note that this
+ property should not be used to share photos; see the photos property. */
 @property (nonatomic, copy) NSURL *picture;
 
 /*! @abstract An array of NSStrings or FBGraphUsers to tag in the post.

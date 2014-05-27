@@ -158,10 +158,24 @@
     return YES;
 }
 
-- (void) getLoginStatus:(CDVInvokedUrlCommand*)command
+- (void)getLoginStatus:(CDVInvokedUrlCommand *)command
 {
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                   messageAsDictionary:[self responseObject]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)getAccessToken:(CDVInvokedUrlCommand *)command {
+    // Return access token if available
+    CDVPluginResult *pluginResult;
+    // Check if the session is open or not
+    if (FBSession.activeSession.isOpen) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:
+                        FBSession.activeSession.accessTokenData.accessToken];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:
+                        @"Session not open."];
+    }
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
