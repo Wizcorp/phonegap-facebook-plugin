@@ -497,6 +497,7 @@ public class ConnectPlugin extends CordovaPlugin {
               "\"session_key\": true,"+
               "\"sig\": \"...\","+
               "\"userId\": \""+this.userID+"\""+
+              "\"userID\": \""+this.userID+"\""+
             "}"+
           "}";
     	} else {
