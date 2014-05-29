@@ -275,13 +275,11 @@
 
 - (void) logout:(CDVInvokedUrlCommand*)command
 {
-    if (!FBSession.activeSession.isOpen) {
-        return;
+    if (FBSession.activeSession.isOpen) {
+        // Close the session and clear the cache
+        [FBSession.activeSession closeAndClearTokenInformation];
     }
-    
-    // Close the session and clear the cache
-    [FBSession.activeSession closeAndClearTokenInformation];
-    
+    // Else just return OK we are already logged out
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
