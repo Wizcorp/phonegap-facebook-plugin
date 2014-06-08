@@ -496,7 +496,7 @@ public class ConnectPlugin extends CordovaPlugin {
               "\"expiresIn\": \""+expiresIn+"\","+
               "\"session_key\": true,"+
               "\"sig\": \"...\","+
-              "\"userId\": \""+this.userID+"\""+
+              "\"userId\": \""+this.userID+"\","+
               "\"userID\": \""+this.userID+"\""+
             "}"+
           "}";
