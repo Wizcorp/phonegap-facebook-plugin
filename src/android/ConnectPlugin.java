@@ -101,7 +101,10 @@ public class ConnectPlugin extends CordovaPlugin {
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 
-		if (action.equals("login")) {
+		if (action.equals("init")) {
+			Log.d(TAG, "init FB, nop");
+			return true;
+		} else if (action.equals("login")) {
 			Log.d(TAG, "login FB");
 			// Get the permissions
 			String[] arrayPermissions = new String[args.length()];
@@ -334,7 +337,7 @@ public class ConnectPlugin extends CordovaPlugin {
 			graphPath = args.getString(0);
 
 			JSONArray arr = args.getJSONArray(1);
-			
+
 			final List<String> permissionsList = new ArrayList<String>();
 			for (int i = 0; i < arr.length(); i++) {
 				permissionsList.add(arr.getString(i));
@@ -423,7 +426,7 @@ public class ConnectPlugin extends CordovaPlugin {
 				}
 			}
 		};
-		
+
 		//If you're using the paging URLs they will be URLEncoded, let's decode them.
 		try {
 			graphPath = URLDecoder.decode(graphPath, "UTF-8");
@@ -477,7 +480,7 @@ public class ConnectPlugin extends CordovaPlugin {
 	private boolean isPublishPermission(String permission) {
 		return permission != null && (permission.startsWith(PUBLISH_PERMISSION_PREFIX) || permission.startsWith(MANAGE_PERMISSION_PREFIX) || OTHER_PUBLISH_PERMISSIONS.contains(permission));
 	}
-	
+
 	/**
 	 * Create a Facebook Response object that matches the one for the Javascript SDK
 	 * @return JSONObject - the response object
@@ -508,7 +511,7 @@ public class ConnectPlugin extends CordovaPlugin {
         try {
             return new JSONObject(response);
         } catch (JSONException e) {
-           
+
             e.printStackTrace();
         }
         return new JSONObject();
