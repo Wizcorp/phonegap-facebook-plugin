@@ -202,7 +202,7 @@ public class ConnectPlugin extends CordovaPlugin {
 			}
 			return true;
 		} else if (action.equals("getLoginStatus")) {
-			callbackContext.success(Session.getActiveSession().getState().toString());
+			callbackContext.success(getResponse());
 			return true;
 		} else if (action.equals("getAccessToken")) {
 			Session session = Session.getActiveSession();
