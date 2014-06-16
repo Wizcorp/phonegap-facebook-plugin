@@ -51,6 +51,7 @@ public class ConnectPlugin extends CordovaPlugin {
 
 	private String applicationId = null;
 	private CallbackContext loginContext = null;
+	private CallbackContext loginStatusContext = null;
 	private CallbackContext showDialogContext = null;
 	private CallbackContext graphContext = null;
 	private Bundle paramBundle;
@@ -202,8 +203,24 @@ public class ConnectPlugin extends CordovaPlugin {
 			}
 			return true;
 		} else if (action.equals("getLoginStatus")) {
-			callbackContext.success(getResponse());
+			Session session = Session.getActiveSession();
+			if (session != null) {
+				if (session.isOpened()) {
+					loginStatusContext = callbackContext;
+					PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
+					pr.setKeepCallback(true);
+					loginStatusContext.sendPluginResult(pr);
+					getUserInfo(session);			
+				} else {
+					// Session not open
+					callbackContext.error("Session not open.");
+				}
+			} else {
+				callbackContext
+					.error("No valid session found, must call init and login before logout.");
+			}
 			return true;
+
 		} else if (action.equals("getAccessToken")) {
 			Session session = Session.getActiveSession();
 			if (session != null) {
@@ -398,7 +415,14 @@ public class ConnectPlugin extends CordovaPlugin {
 						userID = user.getId();
 						loginContext.success(getResponse());
 						loginContext = null;
+					} else if (loginStatusContext != null) {
+						GraphObject graphObject = response.getGraphObject();
+						Log.d(TAG, "returning login object " + graphObject.getInnerJSONObject().toString());
+						userID = user.getId();
+						loginStatusContext.success(getResponse());
+						loginStatusContext = null;
 					}
+					
 				}
 			}).executeAsync();
 		}
