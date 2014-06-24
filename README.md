@@ -106,6 +106,47 @@ In Eclipse, right click your project folder in the left-had column. Select "Prop
 
 ![image](./android_setup_2.png) ***Img. 2***
 
+### Android Setup without Eclipse (just CLI)
+
+Follow the steps above:
+
+	cordova create myApp
+
+	cd myApp/
+
+	cordova platform add android
+
+	cordova -d plugin add https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID="123456789" --variable APP_NAME="myApplication"
+	
+	// add FacebookLib
+	echo "android.library.reference.2=FacebookLib" >> platforms/android/project.properties
+	
+	cp platforms/android/local.properties platforms/android/FacebookLib
+	
+	android update project -p platforms/android/
+	
+	cd platforms/android/
+	
+	ant clean
+	
+	cd FacebookLib
+	
+	ant clean
+	
+	open -e AndroidManifest.xml	
+
+	// change your minSdkVersion and your targetSdkVersion to your environment settings for me it was:
+	// <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="17" />
+	
+	ant release
+	
+	cd ../../..
+	
+	cordova build android
+	
+With this steps you can add the Plugin without using Eclipse (like suggested above)
+	
+	
 ## JavaScript API
 
 ###facebookConnectPlugin.login(Function success, Function failure)
