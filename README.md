@@ -5,7 +5,7 @@ This is the official plugin for Facebook in Apache Cordova/PhoneGap!
 The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) allows you to use the same JavaScript code in your Cordova application as you use in your web application. However, unlike in the browser, the Cordova application will use the native Facebook app to perform Single Sign On for the user.  If this is not possible then the sign on will degrade gracefully using the standard dialog based authentication.
 
 * Supported on PhoneGap (Cordova) v3.3.0 and above.
-* This plugin is build for
+* This plugin is built for
 	* iOS FacebookSDK 3.13.0
 	* Android FacebookSDK 3.8.0
 
