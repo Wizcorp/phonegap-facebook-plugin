@@ -70,22 +70,26 @@
                     [FBRequestConnection startForMeWithCompletionHandler:
                      ^(FBRequestConnection *connection, id <FBGraphUser>user, NSError *error) {
                          if (!error) {
-                             self.userid = user.id;
+                             self.userid = [user objectForKey:@"id"];
+                             
                              // Send the plugin result. Wait for a successful fetch of user info.
-                             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                             if (self.loginCallbackId) {
+                                CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                                            messageAsDictionary:[self responseObject]];
-                             [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
+                                [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
+                             }
                          } else {
                              self.userid = @"";
-                             
                          }
                      }];
-                }else {
+                } else {
                     // Don't get user's info but trigger success callback
                     // Send the plugin result. Wait for a successful fetch of user info.
-                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK 
+                    if (self.loginCallbackId) {
+                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK 
                                                                 messageAsDictionary:[self responseObject]];
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
+                        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
+                    }
                 }
             }
             break;
@@ -127,7 +131,7 @@
             alertMessage = @"Error. Please try again later.";
         }
         
-        if (alertMessage) {
+        if (alertMessage && self.loginCallbackId) {
             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
                                                               messageAsString:alertMessage];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
