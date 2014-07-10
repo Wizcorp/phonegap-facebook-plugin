@@ -6,8 +6,8 @@ The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) a
 
 * Supported on PhoneGap (Cordova) v3.3.0 and above.
 * This plugin is built for
-	* iOS FacebookSDK 3.13.0
-	* Android FacebookSDK 3.8.0
+	* iOS FacebookSDK 3.15.1
+	* Android FacebookSDK 3.15.0
 
 ## Facebook Requirements and Set-Up
 
