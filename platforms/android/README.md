@@ -44,7 +44,7 @@ In Eclipse, right click your project folder in the left-had column. Select "Prop
 
 ## Setup without Eclipse (just CLI)
 
-Follow the steps above:
+Follow the steps below:
 
 	cordova create myApp
 
