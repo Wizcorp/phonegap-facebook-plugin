@@ -11,147 +11,30 @@ The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) a
 
 ## Facebook Requirements and Set-Up
 
-The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The manual install instructions include how to get the latest SDK for use in your project.
+To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an `APP_ID` [https://developers.facebook.com/apps](https://developers.facebook.com/apps).
 
-To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an APP_ID (https://developers.facebook.com/apps).
+#### Install Guides
 
-#### iOS
-If you plan on rolling this out on iOS, please note that you will need to ensure that you have properly set up your Native iOS App settings on the [Facebook App Dashboard](http://developers.facebook.com/apps). Please see the [Getting Started with the Facebook SDK](https://developers.facebook.com/docs/ios/getting-started/): Create a Facebook App section, for more details on this.
+- [iOS Guide](platforms/ios/README.md)
 
-#### Android
-If you plan on rolling this out on Android, please note that you will need to [generate a hash of your Android key(s) and submit those to the Developers page on Facebook](https://developers.facebook.com/docs/android/getting-started/facebook-sdk-for-android/) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
+- [Android Guide](platforms/android/README.md)
 
-#### Web App
-`www/js/facebookConnectPlugin.js` contains the JavaScript SDK and API file. The API matches as close as possible to the native APIs.
+- [Web App Guide](platforms/web/README.md)
 
-## Example Apps
+#### Example Apps
 
 `platforms/android` and `platforms/ios` contain example projects and all the native code for the plugin for both Android and iOS platforms. They also include versions of the Android and iOS Facebook SDKs. These are used during automatic installation.
 
-#### Setup Android Example
-
-Configure the project with your FB app id in the `res/values/facebookconnect.xml` file. For example:
-
-```xml
-<resources>
-    <string name="fb_app_id">123456789</string>
-    <string name="fb_app_name">TEST</string>
-</resources>
-```
-
-#### Setup iOS Example
-
-- Change **FacebookAppID** in project *-info.plist
-- Change URL scheme to `fb<YOUR APPID>` e.g. `fb123456789`
-
-#### Setup Web App Example
-
-Host the `www` folder on a server and configure your Facebook dashboard correctly to test the Web APIs. Most people use [Parse](https://parse.com/) for easy testing.
-
-
-## Adobe PhoneGap Build
+#### Adobe PhoneGap Build
 
 If using this plugin on Adobe PhoneGap Build you can ignore the instructions below and go straight to the
 PhoneGap Build documentation available [here] (https://build.phonegap.com/plugins/257).
 
-## Manual Installation
-
-- None! CLI automatic install is now the recommended method. 
-	- Why?
-		- Too much can go wrong with this plugin for manual installs.
-		- We automate so you have less work to do!
-		- All Plugins should be CLI compatible since Cordova 3
-
-## Automatic Installation
-
-This plugin is based on [plugman](https://git-wip-us.apache.org/repos/asf?p=cordova-plugman.git;a=summary).
-
-It will:
-
- - add native class files
- - setup the whitelist
- - setup URL scheme (for deeplink with FB application if installed)
- - and add your Facebook application Id automagically to a string resource file that can be read from the plugin.
-
-To install the plugin in your app, execute the following (replace variables where necessary)...
-
-### iOS
-
-
-	cordova create myApp
-
-	cd myApp/
-
-	cordova platform add ios
-
-	cordova -d plugin add /Users/your/path/here/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
-
-### Android
-
-	cordova create myApp
-
-	cd myApp/
-
-	cordova platform add android
-
-	cordova -d plugin add /Users/your/path/here/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
-
-**Android requires an additional step which is to reference the FacebookSDK project as a library to your project.**
-
-Open your project in Eclipse (New > Project... Existing Android project from source), import everything (***see Img. 1***).
-
-![image](./android_setup_1.png) ***Img. 1***
-
-In Eclipse, right click your project folder in the left-had column. Select "Properties", select Android in the left column and in the right side of the window add FacebookSDK as a library (***see Img. 2***).
-
-![image](./android_setup_2.png) ***Img. 2***
-
-### Android Setup without Eclipse (just CLI)
-
-Follow the steps above:
-
-	cordova create myApp
-
-	cd myApp/
-
-	cordova platform add android
-
-	cordova -d plugin add https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID="123456789" --variable APP_NAME="myApplication"
-	
-	// add FacebookLib
-	echo "android.library.reference.2=FacebookLib" >> platforms/android/project.properties
-	
-	cp platforms/android/local.properties platforms/android/FacebookLib
-	
-	android update project -p platforms/android/
-	
-	cd platforms/android/
-	
-	ant clean
-	
-	cd FacebookLib
-	
-	ant clean
-	
-	open -e AndroidManifest.xml	
-
-	// change your minSdkVersion and your targetSdkVersion to your environment settings for me it was:
-	// <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="17" />
-	
-	ant release
-	
-	cd ../../..
-	
-	cordova build android
-	
-With this steps you can add the Plugin without using Eclipse (like suggested above)
-	
-	
-## JavaScript API
+## API
 
 ###facebookConnectPlugin.login(Function success, Function failure)
 
-**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY**
+**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY** (see [Web App Guide](platforms/web/README.md))
 
 Success function returns an Object like;
 
@@ -171,13 +54,21 @@ Success function returns a status String.
 
 ###facebookConnectPlugin.showDialog(Object options, Function success, Function failure)
 
-Example options:
+Examples -
+Feed Dialog:
 
 	{
-		method: "feed" | "apprequests"
+		method: "feed"
 	}
 
-Success function returns an Object with `postId` as String.
+App request:
+
+	{
+		method: "apprequests",
+		message: "Come on man, check out my application."
+	}
+
+Success function returns an Object with `postId` as String or `from` and `to` information when doing `apprequest`.
 Failure function returns an error String.
 
 ###facebookConnectPlugin.api(String requestPath, Array permissions, Func success, Func failure)
@@ -200,7 +91,7 @@ For more information see:
 - Graph Explorer - [https://developers.facebook.com/tools/explorer](https://developers.facebook.com/tools/explorer)
 - Graph API - [https://developers.facebook.com/docs/graph-api/](https://developers.facebook.com/docs/graph-api/)
 
-## Sample JavaScript Code
+## Sample Code
 
 ### Login
 
