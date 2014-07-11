@@ -321,6 +321,14 @@ public class ConnectPlugin extends CordovaPlugin {
 					};
 				};
 				cordova.getActivity().runOnUiThread(runnable);
+			} else if (this.method.equalsIgnoreCase("share_open_graph")) {
+				Runnable runnable = new Runnable() {
+					public void run() {
+						WebDialog shareDialog = (new WebDialog.Builder(me.cordova.getActivity(), Session.getActiveSession(), "share_open_graph", paramBundle)).setOnCompleteListener(dialogCallback).build();
+						shareDialog.show();
+					};
+				};
+				cordova.getActivity().runOnUiThread(runnable);
 			} else {
 				callbackContext.error("Unsupported dialog method.");
 			}
