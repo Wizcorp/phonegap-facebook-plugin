@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -321,14 +322,8 @@ public class ConnectPlugin extends CordovaPlugin {
 					};
 				};
 				cordova.getActivity().runOnUiThread(runnable);
-			} else if (this.method.equalsIgnoreCase("share_open_graph")) {
-				Runnable runnable = new Runnable() {
-					public void run() {
-						WebDialog shareDialog = (new WebDialog.Builder(me.cordova.getActivity(), Session.getActiveSession(), "share_open_graph", paramBundle)).setOnCompleteListener(dialogCallback).build();
-						shareDialog.show();
-					};
-				};
-				cordova.getActivity().runOnUiThread(runnable);
+			} else if (this.method.equalsIgnoreCase("share") || this.method.equalsIgnoreCase("share_open_graph")) {
+				cordova.getActivity().runOnUiThread(new WebDialogBuilderRunnable(me.cordova.getActivity(), Session.getActiveSession(), this.method, paramBundle, dialogCallback));
 			} else {
 				callbackContext.error("Unsupported dialog method.");
 			}
@@ -522,4 +517,25 @@ public class ConnectPlugin extends CordovaPlugin {
         }
         return new JSONObject();
     }
+	
+	private class WebDialogBuilderRunnable implements Runnable {
+		private Context context;
+		private Session session;
+		private String method;
+		private Bundle paramBundle;
+		private OnCompleteListener dialogCallback;
+		
+		public WebDialogBuilderRunnable(Context context, Session session, String method, Bundle paramBundle, OnCompleteListener dialogCallback) {
+			this.context = context;
+			this.session = session;
+			this.method = method;
+			this.paramBundle = paramBundle;
+			this.dialogCallback = dialogCallback;
+		}
+
+		public void run() {
+			WebDialog shareDialog = (new WebDialog.Builder(context, session, method, paramBundle)).setOnCompleteListener(dialogCallback).build();
+			shareDialog.show();
+		}
+	}
 }
