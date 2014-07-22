@@ -61,8 +61,8 @@ if (!window.cordova) {
                     picture: options.picture
                 },
                 function (response) {
-                    if (response && response.post_id) {
-                        s({ post_id: response.post_id });
+                    if (response && response.request) {
+                        s(response);
                     } else {
                         f(response);
                     }
