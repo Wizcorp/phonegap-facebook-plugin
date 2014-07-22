@@ -8,7 +8,7 @@ This guide is for browser only. View the other guides for native setup.
 
 ## Example App
 
-Host the `www` folder on a server and configure your Facebook dashboard correctly to test the Web APIs. Most people use [Parse](https://parse.com/) for easy testing.
+Host the `www` folder on a server and configure your Facebook dashboard correctly to test the Web APIs. Most people use [Parse](https://parse.com/) for easy testing. Check this guide to create a sample web app with Parse [Create a FB WebApp with Parse](guide/PARSE_GUIDE.md).
 
 
 ## Note
