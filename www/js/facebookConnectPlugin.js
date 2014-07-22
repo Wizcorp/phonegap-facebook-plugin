@@ -27,9 +27,12 @@ if (!window.cordova) {
         },
 
         showDialog: function (options, s, f) {
-            
+
             if (!options.name) {
                 options.name = "";
+            }
+            if (!options.message) {
+                options.message = "";
             }
             if (!options.caption) {
                 options.caption = "";
@@ -48,6 +51,7 @@ if (!window.cordova) {
             try {
                 FB.ui({
                     method: options.method,
+                    message: options.message,
                     name: options.name,
                     caption: options.caption,
                     description: (
