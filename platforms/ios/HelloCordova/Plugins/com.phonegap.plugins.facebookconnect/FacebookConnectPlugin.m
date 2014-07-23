@@ -22,7 +22,7 @@
 @implementation FacebookConnectPlugin
 
 
--(CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
+- (CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
     NSLog(@"Init FacebookConnect Session");
     self = (FacebookConnectPlugin *)[super initWithWebView:theWebView];
     self.userid = @"";
@@ -40,9 +40,8 @@
 }
 
 /* This overrides CDVPlugin's method, which receives a notification when handleOpenURL is called on the main app delegate */
-- (void) handleOpenURL:(NSNotification*)notification
-{
-    NSLog(@"handle url: %@", [notification object]);
+- (void)handleOpenURL:(NSNotification *)notification {
+    // NSLog(@"handle url: %@", [notification object]);
     NSURL* url = [notification object];
 
     if (![url isKindOfClass:[NSURL class]]) {
@@ -183,31 +182,51 @@
 }
 
 - (void)logEvent:(CDVInvokedUrlCommand *)command {
-    CDVPluginResult *res;
     if ([command.arguments count] == 0) {
         // Not enough arguments
-        res = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Missing arguments."];
+        CDVPluginResult *res = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Invalid arguments"];
         [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
         return;
     }
-    NSString *kEventName;
-    NSDictionary *params;
-    double value;
-
-    if ([command.arguments count] == 1) {
-        kEventName = [command.arguments objectAtIndex:0];
+    [self.commandDelegate runInBackground:^{
+        // For more verbose output on logging uncomment the following:
+        // [FBSettings setLoggingBehavior:[NSSet setWithObject:FBLoggingBehaviorAppEvents]];
+        NSString *kEventName = [command.arguments objectAtIndex:0];
         kEventName = [NSString stringWithFormat:@"FBAppEventName%@", kEventName];
-    }
-    if ([command.arguments count] == 2) {
-        params = [command.arguments objectAtIndex:1];
-        [FBAppEvents logEvent:kEventName parameters:params];
-    }
-    if ([command.arguments count] == 3) {
-        value = [[command.arguments objectAtIndex:2] doubleValue];
-        [FBAppEvents logEvent:kEventName valueToSum:value parameters:params];
-    }
-    res = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
+
+        CDVPluginResult *res;
+        NSDictionary *params;
+        double value;
+
+        if ([command.arguments count] == 1) {
+            [FBAppEvents logEvent:kEventName];
+        } else {
+            // argument count is not 0 or 1, must be 2 or more
+            params = [command.arguments objectAtIndex:1];
+            // We need to update the key names to match Facebook's constants
+            // So fill a new dictionary object
+            NSMutableDictionary *updateParams = [[NSMutableDictionary alloc] init];
+            for (NSString *oldKey in params) {
+                // Create new key
+                NSString *newKey = [NSString stringWithFormat:@"FBAppEventParameterName%@", oldKey];
+                // Keep value
+                id value = [params objectForKey:oldKey];
+                // Add new key and value to new dictionary
+                [updateParams setObject:value forKey:newKey];
+            }
+            if ([command.arguments count] == 2) {
+                // If count is 2 we will just send params
+                [FBAppEvents logEvent:kEventName parameters:updateParams];
+            }
+            if ([command.arguments count] == 3) {
+                // If count is 3 we will send params and a value to sum
+                value = [[command.arguments objectAtIndex:2] doubleValue];
+                [FBAppEvents logEvent:kEventName valueToSum:value parameters:updateParams];
+            }
+        }
+        res = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
+    }];
 }
 
 - (void)login:(CDVInvokedUrlCommand *)command {
