@@ -162,9 +162,8 @@
     return YES;
 }
 
-- (void)getLoginStatus:(CDVInvokedUrlCommand *)command
-{
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+- (void)getLoginStatus:(CDVInvokedUrlCommand *)command {
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                   messageAsDictionary:[self responseObject]];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
@@ -181,6 +180,34 @@
                         @"Session not open."];
     }
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)logEvent:(CDVInvokedUrlCommand *)command {
+    CDVPluginResult *res;
+    if ([command.arguments count] == 0) {
+        // Not enough arguments
+        res = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Missing arguments."];
+        [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
+        return;
+    }
+    NSString *kEventName;
+    NSDictionary *params;
+    double value;
+
+    if ([command.arguments count] == 1) {
+        kEventName = [command.arguments objectAtIndex:0];
+        kEventName = [NSString stringWithFormat:@"FBAppEventName%@", kEventName];
+    }
+    if ([command.arguments count] == 2) {
+        params = [command.arguments objectAtIndex:1];
+        [FBAppEvents logEvent:kEventName parameters:params];
+    }
+    if ([command.arguments count] == 3) {
+        value = [[command.arguments objectAtIndex:2] doubleValue];
+        [FBAppEvents logEvent:kEventName valueToSum:value parameters:params];
+    }
+    res = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
 }
 
 - (void)login:(CDVInvokedUrlCommand *)command {

@@ -23,6 +23,10 @@ var facebookConnectPlugin = {
         cordova.exec(s, f, "FacebookConnectPlugin", "login", permissions);
     },
 
+    logEvent: function(kName, params, valueToSum, s, f) {
+        cordova.exec(s, f, "FacebookConnectPlugin", "logEvent", [kName, params, valueToSum]);
+    },
+
     getAccessToken: function(s, f) {
         cordova.exec(s, f, "FacebookConnectPlugin", "getAccessToken", []);
     },
