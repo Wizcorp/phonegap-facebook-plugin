@@ -23,6 +23,19 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
             cordova.exec(s, f, "FacebookConnectPlugin", "login", permissions);
         },
 
+        logEvent: function(kName, params, valueToSum, s, f) {
+            // Prevent NSNulls getting into iOS, messes up our [command.argument count]
+            if (!params && !valueToSum) {
+                cordova.exec(s, f, "FacebookConnectPlugin", "logEvent", [kName]);
+            } else if (params && !valueToSum) {
+                cordova.exec(s, f, "FacebookConnectPlugin", "logEvent", [kName, params]);
+            } else if (params && valueToSum) {
+                cordova.exec(s, f, "FacebookConnectPlugin", "logEvent", [kName, params, valueToSum]);
+            } else {
+                f("Invalid arguments");
+            }
+        },
+
         getAccessToken: function(s, f) {
             cordova.exec(s, f, "FacebookConnectPlugin", "getAccessToken", []);
         },
