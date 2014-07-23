@@ -105,6 +105,11 @@ if (!window.cordova) {
             }
         },
 
+        logEvent: function (eventName, params, valueToSum, s, f) {
+            // AppEvents are not avaliable in JS.
+            s();
+        }
+
         logout: function (s, f) {
             // Try will catch errors when SDK has not been init
             try {
