@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="com.phonegap.plugins.facebookconnect"
-    version="0.5.0">
+    version="0.6.0">
 
     <name>Facebook Connect</name>
     
@@ -18,19 +18,8 @@
     
     <license>Apache 2.0</license>
     
-    <asset src="www/cdv-plugin-fb-connect.js" target="cdv-plugin-fb-connect.js" />
-    <asset src="www/facebook-js-sdk.js" target="facebook-js-sdk.js" />
-    
-    <config-file target="config.xml" parent="/*">
-	    <access origin="https://m.facebook.com" />
-	    <access origin="https://graph.facebook.com" />
-	    <access origin="https://api.facebook.com" />
-	    <access origin="https://*.fbcdn.net" />
-	    <access origin="https://*.akamaihd.net" />
-    </config-file>
-    
     <preference name="APP_ID" />
-	<preference name="APP_NAME" />
+    <preference name="APP_NAME" />
     
     <engines>
     	<!-- Requires > 3.3.* because of the custom Framework tag for iOS [CB-5238] -->
@@ -47,13 +36,18 @@
     <!-- android -->
     <platform name="android">
         
-        <config-file target="config.xml" parent="/*">
+        <config-file target="res/xml/config.xml" parent="/*">
             <feature name="FacebookConnectPlugin">
                 <param name="android-package" value="org.apache.cordova.facebook.ConnectPlugin" />
             </feature>
+            <access origin="https://m.facebook.com" />
+	        <access origin="https://graph.facebook.com" />
+	        <access origin="https://api.facebook.com" />
+	        <access origin="https://*.fbcdn.net" />
+	        <access origin="https://*.akamaihd.net" />
         </config-file>
         
-        <source-file src="src/android/facebook/res/values/facebookconnect.xml" target-dir="res/values" />
+        <source-file src="platforms/android/res/values/facebookconnect.xml" target-dir="res/values" />
         <config-file target="res/values/facebookconnect.xml" parent="/*">
             <string name="fb_app_id">$APP_ID</string>
             <string name="fb_app_name">$APP_NAME</string>
@@ -65,10 +59,10 @@
         </config-file>
 
         <!-- copy Facebook Lib project -->
-        <source-file src="src/android/facebook/FacebookLib" target-dir="./" />
+        <source-file src="platforms/android/FacebookLib" target-dir="./" />
         
         <!-- cordova plugin src files -->
-        <source-file src="src/android/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
+        <source-file src="platforms/android/src/org/apache/cordova/facebook/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
          
     </platform>
     
@@ -80,10 +74,15 @@
 			    <param name="onload" value="true" />
 		    </feature>
 		    <plugin name="FacebookConnectPlugin" value="FacebookConnectPlugin"/>
+		    <access origin="https://m.facebook.com" />
+	        <access origin="https://graph.facebook.com" />
+	        <access origin="https://api.facebook.com" />
+	        <access origin="https://*.fbcdn.net" />
+	        <access origin="https://*.akamaihd.net" />
 	    </config-file>
 
-        <header-file src="src/ios/FacebookConnectPlugin.h" />
-        <source-file src="src/ios/FacebookConnectPlugin.m" />
+        <header-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/FacebookConnectPlugin.h" />
+        <source-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/FacebookConnectPlugin.m" />
 
         <config-file target="*-Info.plist" parent="FacebookAppID">
             <string>$APP_ID</string>
@@ -105,7 +104,7 @@
         </config-file>
 
         <!-- Facebook framework -->
-        <framework src="src/ios/frameworks/FacebookSDK.framework" custom="true" />
+        <framework src="platforms/ios/FacebookSDK.framework" custom="true" />
                 
         <!-- System frameworks -->
         <framework src="libsqlite3.dylib" />
