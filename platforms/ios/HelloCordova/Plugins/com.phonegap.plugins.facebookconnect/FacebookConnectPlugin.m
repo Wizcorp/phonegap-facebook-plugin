@@ -200,42 +200,48 @@
     [self.commandDelegate runInBackground:^{
         // For more verbose output on logging uncomment the following:
         // [FBSettings setLoggingBehavior:[NSSet setWithObject:FBLoggingBehaviorAppEvents]];
-        NSString *kEventName = [command.arguments objectAtIndex:0];
-        kEventName = [NSString stringWithFormat:@"FBAppEventName%@", kEventName];
-
+        NSString *eventName = [command.arguments objectAtIndex:0];
         CDVPluginResult *res;
         NSDictionary *params;
         double value;
 
         if ([command.arguments count] == 1) {
-            [FBAppEvents logEvent:kEventName];
+            [FBAppEvents logEvent:eventName];
         } else {
             // argument count is not 0 or 1, must be 2 or more
             params = [command.arguments objectAtIndex:1];
-            // We need to update the key names to match Facebook's constants
-            // So fill a new dictionary object
-            NSMutableDictionary *updateParams = [[NSMutableDictionary alloc] init];
-            for (NSString *oldKey in params) {
-                // Create new key
-                NSString *newKey = [NSString stringWithFormat:@"FBAppEventParameterName%@", oldKey];
-                // Keep value
-                id value = [params objectForKey:oldKey];
-                // Add new key and value to new dictionary
-                [updateParams setObject:value forKey:newKey];
-            }
             if ([command.arguments count] == 2) {
                 // If count is 2 we will just send params
-                [FBAppEvents logEvent:kEventName parameters:updateParams];
+                [FBAppEvents logEvent:eventName parameters:params];
             }
             if ([command.arguments count] == 3) {
                 // If count is 3 we will send params and a value to sum
                 value = [[command.arguments objectAtIndex:2] doubleValue];
-                [FBAppEvents logEvent:kEventName valueToSum:value parameters:updateParams];
+                [FBAppEvents logEvent:eventName valueToSum:value parameters:params];
             }
         }
         res = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
     }];
+}
+
+- (void)logPurchase:(CDVInvokedUrlCommand *)command {
+    /*
+     While calls to logEvent can be made to register purchase events,
+     there is a helper method that explicitly takes a currency indicator.
+     */
+    CDVPluginResult *res;
+    if (!command.arguments == 2) {
+        res = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Invalid arguments"];
+        [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
+        return;
+    }
+    double value = [[command.arguments objectAtIndex:0] doubleValue];
+    NSString *currency = [command.arguments objectAtIndex:1];
+    [FBAppEvents logPurchase:value currency:currency];
+
+    res = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
 }
 
 - (void)login:(CDVInvokedUrlCommand *)command {
