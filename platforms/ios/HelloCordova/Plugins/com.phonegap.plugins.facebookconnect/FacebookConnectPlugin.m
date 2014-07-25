@@ -36,6 +36,10 @@
                                                           state:state
                                                           error:error];
                                   }];
+    // Add notification listener for tracking app activity with FB Events
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive)
+                                                 name:UIApplicationDidBecomeActiveNotification object:nil];
     return self;
 }
 
@@ -49,6 +53,11 @@
     }
 
     [FBSession.activeSession handleOpenURL:url];
+}
+
+- (void)applicationDidBecomeActive {
+    // Call the 'activateApp' method to log an app event for use in analytics and advertising reporting.
+    [FBAppEvents activateApp];
 }
 
 /*
