@@ -1,9 +1,11 @@
 package org.apache.cordova.facebook;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -238,9 +240,9 @@ public class ConnectPlugin extends CordovaPlugin {
 				callbackContext.error("Invalid arguments");
 				return true;
 			}
-			String kEventName = args.getString(0);
+			String eventName = args.getString(0);
 			if (args.length() == 1) {
-				logger.logEvent(kEventName);
+				logger.logEvent(eventName);
 			} else {
 				// args is greater than 1
 				JSONObject params = args.getJSONObject(1);
@@ -265,13 +267,27 @@ public class ConnectPlugin extends CordovaPlugin {
 					}
 				}
 				if (args.length() == 2) {
-					logger.logEvent(kEventName, parameters);
+					logger.logEvent(eventName, parameters);
 				}
 				if (args.length() == 3) {
 					double value = args.getDouble(2);
-					logger.logEvent(kEventName, value, parameters);
+					logger.logEvent(eventName, value, parameters);
 				}
 			}
+			callbackContext.success();
+			return true;
+		} else if (action.equals("logPurchase")) {
+			/*
+			 * While calls to logEvent can be made to register purchase events,
+			 * there is a helper method that explicitly takes a currency indicator.
+			 */
+			if (args.length() != 2) {
+				callbackContext.error("Invalid arguments");
+				return true;
+			}
+			int value = args.getInt(0);
+			String currency = args.getString(1);
+			logger.logPurchase(BigDecimal.valueOf(value), Currency.getInstance(currency));
 			callbackContext.success();
 			return true;
 		} else if (action.equals("showDialog")) {
