@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.facebook.AppEventsConstants;
 import com.facebook.AppEventsLogger;
 import com.facebook.FacebookDialogException;
 import com.facebook.FacebookException;
