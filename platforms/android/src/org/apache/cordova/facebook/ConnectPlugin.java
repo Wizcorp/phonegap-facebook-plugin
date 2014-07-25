@@ -1,9 +1,11 @@
 package org.apache.cordova.facebook;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -24,6 +26,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.facebook.AppEventsConstants;
+import com.facebook.AppEventsLogger;
 import com.facebook.FacebookDialogException;
 import com.facebook.FacebookException;
 import com.facebook.FacebookOperationCanceledException;
@@ -50,6 +54,7 @@ public class ConnectPlugin extends CordovaPlugin {
 	};
 	private final String TAG = "ConnectPlugin";
 
+	private AppEventsLogger logger;
 	private String applicationId = null;
 	private CallbackContext loginContext = null;
 	private CallbackContext showDialogContext = null;
@@ -61,6 +66,9 @@ public class ConnectPlugin extends CordovaPlugin {
 
 	@Override
 	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+
+		// Init logger
+		logger = AppEventsLogger.newLogger(cordova.getActivity());
 
 		int appResId = cordova.getActivity().getResources().getIdentifier("fb_app_id", "string", cordova.getActivity().getPackageName());
 		applicationId = cordova.getActivity().getString(appResId);
@@ -90,6 +98,13 @@ public class ConnectPlugin extends CordovaPlugin {
 			onSessionStateChange(session.getState(), null);
 		}
 		super.initialize(cordova, webView);
+	}
+
+	@Override
+	public void onResume(boolean multitasking) {
+		super.onResume(multitasking);
+		// Developers can observe how frequently users activate their app by logging an app activation event. 
+		AppEventsLogger.activateApp(cordova.getActivity());
 	}
 
 	@Override
@@ -218,6 +233,62 @@ public class ConnectPlugin extends CordovaPlugin {
 				callbackContext
 					.error("No valid session found, must call init and login before logout.");
 			}
+			return true;
+		} else if (action.equals("logEvent")) {
+			if (args.length() == 0) {
+				// Not enough parameters
+				callbackContext.error("Invalid arguments");
+				return true;
+			}
+			String eventName = args.getString(0);
+			if (args.length() == 1) {
+				logger.logEvent(eventName);
+			} else {
+				// args is greater than 1
+				JSONObject params = args.getJSONObject(1);
+				Bundle parameters = new Bundle();
+
+				Iterator<?> iterator = params.keys();
+				while (iterator.hasNext() ) {
+					try {
+						// Try get a String
+						String value = params.getString((String) iterator.next());
+						parameters.putString((String) iterator.next(), value);
+					} catch (Exception e) {
+						// Maybe it was an int
+						Log.w(TAG, "Type in AppEvent parameters was not String for key: " + (String) iterator.next());
+						try {
+							int value = params.getInt((String) iterator.next());
+							parameters.putInt((String) iterator.next(), value);
+						} catch (Exception e2) {
+							// Nope
+							Log.e(TAG, "Unsupported type in AppEvent parameters for key: " + (String) iterator.next());
+						}
+					}
+				}
+				if (args.length() == 2) {
+					logger.logEvent(eventName, parameters);
+				}
+				if (args.length() == 3) {
+					double value = args.getDouble(2);
+					logger.logEvent(eventName, value, parameters);
+				}
+			}
+			callbackContext.success();
+			return true;
+		} else if (action.equals("logPurchase")) {
+			/*
+			 * While calls to logEvent can be made to register purchase events,
+			 * there is a helper method that explicitly takes a currency indicator.
+			 */
+			if (args.length() != 2) {
+				callbackContext.error("Invalid arguments");
+				return true;
+			}
+			int value = args.getInt(0);
+			String currency = args.getString(1);
+			logger.logPurchase(BigDecimal.valueOf(value), Currency.getInstance(currency));
+			callbackContext.success();
 			return true;
 		} else if (action.equals("showDialog")) {
 			Bundle collect = new Bundle();
