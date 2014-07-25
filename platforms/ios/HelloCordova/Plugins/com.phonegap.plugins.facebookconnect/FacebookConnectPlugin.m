@@ -501,13 +501,12 @@
      }];
 }
 
-- (NSDictionary*) responseObject
-{
-    NSString* status = @"unknown";
-    NSDictionary* sessionDict = nil;
+- (NSDictionary *)responseObject {
+    NSString *status = @"unknown";
+    NSDictionary *sessionDict = nil;
     
     NSTimeInterval expiresTimeInterval = [FBSession.activeSession.accessTokenData.expirationDate timeIntervalSinceNow];
-    NSString* expiresIn = @"0";
+    NSString *expiresIn = @"0";
     if (expiresTimeInterval > 0) {
         expiresIn = [NSString stringWithFormat:@"%0.0f", expiresTimeInterval];
     }
@@ -521,7 +520,7 @@
                         @"secret" : @"...",
                         @"session_key" : [NSNumber numberWithBool:YES],
                         @"sig" : @"...",
-                        @"userID" : self.userid,
+                        @"userID" : self.userid
                         };
     }
     

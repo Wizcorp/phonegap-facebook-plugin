@@ -217,7 +217,7 @@ public class ConnectPlugin extends CordovaPlugin {
 			}
 			return true;
 		} else if (action.equals("getLoginStatus")) {
-			callbackContext.success(Session.getActiveSession().getState().toString());
+			callbackContext.success(getResponse());
 			return true;
 		} else if (action.equals("getAccessToken")) {
 			Session session = Session.getActiveSession();
@@ -569,7 +569,6 @@ public class ConnectPlugin extends CordovaPlugin {
               "\"expiresIn\": \""+expiresIn+"\","+
               "\"session_key\": true,"+
               "\"sig\": \"...\","+
-              "\"userId\": \""+this.userID+"\","+
               "\"userID\": \""+this.userID+"\""+
             "}"+
           "}";
