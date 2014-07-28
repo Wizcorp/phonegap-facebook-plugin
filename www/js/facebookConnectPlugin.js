@@ -15,7 +15,7 @@ if (!window.cordova) {
             // Try will catch errors when SDK has not been init
             try {
                 FB.getLoginStatus(function (response) {
-                    s(response.status);
+                    s(response);
                 });
             } catch (error) {
                 if (!f) {
@@ -27,9 +27,12 @@ if (!window.cordova) {
         },
 
         showDialog: function (options, s, f) {
-            
+
             if (!options.name) {
                 options.name = "";
+            }
+            if (!options.message) {
+                options.message = "";
             }
             if (!options.caption) {
                 options.caption = "";
@@ -48,6 +51,7 @@ if (!window.cordova) {
             try {
                 FB.ui({
                     method: options.method,
+                    message: options.message,
                     name: options.name,
                     caption: options.caption,
                     description: (
@@ -57,8 +61,8 @@ if (!window.cordova) {
                     picture: options.picture
                 },
                 function (response) {
-                    if (response && response.post_id) {
-                        s({ post_id: response.post_id });
+                    if (response && response.request) {
+                        s(response);
                     } else {
                         f(response);
                     }
@@ -99,6 +103,16 @@ if (!window.cordova) {
             } else {
                 s(response);
             }
+        },
+
+        logEvent: function (eventName, params, valueToSum, s, f) {
+            // AppEvents are not avaliable in JS.
+            s();
+        },
+
+        logPurchase: function (value, currency, s, f) {
+            // AppEvents are not avaliable in JS.
+            s();
         },
 
         logout: function (s, f) {
@@ -144,6 +158,7 @@ if (!window.cordova) {
             }
             FB.init({
                 appId      : appId,
+                cookie     : true,
                 xfbml      : true,
                 version    : version
             })

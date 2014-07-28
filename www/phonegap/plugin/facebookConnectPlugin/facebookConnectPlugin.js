@@ -80,6 +80,23 @@ if (!window.cordova) {
             cordova.exec(s, f, "FacebookConnectPlugin", "login", permissions);
         },
 
+        logEvent: function(name, params, valueToSum, s, f) {
+            // Prevent NSNulls getting into iOS, messes up our [command.argument count]
+            if (!params && !valueToSum) {
+                cordova.exec(s, f, "FacebookConnectPlugin", "logEvent", [name]);
+            } else if (params && !valueToSum) {
+                cordova.exec(s, f, "FacebookConnectPlugin", "logEvent", [name, params]);
+            } else if (params && valueToSum) {
+                cordova.exec(s, f, "FacebookConnectPlugin", "logEvent", [name, params, valueToSum]);
+            } else {
+                f("Invalid arguments");
+            }
+        },
+
+        logPurchase: function(value, currency, s, f) {
+            cordova.exec(s, f, "FacebookConnectPlugin", "logPurchase", [value, currency]);
+        },
+
         getAccessToken: function(s, f) {
             cordova.exec(s, f, "FacebookConnectPlugin", "getAccessToken", []);
         },
@@ -89,6 +106,7 @@ if (!window.cordova) {
         },
 
         api: function (graphPath, permissions, s, f) {
+            if (!permissions) permissions = [];
             cordova.exec(s, f, "FacebookConnectPlugin", "graphApi", [graphPath, permissions]);
         }
     };

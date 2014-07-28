@@ -22,7 +22,7 @@
 @implementation FacebookConnectPlugin
 
 
--(CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
+- (CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
     NSLog(@"Init FacebookConnect Session");
     self = (FacebookConnectPlugin *)[super initWithWebView:theWebView];
     self.userid = @"";
@@ -36,13 +36,16 @@
                                                           state:state
                                                           error:error];
                                   }];
+    // Add notification listener for tracking app activity with FB Events
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive)
+                                                 name:UIApplicationDidBecomeActiveNotification object:nil];
     return self;
 }
 
 /* This overrides CDVPlugin's method, which receives a notification when handleOpenURL is called on the main app delegate */
-- (void) handleOpenURL:(NSNotification*)notification
-{
-    NSLog(@"handle url: %@", [notification object]);
+- (void)handleOpenURL:(NSNotification *)notification {
+    // NSLog(@"handle url: %@", [notification object]);
     NSURL* url = [notification object];
 
     if (![url isKindOfClass:[NSURL class]]) {
@@ -50,6 +53,11 @@
     }
 
     [FBSession.activeSession handleOpenURL:url];
+}
+
+- (void)applicationDidBecomeActive {
+    // Call the 'activateApp' method to log an app event for use in analytics and advertising reporting.
+    [FBAppEvents activateApp];
 }
 
 /*
@@ -162,9 +170,8 @@
     return YES;
 }
 
-- (void)getLoginStatus:(CDVInvokedUrlCommand *)command
-{
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+- (void)getLoginStatus:(CDVInvokedUrlCommand *)command {
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                   messageAsDictionary:[self responseObject]];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
@@ -181,6 +188,60 @@
                         @"Session not open."];
     }
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)logEvent:(CDVInvokedUrlCommand *)command {
+    if ([command.arguments count] == 0) {
+        // Not enough arguments
+        CDVPluginResult *res = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Invalid arguments"];
+        [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
+        return;
+    }
+    [self.commandDelegate runInBackground:^{
+        // For more verbose output on logging uncomment the following:
+        // [FBSettings setLoggingBehavior:[NSSet setWithObject:FBLoggingBehaviorAppEvents]];
+        NSString *eventName = [command.arguments objectAtIndex:0];
+        CDVPluginResult *res;
+        NSDictionary *params;
+        double value;
+
+        if ([command.arguments count] == 1) {
+            [FBAppEvents logEvent:eventName];
+        } else {
+            // argument count is not 0 or 1, must be 2 or more
+            params = [command.arguments objectAtIndex:1];
+            if ([command.arguments count] == 2) {
+                // If count is 2 we will just send params
+                [FBAppEvents logEvent:eventName parameters:params];
+            }
+            if ([command.arguments count] == 3) {
+                // If count is 3 we will send params and a value to sum
+                value = [[command.arguments objectAtIndex:2] doubleValue];
+                [FBAppEvents logEvent:eventName valueToSum:value parameters:params];
+            }
+        }
+        res = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
+    }];
+}
+
+- (void)logPurchase:(CDVInvokedUrlCommand *)command {
+    /*
+     While calls to logEvent can be made to register purchase events,
+     there is a helper method that explicitly takes a currency indicator.
+     */
+    CDVPluginResult *res;
+    if (!command.arguments == 2) {
+        res = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Invalid arguments"];
+        [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
+        return;
+    }
+    double value = [[command.arguments objectAtIndex:0] doubleValue];
+    NSString *currency = [command.arguments objectAtIndex:1];
+    [FBAppEvents logPurchase:value currency:currency];
+
+    res = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
 }
 
 - (void)login:(CDVInvokedUrlCommand *)command {
@@ -440,13 +501,12 @@
      }];
 }
 
-- (NSDictionary*) responseObject
-{
-    NSString* status = @"unknown";
-    NSDictionary* sessionDict = nil;
+- (NSDictionary *)responseObject {
+    NSString *status = @"unknown";
+    NSDictionary *sessionDict = nil;
     
     NSTimeInterval expiresTimeInterval = [FBSession.activeSession.accessTokenData.expirationDate timeIntervalSinceNow];
-    NSString* expiresIn = @"0";
+    NSString *expiresIn = @"0";
     if (expiresTimeInterval > 0) {
         expiresIn = [NSString stringWithFormat:@"%0.0f", expiresTimeInterval];
     }
@@ -460,7 +520,7 @@
                         @"secret" : @"...",
                         @"session_key" : [NSNumber numberWithBool:YES],
                         @"sig" : @"...",
-                        @"userID" : self.userid,
+                        @"userID" : self.userid
                         };
     }
     
@@ -476,14 +536,36 @@
  * A method for parsing URL parameters.
  */
 - (NSDictionary*)parseURLParams:(NSString *)query {
+    NSString *regexStr = @"^(.+)\\[(.*)\\]$";
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexStr options:0 error:nil];
+
     NSArray *pairs = [query componentsSeparatedByString:@"&"];
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
     [pairs enumerateObjectsUsingBlock:
      ^(NSString *pair, NSUInteger idx, BOOL *stop) {
          NSArray *kv = [pair componentsSeparatedByString:@"="];
-         NSString *val = [kv[1]
-                          stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-         params[kv[0]] = val;
+         NSString *key = [kv[0] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+         NSString *val = [kv[1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
+         NSArray *matches = [regex matchesInString:key options:0 range:NSMakeRange(0, [key length])];
+         if ([matches count] > 0) {
+             for (NSTextCheckingResult *match in matches) {
+
+                 NSString *newKey = [key substringWithRange:[match rangeAtIndex:1]];
+
+                 if ([[params allKeys] containsObject:newKey]) {
+                     NSMutableArray *obj = [params objectForKey:newKey];
+                     [obj addObject:val];
+                     [params setObject:obj forKey:newKey];
+                 } else {
+                     NSMutableArray *obj = [NSMutableArray arrayWithObject:val];
+                     [params setObject:obj forKey:newKey];
+                 }
+             }
+         } else {
+             params[key] = val;
+         }
+         // params[kv[0]] = val;
     }];
     return params;
 }

@@ -17,43 +17,38 @@
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CGBase.h>
 
+#import "FBSDKMacros.h"
+
 /*
  * Constants defining logging behavior.  Use with <[FBSettings setLoggingBehavior]>.
  */
 
 /*! Log requests from FBRequest* classes */
-extern NSString *const FBLoggingBehaviorFBRequests;
+FBSDK_EXTERN NSString *const FBLoggingBehaviorFBRequests;
 
 /*! Log requests from FBURLConnection* classes */
-extern NSString *const FBLoggingBehaviorFBURLConnections;
+FBSDK_EXTERN NSString *const FBLoggingBehaviorFBURLConnections;
 
 /*! Include access token in logging. */
-extern NSString *const FBLoggingBehaviorAccessTokens;
+FBSDK_EXTERN NSString *const FBLoggingBehaviorAccessTokens;
 
 /*! Log session state transitions. */
-extern NSString *const FBLoggingBehaviorSessionStateTransitions;
+FBSDK_EXTERN NSString *const FBLoggingBehaviorSessionStateTransitions;
 
 /*! Log performance characteristics */
-extern NSString *const FBLoggingBehaviorPerformanceCharacteristics;
+FBSDK_EXTERN NSString *const FBLoggingBehaviorPerformanceCharacteristics;
 
 /*! Log FBAppEvents interactions */
-extern NSString *const FBLoggingBehaviorAppEvents;
+FBSDK_EXTERN NSString *const FBLoggingBehaviorAppEvents;
 
 /*! Log Informational occurrences */
-extern NSString *const FBLoggingBehaviorInformational;
+FBSDK_EXTERN NSString *const FBLoggingBehaviorInformational;
+
+/*! Log cache errors. */
+FBSDK_EXTERN NSString *const FBLoggingBehaviorCacheErrors;
 
 /*! Log errors likely to be preventable by the developer. This is in the default set of enabled logging behaviors. */
-extern NSString *const FBLoggingBehaviorDeveloperErrors;
-
-@class FBGraphObject;
-
-/*!
- @typedef
-
- @abstract Block type used to get install data that is returned by server when publishInstall is called
- @discussion
- */
-typedef void (^FBInstallResponseDataHandler)(FBGraphObject *response, NSError *error);
+FBSDK_EXTERN NSString *const FBLoggingBehaviorDeveloperErrors;
 
 /*!
  @typedef
@@ -65,8 +60,7 @@ typedef void (^FBInstallResponseDataHandler)(FBGraphObject *response, NSError *e
 typedef enum : NSUInteger {
     FBBetaFeaturesNone                  = 0,
 #if defined(DEBUG) || defined(FB_BUILD_ONLY)
-    FBBetaFeaturesShareDialog           = 1 << 0,
-    FBBetaFeaturesOpenGraphShareDialog  = 1 << 1,
+    FBBetaFeaturesLikeButton            = 1 << 2,
 #endif
 } FBBetaFeatures;
 
@@ -82,6 +76,11 @@ typedef NS_ENUM(NSUInteger, FBRestrictedTreatment) {
     FBRestrictedTreatmentYES = 1
 };
 
+/*!
+ @class FBSettings
+
+ @abstract Allows configuration of SDK behavior.
+*/
 @interface FBSettings : NSObject
 
 /*!
@@ -111,52 +110,21 @@ typedef NS_ENUM(NSUInteger, FBRestrictedTreatment) {
  */
 + (void)setLoggingBehavior:(NSSet *)loggingBehavior;
 
-/*! @abstract deprecated method */
-+ (BOOL)shouldAutoPublishInstall __attribute__ ((deprecated));
-
-/*! @abstract deprecated method */
-+ (void)setShouldAutoPublishInstall:(BOOL)autoPublishInstall __attribute__ ((deprecated));
-
 /*!
  @method
 
- @abstract This method has been replaced by [FBAppEvents activateApp] */
-+ (void)publishInstall:(NSString *)appID __attribute__ ((deprecated("use [FBAppEvents activateApp] instead")));
-
-/*!
- @method
-
- @abstract Manually publish an attributed install to the Facebook graph, and return the server response back in
- the supplied handler.  Calling this method will implicitly turn off auto-publish.  This method acquires the
- current attribution id from the facebook application, queries the graph API to determine if the application
- has install attribution enabled, publishes the id, and records success to avoid reporting more than once.
-
- @param appID   A specific appID to publish an install for.  If nil, uses [FBSession defaultAppID].
- @param handler A block to call with the server's response.
+ @abstract
+ This method is deprecated -- App Events favors using bundle identifiers to this.
  */
-+ (void)publishInstall:(NSString *)appID
-           withHandler:(FBInstallResponseDataHandler)handler __attribute__ ((deprecated));
-
++ (NSString *)appVersion __attribute__ ((deprecated("App Events favors use of bundle identifiers for version identification.")));
 
 /*!
  @method
 
  @abstract
- Gets the application version to the provided string.  `FBAppEvents`, for instance, attaches the app version to
- events that it logs, which are then available in App Insights.
+ This method is deprecated -- App Events favors using bundle identifiers to this.
  */
-+ (NSString *)appVersion;
-
-/*!
- @method
-
- @abstract
- Sets the application version to the provided string.  `FBAppEvents`, for instance, attaches the app version to
- events that it logs, which are then available in App Insights.
-
- @param appVersion  The version identifier of the iOS app.
- */
-+ (void)setAppVersion:(NSString *)appVersion;
++ (void)setAppVersion:(NSString *)appVersion __attribute__ ((deprecated("App Events favors use of bundle identifiers for version identification.")));
 
 /*!
  @method
@@ -323,5 +291,23 @@ typedef NS_ENUM(NSUInteger, FBRestrictedTreatment) {
  @param limitEventAndDataUsage   The desired value.
  */
 + (void)setLimitEventAndDataUsage:(BOOL)limitEventAndDataUsage;
+
+/*!
+ @method
+ @abstract Returns YES if the legacy Graph API mode is enabled
+*/
++ (BOOL)isPlatformCompatibilityEnabled;
+
+/*!
+ @method
+ @abstract Configures the SDK to use the legacy platform.
+ @param enable indicates whether to use the legacy mode
+ @discussion Setting this flag has several effects:
+   - FBRequests will target v1.0 of the Graph API.
+   - Login will use the prior behavior without abilities to decline permission.
+   - Specific new features such as `FBLikeButton` that require the current platform
+     will not work.
+*/
++ (void)enablePlatformCompatibility:(BOOL)enable;
 
 @end
