@@ -32,7 +32,9 @@ PhoneGap Build documentation available [here] (https://build.phonegap.com/plugin
 
 ## API
 
-###facebookConnectPlugin.login(Function success, Function failure)
+### Login
+
+`facebookConnectPlugin.login(Function success, Function failure)`
 
 **NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY** (see [Web App Guide](platforms/web/README.md))
 
@@ -46,19 +48,41 @@ Success function returns an Object like;
 
 Failure function returns an error String.
 
-###facebookConnectPlugin.logout(Function success, Function failure)
+### Logout
 
-###facebookConnectPlugin.getLoginStatus(Function success, Function failure)
+`facebookConnectPlugin.logout(Function success, Function failure)`
 
-Success function returns a status String.
+### Get Status
 
-###facebookConnectPlugin.showDialog(Object options, Function success, Function failure)
+`facebookConnectPlugin.getLoginStatus(Function success, Function failure)`
 
-Examples -
+Success function returns a status Object. Example:
+
+```
+{
+	authResponse: {
+		userID: "12345678912345",
+		accessToken: "kgkh3g42kh4g23kh4g2kh34g2kg4k2h4gkh3g4k2h4gk23h4gk2h34gk234gk2h34AndSoOn",
+		session_Key: true,
+		expiresIn: "5183738",
+		sig: "..."
+	},
+	status: "connected"
+}
+```
+For more information see: [Facebook Documentation](https://developers.facebook.com/docs/reference/javascript/FB.getLoginStatus)
+
+### Show a Dialog
+
+`facebookConnectPlugin.showDialog(Object options, Function success, Function failure)`
+
+Example options -
 Feed Dialog:
 
 	{
-		method: "feed"
+		method: "feed",
+		link: "http://example.com",
+		caption: "Such caption, very feed."
 	}
 
 App request:
@@ -68,10 +92,14 @@ App request:
 		message: "Come on man, check out my application."
 	}
 
+For options information see: [Facebook feed dialog documentation](https://developers.facebook.com/docs/sharing/reference/feed-dialog/v2.0), [Facebook share dialog documentation](https://developers.facebook.com/docs/sharing/reference/share-dialog)
+
 Success function returns an Object with `postId` as String or `from` and `to` information when doing `apprequest`.
 Failure function returns an error String.
 
-###facebookConnectPlugin.api(String requestPath, Array permissions, Func success, Func failure)
+### The Graph API
+
+`facebookConnectPlugin.api(String requestPath, Array permissions, Function success, Function failure)`
 
 Allows access to the Facebook Graph API. This API allows for additional permission because, unlike login, the Graph API can accept multiple permissions.
 
@@ -103,13 +131,17 @@ Activation events are automatically tracked for you in the plugin.
 
 Events are listed on the [insights page](https://www.facebook.com/insights/)
 
-### logEvent(String name, Object params, Number valueToSum, Function success, Function failure)
+### Log an Event
+
+`logEvent(String name, Object params, Number valueToSum, Function success, Function failure)`
 
 - **name**, name of the event
 - **params**, extra data to log with the event (is optional)
 - **valueToSum**, a property which is an arbitrary number that can represent any value (e.g., a price or a quantity). When reported, all of the valueToSum properties will be summed together. For example, if 10 people each purchased one item that cost $10 (and passed in valueToSum) then they would be summed to report a number of $100. (is optional)
 
-### logPurchase(Number value, String currency, Function success, Function failure)
+### Log a Purchase
+
+`logPurchase(Number value, String currency, Function success, Function failure)`
 
 **NOTE:** Both parameters are required. The currency specification is expected to be an [ISO 4217 currency code](http://en.wikipedia.org/wiki/ISO_4217)
 
@@ -128,7 +160,7 @@ In your `onDeviceReady` event add the following
         function (error) { alert("" + error) }
     );
 
-### Get access token
+### Get Access Token
 
 If you need the Facebook access token (for example, for validating the login on server side), do:
 
@@ -146,7 +178,7 @@ If you need the Facebook access token (for example, for validating the login on 
         function (error) { alert("" + error) }
     );
 
-### Get Status & Post-to-wall
+### Get Status and Post-to-wall
 
 For a more instructive example change the above `fbLoginSuccess` to;
 
@@ -167,7 +199,7 @@ For a more instructive example change the above `fbLoginSuccess` to;
     	);
     };
 
-### Getting A User's Birthday
+### Getting a User's Birthday
 
 Using the graph api this is a very simple task: [currently iOS only!]
 
