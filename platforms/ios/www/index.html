@@ -37,6 +37,8 @@
             <div class="event listening button" onclick="showDialog();">Show Dialog with Facebook</div>
             <div class="event listening button" onclick="apiTest();">Test API with Facebook</div>
             <div class="event listening button" onclick="getAccessToken();">Get access token with Facebook</div>
+            <div class="event listening button" onclick="logPurchase();">Log Purchase Event</div>
+            <div class="event listening button" onclick="logEvent();">Log Regular Event</div>
             <div class="event listening button" onclick="getStatus();">Get login status with Facebook</div>
             <div class="event listening button" onclick="logout();">Logout with Facebook</div>
         </div>
@@ -64,6 +66,27 @@
                 facebookConnectPlugin.api( "me/?fields=id,email", ["user_birthday"],
                     function (response) { alert(JSON.stringify(response)) },
                     function (response) { alert(JSON.stringify(response)) }); 
+            }
+
+            var logPurchase = function () {
+                facebookConnectPlugin.logPurchase(1.99, "USD",
+                    function (response) { alert(JSON.stringify(response)) },
+                    function (response) { alert(JSON.stringify(response)) });
+            }
+
+            var logEvent = function () {
+                // For more information on AppEvent param structure see
+                // https://developers.facebook.com/docs/ios/app-events
+                // https://developers.facebook.com/docs/android/app-events
+                facebookConnectPlugin.logEvent("Purchased",
+                    {
+                        NumItems: 1,
+                        Currency: "USD",
+                        ContentType: "shoes",
+                        ContentID: "HDFU-8452"
+                    }, null,
+                    function (response) { alert(JSON.stringify(response)) },
+                    function (response) { alert(JSON.stringify(response)) });
             }
 
             var getAccessToken = function () { 

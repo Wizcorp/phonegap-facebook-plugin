@@ -6,111 +6,37 @@ The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) a
 
 * Supported on PhoneGap (Cordova) v3.3.0 and above.
 * This plugin is built for
-	* iOS FacebookSDK 3.13.0
-	* Android FacebookSDK 3.8.0
+	* iOS FacebookSDK 3.16.1
+	* Android FacebookSDK 3.16.0
 
 ## Facebook Requirements and Set-Up
 
-The Facebook SDK (both native and JavaScript) is changing independent of this plugin. The manual install instructions include how to get the latest SDK for use in your project.
+To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an `APP_ID` [https://developers.facebook.com/apps](https://developers.facebook.com/apps).
 
-To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an APP_ID (https://developers.facebook.com/apps).
+#### Install Guides
 
-#### iOS
-If you plan on rolling this out on iOS, please note that you will need to ensure that you have properly set up your Native iOS App settings on the [Facebook App Dashboard](http://developers.facebook.com/apps). Please see the [Getting Started with the Facebook SDK](https://developers.facebook.com/docs/ios/getting-started/): Create a Facebook App section, for more details on this.
+- [iOS Guide](platforms/ios/README.md)
 
-#### Android
-If you plan on rolling this out on Android, please note that you will need to [generate a hash of your Android key(s) and submit those to the Developers page on Facebook](https://developers.facebook.com/docs/android/getting-started/facebook-sdk-for-android/) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
+- [Android Guide](platforms/android/README.md)
 
-#### Web App
-`www/js/facebookConnectPlugin.js` contains the JavaScript SDK and API file. The API matches as close as possible to the native APIs.
+- [Web App Guide](platforms/web/README.md)
 
-## Example Apps
+#### Example Apps
 
 `platforms/android` and `platforms/ios` contain example projects and all the native code for the plugin for both Android and iOS platforms. They also include versions of the Android and iOS Facebook SDKs. These are used during automatic installation.
 
-#### Setup Android Example
-
-Configure the project with your FB app id in the `res/values/facebookconnect.xml` file. For example:
-
-```xml
-<resources>
-    <string name="fb_app_id">123456789</string>
-    <string name="fb_app_name">TEST</string>
-</resources>
-```
-
-#### Setup iOS Example
-
-- Change **FacebookAppID** in project *-info.plist
-- Change URL scheme to `fb<YOUR APPID>` e.g. `fb123456789`
-
-#### Setup Web App Example
-
-Host the `www` folder on a server and configure your Facebook dashboard correctly to test the Web APIs. Most people use [Parse](https://parse.com/) for easy testing.
-
-
-## Adobe PhoneGap Build
+#### Adobe PhoneGap Build
 
 If using this plugin on Adobe PhoneGap Build you can ignore the instructions below and go straight to the
 PhoneGap Build documentation available [here] (https://build.phonegap.com/plugins/257).
 
-## Manual Installation
+## API
 
-- None! CLI automatic install is now the recommended method. 
-	- Why?
-		- Too much can go wrong with this plugin for manual installs.
-		- We automate so you have less work to do!
-		- All Plugins should be CLI compatible since Cordova 3
+### Login
 
-## Automatic Installation
+`facebookConnectPlugin.login(Function success, Function failure)`
 
-This plugin is based on [plugman](https://git-wip-us.apache.org/repos/asf?p=cordova-plugman.git;a=summary).
-
-It will:
-
- - add native class files
- - setup the whitelist
- - setup URL scheme (for deeplink with FB application if installed)
- - and add your Facebook application Id automagically to a string resource file that can be read from the plugin.
-
-To install the plugin in your app, execute the following (replace variables where necessary)...
-
-### iOS
-
-
-	cordova create myApp
-
-	cd myApp/
-
-	cordova platform add ios
-
-	cordova -d plugin add /Users/your/path/here/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
-
-### Android
-
-	cordova create myApp
-
-	cd myApp/
-
-	cordova platform add android
-
-	cordova -d plugin add /Users/your/path/here/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
-
-**Android requires an additional step which is to reference the FacebookSDK project as a library to your project.**
-
-Open your project in Eclipse (New > Project... Existing Android project from source), import everything (***see Img. 1***).
-
-![image](./android_setup_1.png) ***Img. 1***
-
-In Eclipse, right click your project folder in the left-had column. Select "Properties", select Android in the left column and in the right side of the window add FacebookSDK as a library (***see Img. 2***).
-
-![image](./android_setup_2.png) ***Img. 2***
-
-## JavaScript API
-
-###facebookConnectPlugin.login(Function success, Function failure)
-
-**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY**
+**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY** (see [Web App Guide](platforms/web/README.md))
 
 Success function returns an Object like;
 
@@ -122,30 +48,64 @@ Success function returns an Object like;
 
 Failure function returns an error String.
 
-###facebookConnectPlugin.logout(Function success, Function failure)
+### Logout
 
-###facebookConnectPlugin.getLoginStatus(Function success, Function failure)
+`facebookConnectPlugin.logout(Function success, Function failure)`
 
-Success function returns a status String.
+### Get Status
 
-###facebookConnectPlugin.showDialog(Object options, Function success, Function failure)
+`facebookConnectPlugin.getLoginStatus(Function success, Function failure)`
 
-Example options:
+Success function returns a status Object. Example:
+
+```
+{
+	authResponse: {
+		userID: "12345678912345",
+		accessToken: "kgkh3g42kh4g23kh4g2kh34g2kg4k2h4gkh3g4k2h4gk23h4gk2h34gk234gk2h34AndSoOn",
+		session_Key: true,
+		expiresIn: "5183738",
+		sig: "..."
+	},
+	status: "connected"
+}
+```
+For more information see: [Facebook Documentation](https://developers.facebook.com/docs/reference/javascript/FB.getLoginStatus)
+
+### Show a Dialog
+
+`facebookConnectPlugin.showDialog(Object options, Function success, Function failure)`
+
+Example options -
+Feed Dialog:
 
 	{
-		method: "feed" | "apprequests"
+		method: "feed",
+		link: "http://example.com",
+		caption: "Such caption, very feed."
 	}
 
-Success function returns an Object with `postId` as String.
+App request:
+
+	{
+		method: "apprequests",
+		message: "Come on man, check out my application."
+	}
+
+For options information see: [Facebook feed dialog documentation](https://developers.facebook.com/docs/sharing/reference/feed-dialog/v2.0), [Facebook share dialog documentation](https://developers.facebook.com/docs/sharing/reference/share-dialog)
+
+Success function returns an Object with `postId` as String or `from` and `to` information when doing `apprequest`.
 Failure function returns an error String.
 
-###facebookConnectPlugin.api(String requestPath, Array permissions, Func success, Func failure)
+### The Graph API
+
+`facebookConnectPlugin.api(String requestPath, Array permissions, Function success, Function failure)`
 
 Allows access to the Facebook Graph API. This API allows for additional permission because, unlike login, the Graph API can accept multiple permissions.
 
 Example permissions:
 
-	["basic_info", "user_birthday"]
+	["public_info", "user_birthday"]
 
 Success function returns an Object.
 
@@ -159,7 +119,33 @@ For more information see:
 - Graph Explorer - [https://developers.facebook.com/tools/explorer](https://developers.facebook.com/tools/explorer)
 - Graph API - [https://developers.facebook.com/docs/graph-api/](https://developers.facebook.com/docs/graph-api/)
 
-## Sample JavaScript Code
+# Events
+
+App events allow you to understand the makeup of users engaging with your app, measure the performance of your Facebook mobile app ads, and reach specific sets of your users with Facebook mobile app ads.
+
+- [iOS] [https://developers.facebook.com/docs/ios/app-events](https://developers.facebook.com/docs/ios/app-events)
+- [Android] [https://developers.facebook.com/docs/android/app-events](https://developers.facebook.com/docs/android/app-events)
+- [JS] Does not have an Events API, so the plugin functions are empty and will return an automatic success
+
+Activation events are automatically tracked for you in the plugin.
+
+Events are listed on the [insights page](https://www.facebook.com/insights/)
+
+### Log an Event
+
+`logEvent(String name, Object params, Number valueToSum, Function success, Function failure)`
+
+- **name**, name of the event
+- **params**, extra data to log with the event (is optional)
+- **valueToSum**, a property which is an arbitrary number that can represent any value (e.g., a price or a quantity). When reported, all of the valueToSum properties will be summed together. For example, if 10 people each purchased one item that cost $10 (and passed in valueToSum) then they would be summed to report a number of $100. (is optional)
+
+### Log a Purchase
+
+`logPurchase(Number value, String currency, Function success, Function failure)`
+
+**NOTE:** Both parameters are required. The currency specification is expected to be an [ISO 4217 currency code](http://en.wikipedia.org/wiki/ISO_4217)
+
+## Sample Code
 
 ### Login
 
@@ -169,12 +155,12 @@ In your `onDeviceReady` event add the following
 		alert("UserInfo: " + JSON.stringify(userData));
 	}
 
-	facebookConnectPlugin.login(["basic_info"],
+	facebookConnectPlugin.login(["public_info"],
         fbLoginSuccess,
         function (error) { alert("" + error) }
     );
 
-### Get access token
+### Get Access Token
 
 If you need the Facebook access token (for example, for validating the login on server side), do:
 
@@ -187,12 +173,12 @@ If you need the Facebook access token (for example, for validating the login on 
 		});
 	}
 
-	facebookConnectPlugin.login(["basic_info"],
+	facebookConnectPlugin.login(["public_info"],
         fbLoginSuccess,
         function (error) { alert("" + error) }
     );
 
-### Get Status & Post-to-wall
+### Get Status and Post-to-wall
 
 For a more instructive example change the above `fbLoginSuccess` to;
 
@@ -213,7 +199,7 @@ For a more instructive example change the above `fbLoginSuccess` to;
     	);
     };
 
-### Getting A User's Birthday
+### Getting a User's Birthday
 
 Using the graph api this is a very simple task: [currently iOS only!]
 
