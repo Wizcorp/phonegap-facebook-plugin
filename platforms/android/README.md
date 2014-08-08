@@ -59,7 +59,7 @@ Follow the steps below:
 	
 	cp platforms/android/local.properties platforms/android/FacebookLib
 	
-	android update project -p platforms/android/
+	android update project -p platforms/android/ --subprojects
 	
 	cd platforms/android/
 	
