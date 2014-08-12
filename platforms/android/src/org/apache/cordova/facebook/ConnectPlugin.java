@@ -34,6 +34,7 @@ import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.Settings;
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.WebDialog;
@@ -74,6 +75,8 @@ public class ConnectPlugin extends CordovaPlugin {
 
 		// Set up the activity result callback to this class
 		cordova.setActivityResultCallback(this);
+
+		Settings.setPlatformCompatibilityEnabled(true);
 
 		// Open a session if we have one cached
 		Session session = new Session.Builder(cordova.getActivity()).setApplicationId(applicationId).build();

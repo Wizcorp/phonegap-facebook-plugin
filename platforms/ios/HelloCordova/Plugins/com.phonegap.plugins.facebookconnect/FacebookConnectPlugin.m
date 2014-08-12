@@ -27,6 +27,7 @@
     self = (FacebookConnectPlugin *)[super initWithWebView:theWebView];
     self.userid = @"";
     
+    [FBSettings enablePlatformCompatibility: YES];
     [FBSession openActiveSessionWithReadPermissions:nil
                                        allowLoginUI:NO
                                   completionHandler:^(FBSession *session,
