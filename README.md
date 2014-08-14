@@ -1,5 +1,7 @@
 # Apache Cordova Facebook Plugin
 
+**Steroids Add-ons note:** The current version of this plugin requires Steroids Add-ons v3.5.0 or newer to function. The version that works with earlier Add-ons versions can be found at  https://github.com/AppGyver/phonegap-facebook-plugin/commit/6b281e1ae9d9c57dba4a665a5dfccf36145be861 (to use this, you need to fork the repo and reset your master to that commit. This is necessary because plugman, the tool used by Cordova (and Steroids) to install plugins doesn't support tags.)
+
 This is the official plugin for Facebook in Apache Cordova/PhoneGap!
 
 The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) allows you to use the same JavaScript code in your Cordova application as you use in your web application. However, unlike in the browser, the Cordova application will use the native Facebook app to perform Single Sign On for the user.  If this is not possible then the sign on will degrade gracefully using the standard dialog based authentication.
