@@ -54,12 +54,9 @@ Follow the steps below:
 
 	cordova -d plugin add https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID="123456789" --variable APP_NAME="myApplication"
 	
-	// add FacebookLib
-	echo "android.library.reference.2=FacebookLib" >> platforms/android/project.properties
+	android update project --subprojects --path "platforms/android" --target android-19 --library "CordovaLib"
 	
-	cp platforms/android/local.properties platforms/android/FacebookLib
-	
-	android update project -p platforms/android/
+	android update project --subprojects --path "platforms/android" --target android-19 --library "FacebookLib"
 	
 	cd platforms/android/
 	
