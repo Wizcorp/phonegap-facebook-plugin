@@ -196,6 +196,9 @@ public class ConnectPlugin extends CordovaPlugin {
 					}
 				});
 
+				// Set up the activity result callback to this class
+				cordova.setActivityResultCallback(this);
+
 				// Can only ask for read permissions initially
 				session.openForRead(openRequest);
 			}
