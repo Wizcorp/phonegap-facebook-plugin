@@ -565,6 +565,11 @@ public class ConnectPlugin extends CordovaPlugin {
     		Date today = new Date();
     		long expiresTimeInterval = (session.getExpirationDate().getTime() - today.getTime()) / 1000L;
     		long expiresIn = (expiresTimeInterval > 0) ? expiresTimeInterval : 0;
+
+    		// Get the granted permissions
+    		List<String> perms = session.getPermissions();
+    		JSONArray permsJSONArray = new JSONArray(perms);
+
     		response = "{"+
             "\"status\": \"connected\","+
             "\"authResponse\": {"+
@@ -572,7 +577,8 @@ public class ConnectPlugin extends CordovaPlugin {
               "\"expiresIn\": \""+expiresIn+"\","+
               "\"session_key\": true,"+
               "\"sig\": \"...\","+
-              "\"userID\": \""+this.userID+"\""+
+              "\"userID\": \""+this.userID+"\","+
+              "\"permissions\": "+ permsJSONArray.toString() +
             "}"+
           "}";
     	} else {
