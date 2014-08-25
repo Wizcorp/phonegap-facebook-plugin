@@ -196,7 +196,7 @@ public class ConnectPlugin extends CordovaPlugin {
 					}
 				});
 
-				// DoubleIP - Set up the activity result callback to this class
+				// Set up the activity result callback to this class
 				cordova.setActivityResultCallback(this);
 
 				// Can only ask for read permissions initially
