@@ -30,6 +30,8 @@ import com.facebook.AppEventsLogger;
 import com.facebook.FacebookDialogException;
 import com.facebook.FacebookException;
 import com.facebook.FacebookOperationCanceledException;
+import com.facebook.FacebookRequestError;
+import com.facebook.FacebookServiceException;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
@@ -330,24 +332,26 @@ public class ConnectPlugin extends CordovaPlugin {
 
 				@Override
 				public void onComplete(Bundle values, FacebookException exception) {
-					String errMsg;
 					if (exception != null) {
+						String errMsg = "Facebook error: " + exception.getMessage();
 						// User clicked "x"
 						if (exception instanceof FacebookOperationCanceledException) {
 							errMsg = "User cancelled dialog";
-							Log.e(TAG, errMsg);
-							showDialogContext.error(errMsg);
 						} else if (exception instanceof FacebookDialogException) {
 							// Dialog error
 							errMsg = "Dialog error: " + exception.getMessage();
-							Log.e(TAG, errMsg);
-							showDialogContext.error(errMsg);
-						} else {
-							// Facebook error
-							errMsg = "Facebook error: " + exception.getMessage();
-							Log.e(TAG, errMsg);
-							showDialogContext.error(errMsg);
+						} else if (exception instanceof FacebookServiceException) {
+							FacebookRequestError error = ((FacebookServiceException) exception).getRequestError();
+							if (error.getErrorCode() == 4201) {
+								// User hit the cancel button in the WebView
+								// Tried error.getErrorMessage() but it returns null
+								// if though the URL says:
+								// Redirect URL: fbconnect://success?error_code=4201&error_message=User+canceled+the+Dialog+flow
+								errMsg = "User cancelled dialog";
+							}
 						}
+						Log.e(TAG, errMsg);
+						showDialogContext.error(errMsg);
 					} else {
 						// Handle a successful dialog:
 						// Send the URL parameters back, for a requests dialog, the "request" parameter
@@ -366,9 +370,8 @@ public class ConnectPlugin extends CordovaPlugin {
 							}
 							showDialogContext.success(response);
 						} else {
-							errMsg = "User cancelled dialog";
-							Log.e(TAG, errMsg);
-							showDialogContext.error(errMsg);
+							Log.e(TAG, "User cancelled dialog");
+							showDialogContext.error("User cancelled dialog");
 						}
 					}
 				}
