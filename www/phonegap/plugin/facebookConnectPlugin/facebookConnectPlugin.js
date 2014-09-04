@@ -77,7 +77,7 @@ if (!window.cordova) {
         },
 
         login: function (permissions, s, f) {
-            cordova.exec(s, f, "FacebookConnectPlugin", "login", permissions);
+            cordova.exec(s, f, "FacebookConnectPlugin", "login", [permissions]);
         },
 
         logEvent: function(name, params, valueToSum, s, f) {
