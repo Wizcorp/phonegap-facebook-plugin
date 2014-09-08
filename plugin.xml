@@ -53,7 +53,7 @@
         
         <config-file target="AndroidManifest.xml" parent="application">
             <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/fb_app_id"/>
-            <activity android:label="@string/fb_app_name" android:name="com.facebook.LoginActivity"></activity>
+            <activity android:label="@string/fb_app_name" android:name="com.facebook.LoginActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
         </config-file>
 
         <!-- copy Facebook Lib project -->
