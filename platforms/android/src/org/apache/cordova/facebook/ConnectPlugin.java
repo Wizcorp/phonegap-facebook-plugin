@@ -36,8 +36,10 @@ import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphUser;
+import com.facebook.widget.FacebookDialog;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
 
@@ -64,10 +66,15 @@ public class ConnectPlugin extends CordovaPlugin {
 	private String method;
 	private String graphPath;
 	private String userID;
+        private UiLifecycleHelper uiHelper;
+        private boolean trackingPendingCall = false;
 
-	@Override
+        @Override
 	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
-
+                //Initialize UiLifecycleHelper
+                uiHelper = new UiLifecycleHelper(cordova.getActivity(), null);
+                //uiHelper.onCreate(savedInstanceState);
+                
 		// Init logger
 		logger = AppEventsLogger.newLogger(cordova.getActivity());
 
@@ -104,20 +111,52 @@ public class ConnectPlugin extends CordovaPlugin {
 	@Override
 	public void onResume(boolean multitasking) {
 		super.onResume(multitasking);
+                uiHelper.onResume();
 		// Developers can observe how frequently users activate their app by logging an app activation event. 
 		AppEventsLogger.activateApp(cordova.getActivity());
 	}
 
-	@Override
+        protected void onSaveInstanceState(Bundle outState) {
+            uiHelper.onSaveInstanceState(outState);
+        }
+
+        public void onPause() {
+            uiHelper.onPause();
+        }
+        
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            uiHelper.onDestroy();
+        }
+
+        @Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
 		Log.d(TAG, "activity result in plugin");
-		
-		Session session = Session.getActiveSession();
-		
-		if (session != null && session.isOpened()) {
-			session.onActivityResult(cordova.getActivity(), requestCode, resultCode, intent);
-		}
+                if (trackingPendingCall) {
+                    uiHelper.onActivityResult(requestCode, resultCode, intent, new FacebookDialog.Callback() {
+                        @Override
+                        public void onError(FacebookDialog.PendingCall pendingCall, Exception error, Bundle data) {
+                            Log.e("Activity", String.format("Error: %s", error.toString()));
+                            handleError(error);
+                        }
+
+                        @Override
+                        public void onComplete(FacebookDialog.PendingCall pendingCall, Bundle data) {
+                            Log.i("Activity", "Success!");
+                            handleSuccess(data);
+                        }
+                    });
+                }
+                else {
+                    Session session = Session.getActiveSession();
+
+                    if (session != null && session.isOpened()) {
+                            session.onActivityResult(cordova.getActivity(), requestCode, resultCode, intent);
+                    }
+                }
+                trackingPendingCall = false;
 	}
 
 	@Override
@@ -338,46 +377,9 @@ public class ConnectPlugin extends CordovaPlugin {
 				@Override
 				public void onComplete(Bundle values, FacebookException exception) {
 					if (exception != null) {
-						String errMsg = "Facebook error: " + exception.getMessage();
-						// User clicked "x"
-						if (exception instanceof FacebookOperationCanceledException) {
-							errMsg = "User cancelled dialog";
-						} else if (exception instanceof FacebookDialogException) {
-							// Dialog error
-							errMsg = "Dialog error: " + exception.getMessage();
-						} else if (exception instanceof FacebookServiceException) {
-							FacebookRequestError error = ((FacebookServiceException) exception).getRequestError();
-							if (error.getErrorCode() == 4201) {
-								// User hit the cancel button in the WebView
-								// Tried error.getErrorMessage() but it returns null
-								// if though the URL says:
-								// Redirect URL: fbconnect://success?error_code=4201&error_message=User+canceled+the+Dialog+flow
-								errMsg = "User cancelled dialog";
-							}
-						}
-						Log.e(TAG, errMsg);
-						showDialogContext.error(errMsg);
+                                            handleError(exception);
 					} else {
-						// Handle a successful dialog:
-						// Send the URL parameters back, for a requests dialog, the "request" parameter
-						// will include the resulting request id. For a feed dialog, the "post_id"
-						// parameter will include the resulting post id.
-						// Note: If the user clicks on the Cancel button, the parameter will be empty
-						if (values.size() > 0) {
-							JSONObject response = new JSONObject();
-							try {
-								Set<String> keys = values.keySet();
-								for (String key : keys) {
-									response.put(key, values.get(key));
-								}
-							} catch (JSONException e) {
-								e.printStackTrace();
-							}
-							showDialogContext.success(response);
-						} else {
-							Log.e(TAG, "User cancelled dialog");
-							showDialogContext.error("User cancelled dialog");
-						}
+                                            handleSuccess(values);
 					}
 				}
 			};
@@ -401,7 +403,33 @@ public class ConnectPlugin extends CordovaPlugin {
 				};
 				cordova.getActivity().runOnUiThread(runnable);
 			} else if (this.method.equalsIgnoreCase("share") || this.method.equalsIgnoreCase("share_open_graph")) {
-				cordova.getActivity().runOnUiThread(new WebDialogBuilderRunnable(me.cordova.getActivity(), Session.getActiveSession(), this.method, paramBundle, dialogCallback));
+                            if (FacebookDialog.canPresentShareDialog(me.cordova.getActivity(), FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
+				Runnable runnable = new Runnable() {
+					public void run() {
+                                            // Publish the post using the Share Dialog
+                                            FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(me.cordova.getActivity())
+                                                    .setName(paramBundle.getString("name"))
+                                                    .setCaption(paramBundle.getString("caption"))
+                                                    .setDescription(paramBundle.getString("description"))
+                                                    .setLink(paramBundle.getString("link"))
+                                                    .setPicture(paramBundle.getString("picture"))
+                                                    .build();
+                                            uiHelper.trackPendingDialogCall(shareDialog.present());
+					};
+				};
+                                this.trackingPendingCall = true;
+				cordova.getActivity().runOnUiThread(runnable);
+                            } else {
+                                // Fallback. For example, publish the post using the Feed Dialog
+				Runnable runnable = new Runnable() {
+					public void run() {
+						WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback).build();
+						feedDialog.show();
+					};
+
+				};
+				cordova.getActivity().runOnUiThread(runnable);
+                            }
 			} else {
 				callbackContext.error("Unsupported dialog method.");
 			}
@@ -465,6 +493,51 @@ public class ConnectPlugin extends CordovaPlugin {
 		}
 		return false;
 	}
+        
+        private void handleError(Exception exception) {
+            String errMsg = "Facebook error: " + exception.getMessage();
+            // User clicked "x"
+            if (exception instanceof FacebookOperationCanceledException) {
+                    errMsg = "User cancelled dialog";
+            } else if (exception instanceof FacebookDialogException) {
+                    // Dialog error
+                    errMsg = "Dialog error: " + exception.getMessage();
+            } else if (exception instanceof FacebookServiceException) {
+                    FacebookRequestError error = ((FacebookServiceException) exception).getRequestError();
+                    if (error.getErrorCode() == 4201) {
+                            // User hit the cancel button in the WebView
+                            // Tried error.getErrorMessage() but it returns null
+                            // if though the URL says:
+                            // Redirect URL: fbconnect://success?error_code=4201&error_message=User+canceled+the+Dialog+flow
+                            errMsg = "User cancelled dialog";
+                    }
+            }
+            Log.e(TAG, errMsg);
+            showDialogContext.error(errMsg);
+        }
+        
+        private void handleSuccess(Bundle values) {
+            // Handle a successful dialog:
+            // Send the URL parameters back, for a requests dialog, the "request" parameter
+            // will include the resulting request id. For a feed dialog, the "post_id"
+            // parameter will include the resulting post id.
+            // Note: If the user clicks on the Cancel button, the parameter will be empty
+            if (values.size() > 0) {
+                    JSONObject response = new JSONObject();
+                    try {
+                            Set<String> keys = values.keySet();
+                            for (String key : keys) {
+                                    response.put(key, values.get(key));
+                            }
+                    } catch (JSONException e) {
+                            e.printStackTrace();
+                    }
+                    showDialogContext.success(response);
+            } else {
+                    Log.e(TAG, "User cancelled dialog");
+                    showDialogContext.error("User cancelled dialog");
+            }
+        }
 
 	private void getUserInfo(final Session session) {
 		if (cordova != null) {
