@@ -150,7 +150,7 @@ public class ConnectPlugin extends CordovaPlugin {
 		} else {
 			Session session = Session.getActiveSession();
 
-			if (session != null && session.isOpened()) {
+			if (session != null && (loginContext != null || session.isOpened())) {
 				session.onActivityResult(cordova.getActivity(), requestCode, resultCode, intent);
 			}
 		}
