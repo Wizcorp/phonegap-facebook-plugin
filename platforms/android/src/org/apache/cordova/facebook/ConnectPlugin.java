@@ -388,8 +388,6 @@ public class ConnectPlugin extends CordovaPlugin {
 						WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback).build();
 						feedDialog.show();
 					}
-				;
-
 				};
 				cordova.getActivity().runOnUiThread(runnable);
 			} else if (this.method.equalsIgnoreCase("apprequests")) {
@@ -399,7 +397,6 @@ public class ConnectPlugin extends CordovaPlugin {
 							.build();
 						requestsDialog.show();
 					}
-				;
 				};
 				cordova.getActivity().runOnUiThread(runnable);
 			} else if (this.method.equalsIgnoreCase("share") || this.method.equalsIgnoreCase("share_open_graph")) {
@@ -416,7 +413,6 @@ public class ConnectPlugin extends CordovaPlugin {
 								.build();
 							uiHelper.trackPendingDialogCall(shareDialog.present());
 						}
-					;
 					};
                                 this.trackingPendingCall = true;
 					cordova.getActivity().runOnUiThread(runnable);
@@ -427,8 +423,6 @@ public class ConnectPlugin extends CordovaPlugin {
 							WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback).build();
 							feedDialog.show();
 						}
-					;
-
 					};
 				cordova.getActivity().runOnUiThread(runnable);
 				}
