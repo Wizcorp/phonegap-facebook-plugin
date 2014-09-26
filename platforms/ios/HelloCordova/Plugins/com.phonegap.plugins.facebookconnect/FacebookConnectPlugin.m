@@ -515,13 +515,22 @@
     if (FBSession.activeSession.isOpen) {
         
         status = @"connected";
+
+        // Get the user's permissions
+        NSLog(@"%@", [FBSession.activeSession permissions]);
+        NSError *error = nil;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:FBSession.activeSession.permissions options:0 error:&error];
+        NSString *jsonPermString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+        // Now construct the response object
         sessionDict = @{
                         @"accessToken" : FBSession.activeSession.accessTokenData.accessToken,
                         @"expiresIn" : expiresIn,
                         @"secret" : @"...",
                         @"session_key" : [NSNumber numberWithBool:YES],
                         @"sig" : @"...",
-                        @"userID" : self.userid
+                        @"userID" : self.userid,
+                        @"permissions" : jsonPermString
                         };
     }
     
