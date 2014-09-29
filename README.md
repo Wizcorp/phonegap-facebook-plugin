@@ -8,11 +8,15 @@ The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) a
 * This plugin is built for
 	* iOS FacebookSDK 3.16.1
 	* Android FacebookSDK 3.16.0
+* GitHub URL : [https://github.com/Wizcorp/phonegap-facebook-plugin/](https://github.com/Wizcorp/phonegap-facebook-plugin/)
 
-## << -- Cordova Registry Warning [iOS]
+## << --- Cordova Registry Warning [iOS]
 
 ****Installing this plugin directly from Cordova Registry results in Xcode using a broken `Facebook.framework`, this is because the current publish procedure to NPM breaks symlinks [CB-6092](https://issues.apache.org/jira/browse/CB-6092). Please re-add facebook.framework to Xcode.****
+
 ## ------------------------------------------ >>
+
+------------------------------------------
 
 ## Facebook Requirements and Set-Up
 
