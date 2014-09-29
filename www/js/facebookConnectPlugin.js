@@ -1,3 +1,6 @@
+/* global FB */
+"use strict";
+
 /*
  * @author Ally Ogilvie
  * @copyright Wizcorp Inc. [ Incorporated Wizards ] 2014
@@ -122,7 +125,7 @@ if (!window.cordova) {
             try {
                 FB.logout( function (response) {
                     s(response);
-                })
+                });
             } catch (error) {
                 if (!f) {
                     console.error(error.message);
@@ -170,7 +173,7 @@ if (!window.cordova) {
     // Bake in the JS SDK
     (function () {
         if (!window.FB) {
-            console.log("launching FB SDK")
+            console.log("launching FB SDK");
             var e = document.createElement('script');
             e.src = document.location.protocol + '//connect.facebook.net/en_US/sdk.js';
             e.async = true;
