@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="com.phonegap.plugins.facebookconnect"
-    version="0.7.1">
+    version="0.8.0">
 
     <name>Facebook Connect</name>
     
@@ -21,7 +21,8 @@
     
     <engines>
     	<!-- Requires > 3.3.* because of the custom Framework tag for iOS [CB-5238] -->
-    	<engine name="cordova" version=">=3.3.0" />
+    	<!-- Requires > 3.5.0 because of the custom Framework tag for Android [CB-6698] -->
+    	<engine name="cordova" version=">=3.5.0" />
     </engines>
     
     <!-- JavaScript interface -->
@@ -53,11 +54,10 @@
         
         <config-file target="AndroidManifest.xml" parent="application">
             <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/fb_app_id"/>
-            <activity android:label="@string/fb_app_name" android:name="com.facebook.LoginActivity"></activity>
+            <activity android:label="@string/fb_app_name" android:name="com.facebook.LoginActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
         </config-file>
 
-        <!-- copy Facebook Lib project -->
-        <source-file src="platforms/android/FacebookLib" target-dir="./" />
+        <framework src="platforms/android/FacebookLib" custom="true" />
         
         <!-- cordova plugin src files -->
         <source-file src="platforms/android/src/org/apache/cordova/facebook/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
