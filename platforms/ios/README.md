@@ -22,6 +22,8 @@ To install the plugin in your app, execute the following (replace variables wher
 	cordova platform add ios
 
 	cordova -d plugin add /Users/your/path/here/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
+	
+**Warning**: Do not install through the plugin registry.  Instead, install from a locally cloned copy of this repository, or directly from the github URL.  If you install through the plugin registry, building will fail with an error about a missing FacebookSDK/FacebookSDK.h file.
 
 ## Setup
 
