@@ -344,6 +344,7 @@ public class ConnectPlugin extends CordovaPlugin {
 
 			final ConnectPlugin me = this;
 			Iterator<?> iter = params.keys();
+			boolean fullscreenParam = false;
 			while (iter.hasNext()) {
 				String key = (String) iter.next();
 				if (key.equals("method")) {
@@ -353,6 +354,10 @@ public class ConnectPlugin extends CordovaPlugin {
 						Log.w(TAG, "Nonstring method parameter provided to dialog");
 					}
 				} else {
+					if (key.equals("fullscreen")) {
+						fullscreenParam = params.getBoolean(key);
+					}
+
 					try {
 						collect.putString(key, params.getString(key));
 					} catch (JSONException e) {
@@ -383,19 +388,26 @@ public class ConnectPlugin extends CordovaPlugin {
 			};
 
 			if (this.method.equalsIgnoreCase("feed")) {
+				final boolean isFullscreen = fullscreenParam;
 				Runnable runnable = new Runnable() {
 					public void run() {
-						WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback).build();
-						feedDialog.show();
+						WebDialog.FeedDialogBuilder feedDialog = (new WebDialog.FeedDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback);
+						if (isFullscreen) {
+							feedDialog.setTheme(android.R.style.Theme_Wallpaper_NoTitleBar_Fullscreen);
+						}
+						feedDialog.build().show();
 					}
 				};
 				cordova.getActivity().runOnUiThread(runnable);
 			} else if (this.method.equalsIgnoreCase("apprequests")) {
+				final boolean isFullscreen = fullscreenParam;
 				Runnable runnable = new Runnable() {
 					public void run() {
-						WebDialog requestsDialog = (new WebDialog.RequestsDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback)
-							.build();
-						requestsDialog.show();
+						WebDialog.RequestsDialogBuilder requestsDialog = (new WebDialog.RequestsDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback);
+						if (isFullscreen) {
+							requestsDialog.setTheme(android.R.style.Theme_Wallpaper_NoTitleBar_Fullscreen);
+						}
+						requestsDialog.build().show();
 					}
 				};
 				cordova.getActivity().runOnUiThread(runnable);
