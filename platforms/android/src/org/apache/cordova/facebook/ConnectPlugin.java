@@ -541,12 +541,15 @@ public class ConnectPlugin extends CordovaPlugin {
 
 				@Override
 				public void onCompleted(GraphUser user, Response response) {
-					// Create a new result with response data
 					if (loginContext != null) {
-						GraphObject graphObject = response.getGraphObject();
-						Log.d(TAG, "returning login object " + graphObject.getInnerJSONObject().toString());
-						userID = user.getId();
-						loginContext.success(getResponse());
+						if (response.getError() != null) {
+							loginContext.error(getErrorResponse(response.getError()));
+						} else {
+							// Create a new result with response data
+							GraphObject graphObject = response.getGraphObject();
+							userID = user.getId();
+							loginContext.success(getResponse());
+						}
 						loginContext = null;
 					}
 				}
@@ -563,7 +566,7 @@ public class ConnectPlugin extends CordovaPlugin {
 			public void onCompleted(Response response) {
 				if (graphContext != null) {
 					if (response.getError() != null) {
-						graphContext.error(response.getError().getErrorMessage());
+						graphContext.error(getErrorResponse(response.getError()));
 					} else {
 						GraphObject graphObject = response.getGraphObject();
 						graphContext.success(graphObject.getInnerJSONObject());
@@ -663,6 +666,28 @@ public class ConnectPlugin extends CordovaPlugin {
 		}
 		return new JSONObject();
 	}
+
+	/**
+	 * Create a Facebook Response object that matches the one for the Javascript SDK
+	 * @return JSONObject - the response object
+	 */
+	public JSONObject getErrorResponse(FacebookRequestError error) {
+		String response = "{"
+			+ "\"errorCode\": \"" + error.getErrorCode() + "\","
+			+ "\"errorType\": \"" + error.getErrorType() + "\","
+			+ "\"errorMessage\": \"" + error.getErrorMessage() + "\","
+			+ "\"errorUserMessage\": \"" + cordova.getActivity().getResources().getString(error.getUserActionMessageId()) + "\""
+			+ "}";
+
+		try {
+			return new JSONObject(response);
+		} catch (JSONException e) {
+
+			e.printStackTrace();
+		}
+		return new JSONObject();
+	}
+
 
 	private class WebDialogBuilderRunnable implements Runnable {
 		private Context context;
