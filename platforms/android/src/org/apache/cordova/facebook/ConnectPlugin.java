@@ -606,11 +606,11 @@ public class ConnectPlugin extends CordovaPlugin {
 	 * Handles session state changes
 	 */
 	private void onSessionStateChange(SessionState state, Exception exception) {
-
-		if (exception != null) {
-			if (loginContext != null) {
-				handleError(exception, loginContext);
-			}
+		if (exception != null && exception instanceof FacebookOperationCanceledException) {
+			// only handle FacebookOperationCanceledException to support
+			// SDK recovery behavior triggered by getUserInfo
+			Log.e(TAG, "exception:" + exception.toString());
+			handleError(exception, loginContext);
 		} else {
 			final Session session = Session.getActiveSession();
 			// Check if the session is open
