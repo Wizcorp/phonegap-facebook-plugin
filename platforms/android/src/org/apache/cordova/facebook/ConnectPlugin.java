@@ -639,6 +639,13 @@ public class ConnectPlugin extends CordovaPlugin {
 			Date today = new Date();
 			long expiresTimeInterval = (session.getExpirationDate().getTime() - today.getTime()) / 1000L;
 			long expiresIn = (expiresTimeInterval > 0) ? expiresTimeInterval : 0;
+
+			if (userID == null) {
+				Request request = Request.newGraphPathRequest(session, "me", null);
+				Response meResponse = Request.executeAndWait(request);
+				userID = meResponse.getGraphObject().getProperty("id").toString();
+			}
+
 			response = "{"
 				+ "\"status\": \"connected\","
 				+ "\"authResponse\": {"
