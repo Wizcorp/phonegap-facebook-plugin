@@ -426,60 +426,44 @@
 
 - (void) graphApi:(CDVInvokedUrlCommand *)command
 {
-    
-    
     // Save the callback ID
     self.graphCallbackId = command.callbackId;
     
     NSString *graphPath = [command argumentAtIndex:0];
     NSArray *permissionsNeeded = [command argumentAtIndex:1];
-
-    [FBRequestConnection
-     startWithGraphPath: @"/me/permissions"
-     completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-         
-         if (!error){
-             // These are the current permissions the user has:
-             NSDictionary *currentPermissions= [(NSArray *)[result data] objectAtIndex:0];
-             
-             // We will store here the missing permissions that we will have to request
-             NSMutableArray *requestPermissions = [[NSMutableArray alloc] initWithArray:@[]];
-             
-             // Check if all the permissions we need are present in the user's current permissions
-             // If they are not present add them to the permissions to be requested
-             for (NSString *permission in permissionsNeeded){
-                 if (![currentPermissions objectForKey:permission]){
-                     [requestPermissions addObject:permission];
-                 }
-             }
-             
-             // If we have permissions to request
-             if ([requestPermissions count] > 0){
-                 // Ask for the missing permissions
-                 [FBSession.activeSession
-                  requestNewReadPermissions:requestPermissions
-                  completionHandler:^(FBSession *session, NSError *error) {
-                      if (!error) {
-                          // Permission granted
-                          NSLog(@"new permissions %@", [FBSession.activeSession permissions]);
-                          // We can request the user information
-                          [self makeGraphCall:graphPath];
-                      } else {
-                          // An error occurred, we need to handle the error
-                          // See: https://developers.facebook.com/docs/ios/errors
-                      }
-                  }];
-             } else {
-                 // Permissions are present
+    
+    // We will store here the missing permissions that we will have to request
+    NSMutableArray *requestPermissions = [[NSMutableArray alloc] initWithArray:@[]];
+    
+    // Check if all the permissions we need are present in the user's current permissions
+    // If they are not present add them to the permissions to be requested
+    for (NSString *permission in permissionsNeeded){
+        if (![[[FBSession activeSession] permissions] containsObject:permission]) {
+            [requestPermissions addObject:permission];
+        }
+    }
+    
+    // If we have permissions to request
+    if ([requestPermissions count] > 0){
+        // Ask for the missing permissions
+        [FBSession.activeSession
+         requestNewReadPermissions:requestPermissions
+         completionHandler:^(FBSession *session, NSError *error) {
+             if (!error) {
+                 // Permission granted
+                 NSLog(@"new permissions %@", [FBSession.activeSession permissions]);
                  // We can request the user information
                  [self makeGraphCall:graphPath];
+             } else {
+                 // An error occurred, we need to handle the error
+                 // See: https://developers.facebook.com/docs/ios/errors
              }
-             
-         } else {
-             // An error occurred, we need to handle the error
-             // See: https://developers.facebook.com/docs/ios/errors
-         }
-     }];
+         }];
+    } else {
+        // Permissions are present
+        // We can request the user information
+        [self makeGraphCall:graphPath];
+    }
 }
 
 - (void) makeGraphCall:(NSString *)graphPath
