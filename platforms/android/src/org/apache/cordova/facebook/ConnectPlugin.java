@@ -679,13 +679,12 @@ public class ConnectPlugin extends CordovaPlugin {
 		int messageId = error.getUserActionMessageId();
 
     // Check for INVALID_MESSAGE_ID
-    String errorUserMessage = null;
     if (messageId != 0) {
-        errorUserMessage = cordova.getActivity().getResources().getString(messageId);
-    }
-
-    if (errorUserMessage != null) {
-			response += ",\"errorUserMessage\": \"" + cordova.getActivity().getResources().getString(error.getUserActionMessageId()) + "\"";
+    	String errorUserMessage = cordova.getActivity().getResources().getString(messageId);
+    	// Safe check for null
+	    if (errorUserMessage != null) {
+				response += ",\"errorUserMessage\": \"" + cordova.getActivity().getResources().getString(error.getUserActionMessageId()) + "\"";
+	    }
     }
 
     response += "}";
