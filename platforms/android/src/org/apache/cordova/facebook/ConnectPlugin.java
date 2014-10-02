@@ -45,6 +45,7 @@ import com.facebook.widget.WebDialog.OnCompleteListener;
 
 public class ConnectPlugin extends CordovaPlugin {
 
+	private static final int INVALID_ERROR_CODE = -2; //-1 is FacebookRequestError.INVALID_ERROR_CODE
 	private static final String PUBLISH_PERMISSION_PREFIX = "publish";
 	private static final String MANAGE_PERMISSION_PREFIX = "manage";
 	@SuppressWarnings("serial")
@@ -132,7 +133,7 @@ public class ConnectPlugin extends CordovaPlugin {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-		Log.d(TAG, "activity result in plugin");
+		Log.d(TAG, "activity result in plugin: requestCode(" + requestCode + "), resultCode(" + resultCode + ")");
 		if (trackingPendingCall) {
 			uiHelper.onActivityResult(requestCode, resultCode, intent, new FacebookDialog.Callback() {
 				@Override
@@ -492,24 +493,18 @@ public class ConnectPlugin extends CordovaPlugin {
 
 	private void handleError(Exception exception,  CallbackContext context) {
 		String errMsg = "Facebook error: " + exception.getMessage();
+		int errorCode = INVALID_ERROR_CODE;
 		// User clicked "x"
 		if (exception instanceof FacebookOperationCanceledException) {
 			errMsg = "User cancelled dialog";
+			errorCode = 4201;
 		} else if (exception instanceof FacebookDialogException) {
 			// Dialog error
 			errMsg = "Dialog error: " + exception.getMessage();
-		} else if (exception instanceof FacebookServiceException) {
-			FacebookRequestError error = ((FacebookServiceException) exception).getRequestError();
-			if (error.getErrorCode() == 4201) {
-                            // User hit the cancel button in the WebView
-				// Tried error.getErrorMessage() but it returns null
-				// if though the URL says:
-				// Redirect URL: fbconnect://success?error_code=4201&error_message=User+canceled+the+Dialog+flow
-				errMsg = "User cancelled dialog";
-			}
 		}
+
 		Log.e(TAG, exception.toString());
-		context.error(getErrorResponse(exception, errMsg));
+		context.error(getErrorResponse(exception, errMsg, errorCode));
 	}
 
 	private void handleSuccess(Bundle values) {
@@ -675,12 +670,25 @@ public class ConnectPlugin extends CordovaPlugin {
 	}
 
 	public JSONObject getFacebookRequestErrorResponse(FacebookRequestError error) {
+
 		String response = "{"
 			+ "\"errorCode\": \"" + error.getErrorCode() + "\","
 			+ "\"errorType\": \"" + error.getErrorType() + "\","
-			+ "\"errorMessage\": \"" + error.getErrorMessage() + "\","
-			+ "\"errorUserMessage\": \"" + cordova.getActivity().getResources().getString(error.getUserActionMessageId()) + "\""
-			+ "}";
+			+ "\"errorMessage\": \"" + error.getErrorMessage() + "\"";
+
+		int messageId = error.getUserActionMessageId();
+
+    // Check for INVALID_MESSAGE_ID
+    String errorUserMessage = null;
+    if (messageId != 0) {
+        errorUserMessage = cordova.getActivity().getResources().getString(messageId);
+    }
+
+    if (errorUserMessage != null) {
+			response += ",\"errorUserMessage\": \"" + cordova.getActivity().getResources().getString(error.getUserActionMessageId()) + "\"";
+    }
+
+    response += "}";
 
 		try {
 			return new JSONObject(response);
@@ -691,7 +699,7 @@ public class ConnectPlugin extends CordovaPlugin {
 		return new JSONObject();
 	}
 
-	public JSONObject getErrorResponse(Exception error, String message) {
+	public JSONObject getErrorResponse(Exception error, String message, int errorCode) {
 
 		if (error instanceof FacebookServiceException) {
 			return getFacebookRequestErrorResponse(((FacebookServiceException) error).getRequestError());
@@ -700,7 +708,11 @@ public class ConnectPlugin extends CordovaPlugin {
 		String response = "{";
 
     if (error instanceof FacebookDialogException) {
-      response += "\"errorCode\": \"" + ((FacebookDialogException) error).getErrorCode() + "\",";
+    	errorCode = ((FacebookDialogException) error).getErrorCode();
+    }
+
+    if (errorCode != INVALID_ERROR_CODE) {
+    	response += "\"errorCode\": \"" + errorCode + "\",";
     }
 
     if (message == null) {
