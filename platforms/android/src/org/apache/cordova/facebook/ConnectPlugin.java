@@ -472,9 +472,6 @@ public class ConnectPlugin extends CordovaPlugin {
 				permissionsList.add(arr.getString(i));
 			}
 
-			final Session session = Session.getActiveSession();
-			final ConnectPlugin me = this;
-
 			boolean publishPermissions = false;
 			boolean readPermissions = false;
 			if (permissionsList.size() > 0) {
@@ -492,13 +489,14 @@ public class ConnectPlugin extends CordovaPlugin {
 				if (publishPermissions && readPermissions) {
 					graphContext.error("Cannot ask for both read and publish permissions.");
 				} else {
+					Session session = Session.getActiveSession();
 					if (session.getPermissions().containsAll(permissionsList)) {
 						makeGraphCall();
 					} else {
 						// Set up the new permissions request
 						Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(cordova.getActivity(), permissionsList);
 						// Set up the activity result callback to this class
-						cordova.setActivityResultCallback(me);
+						cordova.setActivityResultCallback(this);
 						// Check for write permissions, the default is read (empty)
 						if (publishPermissions) {
 							// Request new publish permissions
