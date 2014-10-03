@@ -33,6 +33,7 @@ import com.facebook.FacebookOperationCanceledException;
 import com.facebook.FacebookRequestError;
 import com.facebook.FacebookServiceException;
 import com.facebook.Request;
+import com.facebook.Request.GraphUserCallback;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
@@ -100,7 +101,7 @@ public class ConnectPlugin extends CordovaPlugin {
 		}
 
 		// If we have a valid open session, get user's info
-		if (session != null && session.isOpened()) {
+		if (checkActiveSession(session)) {
 			// Call this method to initialize the session state info
 			onSessionStateChange(session.getState(), null);
 		}
@@ -149,9 +150,11 @@ public class ConnectPlugin extends CordovaPlugin {
 			});
 		} else {
 			Session session = Session.getActiveSession();
-
-			if (session != null && (loginContext != null || session.isOpened())) {
+			if (session != null && loginContext != null) {
 				session.onActivityResult(cordova.getActivity(), requestCode, resultCode, intent);
+			} else {
+				Log.d(TAG, "loginContext: " + loginContext);
+				Log.d(TAG, "session: " + session);
 			}
 		}
 		trackingPendingCall = false;
@@ -183,7 +186,7 @@ public class ConnectPlugin extends CordovaPlugin {
 			loginContext.sendPluginResult(pr);
 
 			// Check if the active session is open
-			if (session != null && session.isOpened()) {
+			if (checkActiveSession(session)) {
 				// Reauthorize flow
 				boolean publishPermissions = false;
 				boolean readPermissions = false;
@@ -205,7 +208,6 @@ public class ConnectPlugin extends CordovaPlugin {
 						break;
 					}
 				}
-
 				if (publishPermissions && readPermissions) {
 					callbackContext.error("Cannot ask for both read and publish permissions.");
 				} else {
@@ -227,6 +229,9 @@ public class ConnectPlugin extends CordovaPlugin {
 
 				// - Create a new session and set the application ID
 				session = new Session.Builder(cordova.getActivity()).setApplicationId(applicationId).build();
+				// Set up the activity result callback to this class
+				cordova.setActivityResultCallback(this);
+
 				Session.setActiveSession(session);
 				// - Create the request
 				Session.OpenRequest openRequest = new Session.OpenRequest(cordova.getActivity());
@@ -247,34 +252,54 @@ public class ConnectPlugin extends CordovaPlugin {
 		} else if (action.equals("logout")) {
 
 			Session session = Session.getActiveSession();
-			if (session != null) {
-				if (session.isOpened()) {
-					session.closeAndClearTokenInformation();
-					userID = null;
-					callbackContext.success();
-				} else {
-					// Session not open
-					callbackContext.error("Session not open.");
-				}
+			if (checkActiveSession(session)) {
+				session.closeAndClearTokenInformation();
+				userID = null;
+				callbackContext.success();
 			} else {
-				callbackContext.error("No valid session found, must call init and login before logout.");
+				if (session != null) {
+					// Session was existing, but was not open
+					callbackContext.error("Session not open.");
+				} else {
+					callbackContext.error("No valid session found, must call init and login before logout.");
+				}
 			}
 			return true;
 		} else if (action.equals("getLoginStatus")) {
-			callbackContext.success(getResponse());
+			Session session = Session.getActiveSession();
+			if (userID == null && Session.getActiveSession() != null  && session.isOpened()) {
+				// We have no userID but a valid session, so must update the user info
+				// (Probably app was force stopped)
+				final CallbackContext _callbackContext = callbackContext;
+				getUserInfo(session, new GraphUserCallback() {
+					@Override
+					public void onCompleted(GraphUser user, Response response) {
+						// Request completed, userID was updated,
+						// recursive call to generate the correct response JSON
+						FacebookRequestError error = response.getError();
+						if (error != null) {
+							_callbackContext.error(error.getErrorMessage());
+							return;
+						}
+						userID = user.getId();
+						_callbackContext.success(getResponse());
+					}
+				});
+			} else {
+				callbackContext.success(getResponse());
+			}
 			return true;
 		} else if (action.equals("getAccessToken")) {
 			Session session = Session.getActiveSession();
-			if (session != null) {
-				if (session.isOpened()) {
-					callbackContext.success(session.getAccessToken());
+			if (checkActiveSession(session)) {
+				callbackContext.success(session.getAccessToken());
+			} else {
+				if (session == null) {
+					callbackContext.error("No valid session found, must call init and login before logout.");
 				} else {
 					// Session not open
 					callbackContext.error("Session not open.");
 				}
-			} else {
-				callbackContext
-					.error("No valid session found, must call init and login before logout.");
 			}
 			return true;
 		} else if (action.equals("logEvent")) {
@@ -334,6 +359,11 @@ public class ConnectPlugin extends CordovaPlugin {
 			callbackContext.success();
 			return true;
 		} else if (action.equals("showDialog")) {
+			Session session = Session.getActiveSession();
+			if (!checkActiveSession(session)) {
+				callbackContext.error("No active session");
+				return true;
+			}
 			Bundle collect = new Bundle();
 			JSONObject params = null;
 			try {
@@ -490,6 +520,15 @@ public class ConnectPlugin extends CordovaPlugin {
 		return false;
 	}
 
+	// Simple active session check
+	private boolean checkActiveSession(Session session) {
+		if (session != null && session.isOpened()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	private void handleError(Exception exception) {
 		String errMsg = "Facebook error: " + exception.getMessage();
 		// User clicked "x"
@@ -535,22 +574,9 @@ public class ConnectPlugin extends CordovaPlugin {
 		}
 	}
 
-	private void getUserInfo(final Session session) {
+	private void getUserInfo(final Session session, final Request.GraphUserCallback graphUserCb) {
 		if (cordova != null) {
-			Request.newMeRequest(session, new Request.GraphUserCallback() {
-
-				@Override
-				public void onCompleted(GraphUser user, Response response) {
-					// Create a new result with response data
-					if (loginContext != null) {
-						GraphObject graphObject = response.getGraphObject();
-						Log.d(TAG, "returning login object " + graphObject.getInnerJSONObject().toString());
-						userID = user.getId();
-						loginContext.success(getResponse());
-						loginContext = null;
-					}
-				}
-			}).executeAsync();
+			Request.newMeRequest(session, graphUserCb).executeAsync();
 		}
 	}
 
@@ -608,12 +634,28 @@ public class ConnectPlugin extends CordovaPlugin {
 	 * Handles session state changes
 	 */
 	private void onSessionStateChange(SessionState state, Exception exception) {
-		final Session session = Session.getActiveSession();
+		Log.d(TAG, "State is: " + state);
 		// Check if the session is open
-		if (state.isOpened()) {
+		if (state == SessionState.OPENED) {
 			if (loginContext != null) {
 				// Get user info
-				getUserInfo(session);
+				Session session = Session.getActiveSession();
+				getUserInfo(session, new Request.GraphUserCallback() {
+					@Override
+					public void onCompleted(GraphUser user, Response response) {
+						// Create a new result with response data
+						if (loginContext != null) {
+							GraphObject graphObject = response.getGraphObject();
+							Log.d(TAG, "returning login object " + graphObject.getInnerJSONObject().toString());
+							userID = user.getId();
+							loginContext.success(getResponse());
+							loginContext = null;
+						} else {
+							// Just update the userID in case we force quit the application before
+							userID = user.getId();
+						}
+					}
+				});
 			} else if (graphContext != null) {
 				// Make the graph call
 				makeGraphCall();
@@ -634,8 +676,8 @@ public class ConnectPlugin extends CordovaPlugin {
 	 */
 	public JSONObject getResponse() {
 		String response;
-		Session session = Session.getActiveSession();
-		if (session != null && session.isOpened()) {
+		final Session session = Session.getActiveSession();
+		if (checkActiveSession(session)) {
 			Date today = new Date();
 			long expiresTimeInterval = (session.getExpirationDate().getTime() - today.getTime()) / 1000L;
 			long expiresIn = (expiresTimeInterval > 0) ? expiresTimeInterval : 0;
@@ -646,7 +688,7 @@ public class ConnectPlugin extends CordovaPlugin {
 				+ "\"expiresIn\": \"" + expiresIn + "\","
 				+ "\"session_key\": true,"
 				+ "\"sig\": \"...\","
-				+ "\"userID\": \"" + this.userID + "\""
+				+ "\"userID\": \"" + userID + "\""
 				+ "}"
 				+ "}";
 		} else {
@@ -654,7 +696,6 @@ public class ConnectPlugin extends CordovaPlugin {
 				+ "\"status\": \"unknown\""
 				+ "}";
 		}
-
 		try {
 			return new JSONObject(response);
 		} catch (JSONException e) {
