@@ -152,9 +152,6 @@ public class ConnectPlugin extends CordovaPlugin {
 			Session session = Session.getActiveSession();
 			if (session != null && loginContext != null) {
 				session.onActivityResult(cordova.getActivity(), requestCode, resultCode, intent);
-			} else {
-				Log.d(TAG, "loginContext: " + loginContext);
-				Log.d(TAG, "session: " + session);
 			}
 		}
 		trackingPendingCall = false;
