@@ -631,7 +631,7 @@ public class ConnectPlugin extends CordovaPlugin {
 	private void onSessionStateChange(SessionState state, Exception exception) {
 		Log.d(TAG, "State is: " + state);
 		// Check if the session is open
-		if (state == SessionState.OPENED) {
+		if (state.isOpened()) {
 			if (loginContext != null) {
 				// Get user info
 				Session session = Session.getActiveSession();
