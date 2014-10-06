@@ -1,7 +1,21 @@
+repositories {
+    mavenCentral()
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.10.2'
+    }
+}
+
 apply plugin: 'android-library'
 
 dependencies {
-    compile 'com.android.support:support-v4:20.0.+'
+    compile 'com.google.android:support-v4:r7'
     compile 'com.parse.bolts:bolts-android:1.1.2'
 }
 
