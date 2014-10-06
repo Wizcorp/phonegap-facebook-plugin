@@ -25,5 +25,5 @@ To install the plugin in your app, execute the following (replace variables wher
 
 ## Setup
 
-- Change **FacebookAppID** in project *-info.plist
-- Change URL scheme to `fb<YOUR APPID>` e.g. `fb123456789`
+- Make sure **FacebookAppID** in project *-info.plist is set to your `APP_ID`.
+- Make sure **CFBundleURLSchemes** is set to to `fb<YOUR APPID>` e.g. `fb123456789`
