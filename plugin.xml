@@ -2,31 +2,27 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="com.phonegap.plugins.facebookconnect"
-    version="0.5.1">
+    version="0.8.0">
 
     <name>Facebook Connect</name>
     
     <description>
-      &lt;p&gt;This is the official plugin for Facebook in Apache Cordova/PhoneGap!&lt;/p&gt;
+      This is the official plugin for Facebook in Apache Cordova/PhoneGap!
       
-      &lt;p&gt;The Facebook plugin for Apache Cordova allows you to use the same JavaScript code in your
-      Cordova application as you use in your web application. However, unlike in the browser, the
-      Cordova application will use the native Facebook app to perform Single Sign On for the user.
-      If this is not possible then the sign on will degrade gracefully using the standard dialog
-      based authentication.&lt;/p&gt;
+      The Facebook plugin for Apache Cordova allows you to use the same JavaScript code in your
+      Cordova application as you use in your web application.
+      Docs: https://github.com/Wizcorp/phonegap-facebook-plugin.
     </description>
     
     <license>Apache 2.0</license>
-    
-    <asset src="www/cdv-plugin-fb-connect.js" target="cdv-plugin-fb-connect.js" />
-    <asset src="www/facebook-js-sdk.js" target="facebook-js-sdk.js" />
     
     <preference name="APP_ID" />
     <preference name="APP_NAME" />
     
     <engines>
     	<!-- Requires > 3.3.* because of the custom Framework tag for iOS [CB-5238] -->
-    	<engine name="cordova" version=">=3.3.0" />
+    	<!-- Requires > 3.5.0 because of the custom Framework tag for Android [CB-6698] -->
+    	<engine name="cordova" version=">=3.5.0" />
     </engines>
     
     <!-- JavaScript interface -->
@@ -50,7 +46,7 @@
 	        <access origin="https://*.akamaihd.net" />
         </config-file>
         
-        <source-file src="src/android/facebook/res/values/facebookconnect.xml" target-dir="res/values" />
+        <source-file src="platforms/android/res/values/facebookconnect.xml" target-dir="res/values" />
         <config-file target="res/values/facebookconnect.xml" parent="/*">
             <string name="fb_app_id">$APP_ID</string>
             <string name="fb_app_name">$APP_NAME</string>
@@ -58,14 +54,13 @@
         
         <config-file target="AndroidManifest.xml" parent="application">
             <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/fb_app_id"/>
-            <activity android:label="@string/fb_app_name" android:name="com.facebook.LoginActivity"></activity>
+            <activity android:label="@string/fb_app_name" android:name="com.facebook.LoginActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
         </config-file>
 
-        <!-- copy Facebook Lib project -->
-        <source-file src="src/android/facebook/FacebookLib" target-dir="./" />
+        <framework src="platforms/android/FacebookLib" custom="true" />
         
         <!-- cordova plugin src files -->
-        <source-file src="src/android/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
+        <source-file src="platforms/android/src/org/apache/cordova/facebook/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
          
     </platform>
     
@@ -84,8 +79,8 @@
 	        <access origin="https://*.akamaihd.net" />
 	    </config-file>
 
-        <header-file src="src/ios/FacebookConnectPlugin.h" />
-        <source-file src="src/ios/FacebookConnectPlugin.m" />
+        <header-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/FacebookConnectPlugin.h" />
+        <source-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/FacebookConnectPlugin.m" />
 
         <config-file target="*-Info.plist" parent="FacebookAppID">
             <string>$APP_ID</string>
@@ -107,7 +102,7 @@
         </config-file>
 
         <!-- Facebook framework -->
-        <framework src="src/ios/frameworks/FacebookSDK.framework" custom="true" />
+        <framework src="platforms/ios/FacebookSDK.framework" custom="true" />
                 
         <!-- System frameworks -->
         <framework src="libsqlite3.dylib" />
