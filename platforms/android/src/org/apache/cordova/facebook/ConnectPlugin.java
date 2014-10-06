@@ -45,6 +45,7 @@ import com.facebook.widget.WebDialog.OnCompleteListener;
 
 public class ConnectPlugin extends CordovaPlugin {
 
+	private static final int INVALID_ERROR_CODE = -2; //-1 is FacebookRequestError.INVALID_ERROR_CODE
 	private static final String PUBLISH_PERMISSION_PREFIX = "publish";
 	private static final String MANAGE_PERMISSION_PREFIX = "manage";
 	@SuppressWarnings("serial")
@@ -111,7 +112,7 @@ public class ConnectPlugin extends CordovaPlugin {
 	public void onResume(boolean multitasking) {
 		super.onResume(multitasking);
 		uiHelper.onResume();
-		// Developers can observe how frequently users activate their app by logging an app activation event. 
+		// Developers can observe how frequently users activate their app by logging an app activation event.
 		AppEventsLogger.activateApp(cordova.getActivity());
 	}
 
@@ -132,13 +133,13 @@ public class ConnectPlugin extends CordovaPlugin {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-		Log.d(TAG, "activity result in plugin");
+		Log.d(TAG, "activity result in plugin: requestCode(" + requestCode + "), resultCode(" + resultCode + ")");
 		if (trackingPendingCall) {
 			uiHelper.onActivityResult(requestCode, resultCode, intent, new FacebookDialog.Callback() {
 				@Override
 				public void onError(FacebookDialog.PendingCall pendingCall, Exception error, Bundle data) {
 					Log.e("Activity", String.format("Error: %s", error.toString()));
-					handleError(error);
+					handleError(error, showDialogContext);
 				}
 
 				@Override
@@ -375,7 +376,7 @@ public class ConnectPlugin extends CordovaPlugin {
 				@Override
 				public void onComplete(Bundle values, FacebookException exception) {
 					if (exception != null) {
-						handleError(exception);
+						handleError(exception, showDialogContext);
 					} else {
 						handleSuccess(values);
 					}
@@ -490,26 +491,20 @@ public class ConnectPlugin extends CordovaPlugin {
 		return false;
 	}
 
-	private void handleError(Exception exception) {
+	private void handleError(Exception exception,  CallbackContext context) {
 		String errMsg = "Facebook error: " + exception.getMessage();
+		int errorCode = INVALID_ERROR_CODE;
 		// User clicked "x"
 		if (exception instanceof FacebookOperationCanceledException) {
 			errMsg = "User cancelled dialog";
+			errorCode = 4201;
 		} else if (exception instanceof FacebookDialogException) {
 			// Dialog error
 			errMsg = "Dialog error: " + exception.getMessage();
-		} else if (exception instanceof FacebookServiceException) {
-			FacebookRequestError error = ((FacebookServiceException) exception).getRequestError();
-			if (error.getErrorCode() == 4201) {
-                            // User hit the cancel button in the WebView
-				// Tried error.getErrorMessage() but it returns null
-				// if though the URL says:
-				// Redirect URL: fbconnect://success?error_code=4201&error_message=User+canceled+the+Dialog+flow
-				errMsg = "User cancelled dialog";
-			}
 		}
-		Log.e(TAG, errMsg);
-		showDialogContext.error(errMsg);
+
+		Log.e(TAG, exception.toString());
+		context.error(getErrorResponse(exception, errMsg, errorCode));
 	}
 
 	private void handleSuccess(Bundle values) {
@@ -541,12 +536,15 @@ public class ConnectPlugin extends CordovaPlugin {
 
 				@Override
 				public void onCompleted(GraphUser user, Response response) {
-					// Create a new result with response data
 					if (loginContext != null) {
-						GraphObject graphObject = response.getGraphObject();
-						Log.d(TAG, "returning login object " + graphObject.getInnerJSONObject().toString());
-						userID = user.getId();
-						loginContext.success(getResponse());
+						if (response.getError() != null) {
+							loginContext.error(getFacebookRequestErrorResponse(response.getError()));
+						} else {
+							// Create a new result with response data
+							GraphObject graphObject = response.getGraphObject();
+							userID = user.getId();
+							loginContext.success(getResponse());
+						}
 						loginContext = null;
 					}
 				}
@@ -563,7 +561,7 @@ public class ConnectPlugin extends CordovaPlugin {
 			public void onCompleted(Response response) {
 				if (graphContext != null) {
 					if (response.getError() != null) {
-						graphContext.error(response.getError().getErrorMessage());
+						graphContext.error(getFacebookRequestErrorResponse(response.getError()));
 					} else {
 						GraphObject graphObject = response.getGraphObject();
 						graphContext.success(graphObject.getInnerJSONObject());
@@ -608,15 +606,22 @@ public class ConnectPlugin extends CordovaPlugin {
 	 * Handles session state changes
 	 */
 	private void onSessionStateChange(SessionState state, Exception exception) {
-		final Session session = Session.getActiveSession();
-		// Check if the session is open
-		if (state.isOpened()) {
-			if (loginContext != null) {
-				// Get user info
-				getUserInfo(session);
-			} else if (graphContext != null) {
-				// Make the graph call
-				makeGraphCall();
+		if (exception != null && exception instanceof FacebookOperationCanceledException) {
+			// only handle FacebookOperationCanceledException to support
+			// SDK recovery behavior triggered by getUserInfo
+			Log.e(TAG, "exception:" + exception.toString());
+			handleError(exception, loginContext);
+		} else {
+			final Session session = Session.getActiveSession();
+			// Check if the session is open
+			if (state.isOpened()) {
+				if (loginContext != null) {
+					// Get user info
+					getUserInfo(session);
+				} else if (graphContext != null) {
+					// Make the graph call
+					makeGraphCall();
+				}
 			}
 		}
 	}
@@ -654,6 +659,66 @@ public class ConnectPlugin extends CordovaPlugin {
 				+ "\"status\": \"unknown\""
 				+ "}";
 		}
+
+		try {
+			return new JSONObject(response);
+		} catch (JSONException e) {
+
+			e.printStackTrace();
+		}
+		return new JSONObject();
+	}
+
+	public JSONObject getFacebookRequestErrorResponse(FacebookRequestError error) {
+
+		String response = "{"
+			+ "\"errorCode\": \"" + error.getErrorCode() + "\","
+			+ "\"errorType\": \"" + error.getErrorType() + "\","
+			+ "\"errorMessage\": \"" + error.getErrorMessage() + "\"";
+
+		int messageId = error.getUserActionMessageId();
+
+    // Check for INVALID_MESSAGE_ID
+    if (messageId != 0) {
+    	String errorUserMessage = cordova.getActivity().getResources().getString(messageId);
+    	// Safe check for null
+	    if (errorUserMessage != null) {
+				response += ",\"errorUserMessage\": \"" + cordova.getActivity().getResources().getString(error.getUserActionMessageId()) + "\"";
+	    }
+    }
+
+    response += "}";
+
+		try {
+			return new JSONObject(response);
+		} catch (JSONException e) {
+
+			e.printStackTrace();
+		}
+		return new JSONObject();
+	}
+
+	public JSONObject getErrorResponse(Exception error, String message, int errorCode) {
+
+		if (error instanceof FacebookServiceException) {
+			return getFacebookRequestErrorResponse(((FacebookServiceException) error).getRequestError());
+		}
+
+		String response = "{";
+
+    if (error instanceof FacebookDialogException) {
+    	errorCode = ((FacebookDialogException) error).getErrorCode();
+    }
+
+    if (errorCode != INVALID_ERROR_CODE) {
+    	response += "\"errorCode\": \"" + errorCode + "\",";
+    }
+
+    if (message == null) {
+    	message = error.getMessage();
+    }
+
+    response += "\"errorMessage\": \"" + message + "\"}";
 
 		try {
 			return new JSONObject(response);
