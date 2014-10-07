@@ -659,6 +659,8 @@ public class ConnectPlugin extends CordovaPlugin {
 					// Make the graph call
 					makeGraphCall();
 				}
+			} else if (state == SessionState.CLOSED_LOGIN_FAILED && loginContext != null){
+				handleError(new FacebookAuthorizationException("Session was closed and was not closed normally"), loginContext);
 			}
 		}
 	}
