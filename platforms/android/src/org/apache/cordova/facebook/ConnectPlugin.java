@@ -30,6 +30,7 @@ import com.facebook.AppEventsLogger;
 import com.facebook.FacebookDialogException;
 import com.facebook.FacebookException;
 import com.facebook.FacebookOperationCanceledException;
+import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookRequestError;
 import com.facebook.FacebookServiceException;
 import com.facebook.Request;
