@@ -435,7 +435,7 @@ public class ConnectPlugin extends CordovaPlugin {
 								.setName(paramBundle.getString("name"))
 								.setCaption(paramBundle.getString("caption"))
 								.setDescription(paramBundle.getString("description"))
-								.setLink(paramBundle.getString("link"))
+								.setLink(paramBundle.getString("href"))
 								.setPicture(paramBundle.getString("picture"))
 								.build();
 							uiHelper.trackPendingDialogCall(shareDialog.present());
