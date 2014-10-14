@@ -525,7 +525,7 @@ public class ConnectPlugin extends CordovaPlugin {
 		}
 	}
 
-	private void handleError(Exception exception,  CallbackContext context) {
+	private void handleError(Exception exception, CallbackContext context) {
 		String errMsg = "Facebook error: " + exception.getMessage();
 		int errorCode = INVALID_ERROR_CODE;
 		// User clicked "x"
