@@ -40,13 +40,16 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive)
                                                  name:UIApplicationDidBecomeActiveNotification object:nil];
+    // Add notification listener for handleOpenURL
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(openURL:)
+                                                 name:CDVPluginHandleOpenURLNotification object:nil];
     return self;
 }
 
-/* This overrides CDVPlugin's method, which receives a notification when handleOpenURL is called on the main app delegate */
-- (void)handleOpenURL:(NSNotification *)notification {
+- (void)openURL:(NSNotification *)notification {
     // NSLog(@"handle url: %@", [notification object]);
-    NSURL* url = [notification object];
+    NSURL *url = [notification object];
 
     if (![url isKindOfClass:[NSURL class]]) {
         return;
