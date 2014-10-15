@@ -53,26 +53,26 @@ Follow the steps below:
 	cordova platform add android
 
 	cordova -d plugin add https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID="123456789" --variable APP_NAME="myApplication"
-	
+
 	android update project --subprojects --path "platforms/android" --target android-19 --library "CordovaLib"
-	
-	android update project --subprojects --path "platforms/android" --target android-19 --library "FacebookLib"
-	
+
+	android update project --subprojects --path "platforms/android" --target android-19 --library "com.phonegap.plugins.facebookconnect/FacebookLib"
+
 	cd platforms/android/
-	
+
 	ant clean
-	
-	cd FacebookLib
-	
+
+	cd com.phonegap.plugins.facebookconnect/FacebookLib
+
 	ant clean
-	
-	open -e AndroidManifest.xml	
+
+	open -e AndroidManifest.xml
 
 	// change your minSdkVersion and your targetSdkVersion to your environment settings for me it was:
 	// <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="17" />
-	
+
 	ant release
-	
-	cd ../../..
-	
+
+	cd ../../../..
+
 	cordova build android
