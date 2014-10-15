@@ -159,12 +159,14 @@ if (!window.cordova) {
             if (!version) {
                 version = "v2.0";
             }
-            FB.init({
-                appId      : appId,
-                cookie     : true,
-                xfbml      : true,
-                version    : version
-            })
+            window.fbAsyncInit = function() {
+                FB.init({
+                    appId: appId,
+                    cookie: true,
+                    xfbml: true,
+                    version: version
+                });
+            };
         }
     };
     
