@@ -392,6 +392,7 @@ public class ConnectPlugin extends CordovaPlugin {
 				cordova.getActivity().runOnUiThread(runnable);
 			} else if (this.method.equalsIgnoreCase("apprequests")) {
 				Runnable runnable = new Runnable() {
+					paramBundle.putString("frictionless", "1");
 					public void run() {
 						WebDialog requestsDialog = (new WebDialog.RequestsDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback)
 							.build();
@@ -399,7 +400,45 @@ public class ConnectPlugin extends CordovaPlugin {
 					}
 				};
 				cordova.getActivity().runOnUiThread(runnable);
-			} else if (this.method.equalsIgnoreCase("share") || this.method.equalsIgnoreCase("share_open_graph")) {
+			} else if (this.method.equalsIgnoreCase("share_open_graph")) {
+				if (FacebookDialog.canPresentOpenGraphActionDialog(me.cordova.getActivity(), FacebookDialog.OpenGraphActionDialogFeature.OG_ACTION_DIALOG)) {
+					Runnable runnable = new Runnable() {
+						public void run() {
+							OpenGraphAction ogAction = GraphObject.Factory.create(OpenGraphAction.class);
+							ogAction.setType(paramBundle.getString("action_type"));
+							String previewPropertyName = null; 
+							try{
+								JSONObject ogActionProperties = new JSONObject(paramBundle.getString("action_properties"));
+								Iterator<?> iter = ogActionProperties.keys();
+								while (iter.hasNext()) {
+									String key = (String) iter.next();
+									if(previewPropertyName==null){
+										previewPropertyName = key;
+									}
+									ogAction.setProperty(key.toString(), ogActionProperties.getString(key).toString());
+								}
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							
+							FacebookDialog shareDialog = new FacebookDialog.OpenGraphActionDialogBuilder(me.cordova.getActivity(),ogAction,previewPropertyName)
+								.build();
+							uiHelper.trackPendingDialogCall(shareDialog.present());
+						}
+					};
+                                this.trackingPendingCall = true;
+					cordova.getActivity().runOnUiThread(runnable);
+				} else {
+					// Fallback. For example, publish the post using the Feed Dialog
+					Runnable runnable = new Runnable() {
+						public void run() {
+							WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback).build();
+							feedDialog.show();
+						}
+					};
+				cordova.getActivity().runOnUiThread(runnable);
+				}
+			} else if (this.method.equalsIgnoreCase("share")) {
 				if (FacebookDialog.canPresentShareDialog(me.cordova.getActivity(), FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
 					Runnable runnable = new Runnable() {
 						public void run() {
