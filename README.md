@@ -30,6 +30,8 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 - [Web App Guide](platforms/web/README.md)
 
+- [PhoneGap Build](platforms/pg-build/README.md)
+
 #### Example Apps
 
 `platforms/android` and `platforms/ios` contain example projects and all the native code for the plugin for both Android and iOS platforms. They also include versions of the Android and iOS Facebook SDKs. These are used during automatic installation.
