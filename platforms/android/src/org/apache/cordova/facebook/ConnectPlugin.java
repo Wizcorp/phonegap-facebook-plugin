@@ -701,7 +701,7 @@ public class ConnectPlugin extends CordovaPlugin {
 	 * Create a Facebook Response object that matches the one for the Javascript SDK
 	 * @return JSONObject - the response object
 	 */
-	public JSONObject getResponse() {
+	private JSONObject getResponse() {
 		String response;
 		final Session session = Session.getActiveSession();
 		if (checkActiveSession(session)) {
@@ -732,7 +732,7 @@ public class ConnectPlugin extends CordovaPlugin {
 		return new JSONObject();
 	}
 
-	public JSONObject getFacebookRequestErrorResponse(FacebookRequestError error) {
+	private JSONObject getFacebookRequestErrorResponse(FacebookRequestError error) {
 
 		String response = "{"
 			+ "\"errorCode\": \"" + error.getErrorCode() + "\","
@@ -761,7 +761,7 @@ public class ConnectPlugin extends CordovaPlugin {
 		return new JSONObject();
 	}
 
-	public JSONObject getErrorResponse(Exception error, String message, int errorCode) {
+	private JSONObject getErrorResponse(Exception error, String message, int errorCode) {
 
 		if (error instanceof FacebookServiceException) {
 			return getFacebookRequestErrorResponse(((FacebookServiceException) error).getRequestError());
