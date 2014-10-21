@@ -51,6 +51,10 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
         api: function (graphPath, permissions, s, f) {
             if (!permissions) permissions = [];
             cordova.exec(s, f, "FacebookConnectPlugin", "graphApi", [graphPath, permissions]);
+        },
+
+        getAppLink: function (s, f) {
+            cordova.exec(s, f, "FacebookConnectPlugin", "appLink", []);
         }
     };
 

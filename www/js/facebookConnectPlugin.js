@@ -165,6 +165,11 @@ if (!window.cordova) {
                 xfbml      : true,
                 version    : version
             })
+        },
+
+        getAppLink: function (s, f) {
+            // AppEvents are not avaliable in JS.
+            s();
         }
     };
     
