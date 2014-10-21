@@ -114,6 +114,13 @@ public class ConnectPlugin extends CordovaPlugin {
 			// Call this method to initialize the session state info
 			onSessionStateChange(session.getState(), null);
 		}
+
+		Intent intent = cordova.getActivity().getIntent();
+    Uri targetUrl = AppLinks.getTargetUrl(intent);
+    if (targetUrl != null) {
+        appLink = getAppLink(intent);
+    }
+
 		super.initialize(cordova, webView);
 	}
 
