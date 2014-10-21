@@ -812,6 +812,8 @@ public class ConnectPlugin extends CordovaPlugin {
             //}
             response = "{";
 
+            response += "\"data_string\":\"" + intent.getDataString() + "\",";
+
             if (refererAppData != null) {
                 response += "\"referer_app_link\": {"
                         + "\"package\": \"" + refererAppData.getString("package") + "\","
@@ -835,7 +837,7 @@ public class ConnectPlugin extends CordovaPlugin {
             }
             response += "}";
         } else {
-            response = "{}";
+            response = "{\"data_string\":\"" + intent.getDataString() + "\"}";
         }
 
         try {
