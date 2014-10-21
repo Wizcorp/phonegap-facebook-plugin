@@ -5,11 +5,13 @@ import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Currency;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.cordova.CallbackContext;
@@ -23,6 +25,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -44,6 +47,9 @@ import com.facebook.model.GraphUser;
 import com.facebook.widget.FacebookDialog;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
+
+import bolts.AppLink;
+import bolts.AppLinks;
 
 public class ConnectPlugin extends CordovaPlugin {
 
@@ -69,6 +75,7 @@ public class ConnectPlugin extends CordovaPlugin {
 	private String method;
 	private String graphPath;
 	private String userID;
+    private JSONObject appLink;
 	private UiLifecycleHelper uiHelper;
 	private boolean trackingPendingCall = false;
 
@@ -109,6 +116,16 @@ public class ConnectPlugin extends CordovaPlugin {
 		}
 		super.initialize(cordova, webView);
 	}
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        final String intentString = intent.getDataString();
+
+        Uri targetUrl = AppLinks.getTargetUrl(intent);
+        if (targetUrl != null) {
+            appLink = getAppLink(intent);
+        }
+    }
 
 	@Override
 	public void onResume(boolean multitasking) {
@@ -512,7 +529,14 @@ public class ConnectPlugin extends CordovaPlugin {
 				makeGraphCall();
 			}
 			return true;
-		}
+		} else if (action.equals("appLink")){
+            if (appLink != null) {
+                callbackContext.success(appLink);
+            } else {
+                callbackContext.error("No app link available");
+            }
+            return true;
+        }
 		return false;
 	}
 
@@ -767,6 +791,61 @@ public class ConnectPlugin extends CordovaPlugin {
 		}
 		return new JSONObject();
 	}
+
+    private JSONObject getAppLink(Intent intent) {
+        String response;
+
+        Bundle appLinkData = AppLinks.getAppLinkData(intent);
+        if (appLinkData != null) {
+            Bundle refererAppData = appLinkData.getBundle("referer_app_link");
+            //{ "extras": {
+            //      "fb_app_id": 12345678910,
+            //      "fb_access_token": "ACCESS_TOKEN",
+            //      "referer": "REFERER"
+            //  },
+            //  "target_url": "https://fb.me/708882319205526",
+            //  "referer_app_link": {
+            //      "package": "com.facebook.katana",
+            //      "url": "fb:///",
+            //      "app_name": "Facebook"
+            // }
+            //}
+            response = "{";
+
+            if (refererAppData != null) {
+                response += "\"referer_app_link\": {"
+                        + "\"package\": \"" + refererAppData.getString("package") + "\","
+                        + "\"url\": \"" + refererAppData.getString("url") + "\","
+                        + "\"app_name\": " + refererAppData.getString("app_name") + "\""
+                        + "},";
+            }
+
+            Uri targetUrl = AppLinks.getTargetUrl(intent);
+            if (targetUrl != null) {
+                response += "\"target_url\": \"" + targetUrl.toString() + "\",";
+            }
+
+            Bundle extras = AppLinks.getAppLinkExtras(intent);
+            if (extras != null) {
+                response += "\"extras\": {"
+                        + "\"fb_app_id\": \"" + extras.getString("fb_app_id") + "\","
+                        + "\"fb_access_token\": \"" + extras.getString("fb_access_token") + "\","
+                        + "\"referer\": " + extras.getString("referer") + "\""
+                        + "}";
+            }
+            response += "}";
+        } else {
+            response = "{}";
+        }
+
+        try {
+            return new JSONObject(response);
+        } catch (JSONException e) {
+
+            e.printStackTrace();
+        }
+        return new JSONObject();
+    }
 
 	private class WebDialogBuilderRunnable implements Runnable {
 		private Context context;
