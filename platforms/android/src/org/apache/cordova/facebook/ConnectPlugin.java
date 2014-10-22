@@ -72,7 +72,7 @@ public class ConnectPlugin extends CordovaPlugin {
 	private String method;
 	private String graphPath;
 	private String userID;
-    private JSONObject appLink;
+	private JSONObject appLink;
 	private UiLifecycleHelper uiHelper;
 	private boolean trackingPendingCall = false;
 
@@ -113,23 +113,23 @@ public class ConnectPlugin extends CordovaPlugin {
 		}
 
 		Intent intent = cordova.getActivity().getIntent();
-    Uri targetUrl = AppLinks.getTargetUrl(intent);
-    if (targetUrl != null) {
-        appLink = getAppLink(intent);
-    }
+		Uri targetUrl = AppLinks.getTargetUrl(intent);
+		if (targetUrl != null) {
+				appLink = getAppLink(intent);
+		}
 
 		super.initialize(cordova, webView);
 	}
 
-    @Override
-    public void onNewIntent(Intent intent) {
-        final String intentString = intent.getDataString();
+	@Override
+	public void onNewIntent(Intent intent) {
+		final String intentString = intent.getDataString();
 
-        Uri targetUrl = AppLinks.getTargetUrl(intent);
-        if (targetUrl != null) {
-            appLink = getAppLink(intent);
-        }
-    }
+		Uri targetUrl = AppLinks.getTargetUrl(intent);
+		if (targetUrl != null) {
+				appLink = getAppLink(intent);
+		}
+	}
 
 	@Override
 	public void onResume(boolean multitasking) {
@@ -463,7 +463,7 @@ public class ConnectPlugin extends CordovaPlugin {
 							uiHelper.trackPendingDialogCall(shareDialog.present());
 						}
 					};
-                                this.trackingPendingCall = true;
+																this.trackingPendingCall = true;
 					cordova.getActivity().runOnUiThread(runnable);
 				} else {
 					// Fallback. For example, publish the post using the Feed Dialog
@@ -534,13 +534,13 @@ public class ConnectPlugin extends CordovaPlugin {
 			}
 			return true;
 		} else if (action.equals("appLink")){
-            if (appLink != null) {
-                callbackContext.success(appLink);
-            } else {
-                callbackContext.error("No app link available");
-            }
-            return true;
-        }
+			if (appLink != null) {
+					callbackContext.success(appLink);
+			} else {
+					callbackContext.error("No app link available");
+			}
+			return true;
+		}
 		return false;
 	}
 
@@ -570,7 +570,7 @@ public class ConnectPlugin extends CordovaPlugin {
 	}
 
 	private void handleSuccess(Bundle values) {
-            // Handle a successful dialog:
+						// Handle a successful dialog:
 		// Send the URL parameters back, for a requests dialog, the "request" parameter
 		// will include the resulting request id. For a feed dialog, the "post_id"
 		// parameter will include the resulting post id.
@@ -745,16 +745,16 @@ public class ConnectPlugin extends CordovaPlugin {
 
 		int messageId = error.getUserActionMessageId();
 
-    // Check for INVALID_MESSAGE_ID
-    if (messageId != 0) {
-    	String errorUserMessage = cordova.getActivity().getResources().getString(messageId);
-    	// Safe check for null
-	    if (errorUserMessage != null) {
+		// Check for INVALID_MESSAGE_ID
+		if (messageId != 0) {
+			String errorUserMessage = cordova.getActivity().getResources().getString(messageId);
+			// Safe check for null
+			if (errorUserMessage != null) {
 				response += ",\"errorUserMessage\": \"" + cordova.getActivity().getResources().getString(error.getUserActionMessageId()) + "\"";
-	    }
-    }
+			}
+		}
 
-    response += "}";
+		response += "}";
 
 		try {
 			return new JSONObject(response);
@@ -773,19 +773,19 @@ public class ConnectPlugin extends CordovaPlugin {
 
 		String response = "{";
 
-    if (error instanceof FacebookDialogException) {
-    	errorCode = ((FacebookDialogException) error).getErrorCode();
-    }
+		if (error instanceof FacebookDialogException) {
+			errorCode = ((FacebookDialogException) error).getErrorCode();
+		}
 
-    if (errorCode != INVALID_ERROR_CODE) {
-    	response += "\"errorCode\": \"" + errorCode + "\",";
-    }
+		if (errorCode != INVALID_ERROR_CODE) {
+			response += "\"errorCode\": \"" + errorCode + "\",";
+		}
 
-    if (message == null) {
-    	message = error.getMessage();
-    }
+		if (message == null) {
+			message = error.getMessage();
+		}
 
-    response += "\"errorMessage\": \"" + message + "\"}";
+		response += "\"errorMessage\": \"" + message + "\"}";
 
 		try {
 			return new JSONObject(response);
@@ -796,62 +796,61 @@ public class ConnectPlugin extends CordovaPlugin {
 		return new JSONObject();
 	}
 
-    private JSONObject getAppLink(Intent intent) {
-        String response;
+	private JSONObject getAppLink(Intent intent) {
+		String response;
+		Bundle appLinkData = AppLinks.getAppLinkData(intent);
 
-        Bundle appLinkData = AppLinks.getAppLinkData(intent);
-        if (appLinkData != null) {
-            Bundle refererAppData = appLinkData.getBundle("referer_app_link");
-            //{ "extras": {
-            //      "fb_app_id": 12345678910,
-            //      "fb_access_token": "ACCESS_TOKEN",
-            //      "referer": "REFERER"
-            //  },
-            //  "target_url": "https://fb.me/708882319205526",
-            //  "referer_app_link": {
-            //      "package": "com.facebook.katana",
-            //      "url": "fb:///",
-            //      "app_name": "Facebook"
-            // }
-            //}
-            response = "{";
+		if (appLinkData != null) {
+			Bundle refererAppData = appLinkData.getBundle("referer_app_link");
+			//{ "extras": {
+			//      "fb_app_id": 12345678910,
+			//      "fb_access_token": "ACCESS_TOKEN",
+			//      "referer": "REFERER"
+			//  },
+			//  "target_url": "https://fb.me/708882319205526",
+			//  "referer_app_link": {
+			//      "package": "com.facebook.katana",
+			//      "url": "fb:///",
+			//      "app_name": "Facebook"
+			// }
+			//}
+			response = "{";
 
-            response += "\"data_string\":\"" + intent.getDataString() + "\",";
+			response += "\"data_string\":\"" + intent.getDataString() + "\",";
 
-            if (refererAppData != null) {
-                response += "\"referer_app_link\": {"
-                        + "\"package\": \"" + refererAppData.getString("package") + "\","
-                        + "\"url\": \"" + refererAppData.getString("url") + "\","
-                        + "\"app_name\": " + refererAppData.getString("app_name") + "\""
-                        + "},";
-            }
+			if (refererAppData != null) {
+				response += "\"referer_app_link\": {"
+								+ "\"package\": \"" + refererAppData.getString("package") + "\","
+								+ "\"url\": \"" + refererAppData.getString("url") + "\","
+								+ "\"app_name\": " + refererAppData.getString("app_name") + "\""
+								+ "},";
+			}
 
-            Uri targetUrl = AppLinks.getTargetUrl(intent);
-            if (targetUrl != null) {
-                response += "\"target_url\": \"" + targetUrl.toString() + "\",";
-            }
+			Uri targetUrl = AppLinks.getTargetUrl(intent);
+			if (targetUrl != null) {
+				response += "\"target_url\": \"" + targetUrl.toString() + "\",";
+			}
 
-            Bundle extras = AppLinks.getAppLinkExtras(intent);
-            if (extras != null) {
-                response += "\"extras\": {"
-                        + "\"fb_app_id\": \"" + extras.getString("fb_app_id") + "\","
-                        + "\"fb_access_token\": \"" + extras.getString("fb_access_token") + "\","
-                        + "\"referer\": " + extras.getString("referer") + "\""
-                        + "}";
-            }
-            response += "}";
-        } else {
-            response = "{\"data_string\":\"" + intent.getDataString() + "\"}";
-        }
+			Bundle extras = AppLinks.getAppLinkExtras(intent);
+			if (extras != null) {
+					response += "\"extras\": {"
+									+ "\"fb_app_id\": \"" + extras.getString("fb_app_id") + "\","
+									+ "\"fb_access_token\": \"" + extras.getString("fb_access_token") + "\","
+									+ "\"referer\": " + extras.getString("referer") + "\""
+									+ "}";
+			}
+			response += "}";
+		} else {
+			response = "{\"data_string\":\"" + intent.getDataString() + "\"}";
+		}
 
-        try {
-            return new JSONObject(response);
-        } catch (JSONException e) {
-
-            e.printStackTrace();
-        }
-        return new JSONObject();
-    }
+		try {
+			return new JSONObject(response);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return new JSONObject();
+	}
 
 	private class WebDialogBuilderRunnable implements Runnable {
 		private Context context;
