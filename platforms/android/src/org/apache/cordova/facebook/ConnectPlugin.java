@@ -344,7 +344,6 @@ public class ConnectPlugin extends CordovaPlugin {
 
 			final ConnectPlugin me = this;
 			Iterator<?> iter = params.keys();
-			boolean fullscreenParam = false;
 			while (iter.hasNext()) {
 				String key = (String) iter.next();
 				if (key.equals("method")) {
@@ -354,10 +353,6 @@ public class ConnectPlugin extends CordovaPlugin {
 						Log.w(TAG, "Nonstring method parameter provided to dialog");
 					}
 				} else {
-					if (key.equals("fullscreen")) {
-						fullscreenParam = params.getBoolean(key);
-					}
-
 					try {
 						collect.putString(key, params.getString(key));
 					} catch (JSONException e) {
@@ -388,24 +383,22 @@ public class ConnectPlugin extends CordovaPlugin {
 			};
 
 			if (this.method.equalsIgnoreCase("feed")) {
-				final boolean isFullscreen = fullscreenParam;
 				Runnable runnable = new Runnable() {
 					public void run() {
 						WebDialog.FeedDialogBuilder feedDialog = (new WebDialog.FeedDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback);
-						if (isFullscreen) {
-							feedDialog.setTheme(android.R.style.Theme_Wallpaper_NoTitleBar_Fullscreen);
+						if (cordova.getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+								requestsDialog.setTheme(android.R.style.Theme_Wallpaper_NoTitleBar_Fullscreen);
 						}
 						feedDialog.build().show();
 					}
 				};
 				cordova.getActivity().runOnUiThread(runnable);
 			} else if (this.method.equalsIgnoreCase("apprequests")) {
-				final boolean isFullscreen = fullscreenParam;
 				Runnable runnable = new Runnable() {
 					public void run() {
 						WebDialog.RequestsDialogBuilder requestsDialog = (new WebDialog.RequestsDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback);
-						if (isFullscreen) {
-							requestsDialog.setTheme(android.R.style.Theme_Wallpaper_NoTitleBar_Fullscreen);
+						if (cordova.getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+								requestsDialog.setTheme(android.R.style.Theme_Wallpaper_NoTitleBar_Fullscreen);
 						}
 						requestsDialog.build().show();
 					}
@@ -426,7 +419,7 @@ public class ConnectPlugin extends CordovaPlugin {
 							uiHelper.trackPendingDialogCall(shareDialog.present());
 						}
 					};
-                                this.trackingPendingCall = true;
+					this.trackingPendingCall = true;
 					cordova.getActivity().runOnUiThread(runnable);
 				} else {
 					// Fallback. For example, publish the post using the Feed Dialog
@@ -513,7 +506,7 @@ public class ConnectPlugin extends CordovaPlugin {
 		} else if (exception instanceof FacebookServiceException) {
 			FacebookRequestError error = ((FacebookServiceException) exception).getRequestError();
 			if (error.getErrorCode() == 4201) {
-                            // User hit the cancel button in the WebView
+				// User hit the cancel button in the WebView
 				// Tried error.getErrorMessage() but it returns null
 				// if though the URL says:
 				// Redirect URL: fbconnect://success?error_code=4201&error_message=User+canceled+the+Dialog+flow
@@ -525,7 +518,7 @@ public class ConnectPlugin extends CordovaPlugin {
 	}
 
 	private void handleSuccess(Bundle values) {
-            // Handle a successful dialog:
+		// Handle a successful dialog:
 		// Send the URL parameters back, for a requests dialog, the "request" parameter
 		// will include the resulting request id. For a feed dialog, the "post_id"
 		// parameter will include the resulting post id.
