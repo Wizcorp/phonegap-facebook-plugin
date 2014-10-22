@@ -413,17 +413,22 @@ public class ConnectPlugin extends CordovaPlugin {
 			if (this.method.equalsIgnoreCase("feed")) {
 				Runnable runnable = new Runnable() {
 					public void run() {
-						WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback).build();
-						feedDialog.show();
+						WebDialog.FeedDialogBuilder feedDialog = (new WebDialog.FeedDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback);
+						if (cordova.getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+							feedDialog.setTheme(android.R.style.Theme_Wallpaper_NoTitleBar_Fullscreen);
+						}
+						feedDialog.build().show();
 					}
 				};
 				cordova.getActivity().runOnUiThread(runnable);
 			} else if (this.method.equalsIgnoreCase("apprequests")) {
 				Runnable runnable = new Runnable() {
 					public void run() {
-						WebDialog requestsDialog = (new WebDialog.RequestsDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback)
-							.build();
-						requestsDialog.show();
+						WebDialog.RequestsDialogBuilder requestsDialog = (new WebDialog.RequestsDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback);
+						if (cordova.getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+							requestsDialog.setTheme(android.R.style.Theme_Wallpaper_NoTitleBar_Fullscreen);
+						}
+						requestsDialog.build().show();
 					}
 				};
 				cordova.getActivity().runOnUiThread(runnable);
