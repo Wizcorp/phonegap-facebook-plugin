@@ -29,8 +29,3 @@ To install the plugin in your app, execute the following (replace variables wher
 	cordova platform add ios
 
 	cordova -d plugin add /Users/your/path/here/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
-
-## Setup
-
-- Change **FacebookAppID** in project *-info.plist
-- Change URL scheme to `fb<YOUR APPID>` e.g. `fb123456789`
