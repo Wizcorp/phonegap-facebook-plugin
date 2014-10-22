@@ -447,7 +447,7 @@ public class ConnectPlugin extends CordovaPlugin {
 							uiHelper.trackPendingDialogCall(shareDialog.present());
 						}
 					};
-                                this.trackingPendingCall = true;
+					this.trackingPendingCall = true;
 					cordova.getActivity().runOnUiThread(runnable);
 				} else {
 					// Fallback. For example, publish the post using the Feed Dialog
@@ -547,7 +547,7 @@ public class ConnectPlugin extends CordovaPlugin {
 	}
 
 	private void handleSuccess(Bundle values) {
-            // Handle a successful dialog:
+		// Handle a successful dialog:
 		// Send the URL parameters back, for a requests dialog, the "request" parameter
 		// will include the resulting request id. For a feed dialog, the "post_id"
 		// parameter will include the resulting post id.
@@ -722,16 +722,16 @@ public class ConnectPlugin extends CordovaPlugin {
 
 		int messageId = error.getUserActionMessageId();
 
-    // Check for INVALID_MESSAGE_ID
-    if (messageId != 0) {
-    	String errorUserMessage = cordova.getActivity().getResources().getString(messageId);
-    	// Safe check for null
-	    if (errorUserMessage != null) {
+		// Check for INVALID_MESSAGE_ID
+		if (messageId != 0) {
+			String errorUserMessage = cordova.getActivity().getResources().getString(messageId);
+			// Safe check for null
+			if (errorUserMessage != null) {
 				response += ",\"errorUserMessage\": \"" + cordova.getActivity().getResources().getString(error.getUserActionMessageId()) + "\"";
-	    }
-    }
+			}
+		}
 
-    response += "}";
+		response += "}";
 
 		try {
 			return new JSONObject(response);
@@ -750,19 +750,19 @@ public class ConnectPlugin extends CordovaPlugin {
 
 		String response = "{";
 
-    if (error instanceof FacebookDialogException) {
-    	errorCode = ((FacebookDialogException) error).getErrorCode();
-    }
+		if (error instanceof FacebookDialogException) {
+			errorCode = ((FacebookDialogException) error).getErrorCode();
+		}
 
-    if (errorCode != INVALID_ERROR_CODE) {
-    	response += "\"errorCode\": \"" + errorCode + "\",";
-    }
+		if (errorCode != INVALID_ERROR_CODE) {
+			response += "\"errorCode\": \"" + errorCode + "\",";
+		}
 
-    if (message == null) {
-    	message = error.getMessage();
-    }
+		if (message == null) {
+			message = error.getMessage();
+		}
 
-    response += "\"errorMessage\": \"" + message + "\"}";
+		response += "\"errorMessage\": \"" + message + "\"}";
 
 		try {
 			return new JSONObject(response);
