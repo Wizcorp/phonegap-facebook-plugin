@@ -169,7 +169,7 @@ if (!window.cordova) {
 
         getAppLink: function (s, f) {
             // AppEvents are not avaliable in JS.
-            s();
+            f("No app link available");
         }
     };
     
