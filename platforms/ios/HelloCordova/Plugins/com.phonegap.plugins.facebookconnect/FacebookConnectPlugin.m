@@ -391,6 +391,7 @@
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
     } else {
         // Show the web dialog
+        [params setObject: @"1" forKey:@"frictionless"];
         [FBWebDialogs
          presentDialogModallyWithSession:FBSession.activeSession
          dialog:method parameters:params
