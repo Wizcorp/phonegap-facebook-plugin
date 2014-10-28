@@ -406,7 +406,7 @@ public class ConnectPlugin extends CordovaPlugin {
 						public void run() {
 							OpenGraphAction ogAction = GraphObject.Factory.create(OpenGraphAction.class);
 							ogAction.setType(paramBundle.getString("action_type"));
-							String previewPropertyName = null; 
+							String previewPropertyName = null;
 							try {
 								JSONObject ogActionProperties = new JSONObject(paramBundle.getString("action_properties"));
 								Iterator<?> iter = ogActionProperties.keys();
