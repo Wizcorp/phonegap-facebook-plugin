@@ -542,17 +542,32 @@ public class ConnectPlugin extends CordovaPlugin {
 	}
 
 	private void handleSuccess(Bundle values) {
-            // Handle a successful dialog:
+		// Handle a successful dialog:
 		// Send the URL parameters back, for a requests dialog, the "request" parameter
 		// will include the resulting request id. For a feed dialog, the "post_id"
 		// parameter will include the resulting post id.
 		// Note: If the user clicks on the Cancel button, the parameter will be empty
 		if (values.size() > 0) {
+
 			JSONObject response = new JSONObject();
 			try {
 				Set<String> keys = values.keySet();
 				for (String key : keys) {
-					response.put(key, values.get(key));
+					//check if key is array
+					int beginArrayCharIndex = key.indexOf("[");
+					if (beginArrayCharIndex >= 0) {
+						String normalizedKey = key.substring(0, beginArrayCharIndex);
+						ArrayList<String> result;
+						if (response.has(normalizedKey)) {
+							result = (ArrayList<String>) response.get(normalizedKey);
+						} else {
+							result = new ArrayList<String>();
+							response.put(normalizedKey, result);
+						}
+						result.add((String) values.get(key));
+					} else {
+						response.put(key, values.get(key));
+					}
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
