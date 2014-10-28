@@ -407,12 +407,12 @@ public class ConnectPlugin extends CordovaPlugin {
 							OpenGraphAction ogAction = GraphObject.Factory.create(OpenGraphAction.class);
 							ogAction.setType(paramBundle.getString("action_type"));
 							String previewPropertyName = null; 
-							try{
+							try {
 								JSONObject ogActionProperties = new JSONObject(paramBundle.getString("action_properties"));
 								Iterator<?> iter = ogActionProperties.keys();
 								while (iter.hasNext()) {
 									String key = (String) iter.next();
-									if(previewPropertyName==null){
+									if (previewPropertyName==null) {
 										previewPropertyName = key;
 									}
 									ogAction.setProperty(key.toString(), ogActionProperties.getString(key).toString());
@@ -426,7 +426,7 @@ public class ConnectPlugin extends CordovaPlugin {
 							uiHelper.trackPendingDialogCall(shareDialog.present());
 						}
 					};
-                                this.trackingPendingCall = true;
+                                        this.trackingPendingCall = true;
 					cordova.getActivity().runOnUiThread(runnable);
 				} else {
 					// Fallback. For example, publish the post using the Feed Dialog
