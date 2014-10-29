@@ -26,10 +26,10 @@
     </engines>
     
     <!-- JavaScript interface -->
-        <clobbers target="window.facebookConnectPlugin" />
     <js-module src="www/phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js"
                name="FacebookConnectPlugin"
                target="phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js">
+        <clobbers target="facebookConnectPlugin" />
     </js-module>
     
     <!-- android -->
