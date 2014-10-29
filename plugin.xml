@@ -5,7 +5,7 @@
         version="0.8.0">
 
     <name>Facebook Connect</name>
-    
+
     <description>
       This is the official plugin for Facebook in Apache Cordova/PhoneGap!
       
@@ -13,28 +13,28 @@
       Cordova application as you use in your web application.
       Docs: https://github.com/Wizcorp/phonegap-facebook-plugin.
     </description>
-    
+
     <license>Apache 2.0</license>
 
     <preference name="APP_ID" />
     <preference name="APP_NAME" />
-    
+
     <engines>
         <!-- Requires > 3.3.* because of the custom Framework tag for iOS [CB-5238] -->
         <!-- Requires > 3.5.0 because of the custom Framework tag for Android [CB-6698] -->
         <engine name="cordova" version=">=3.5.0" />
     </engines>
-    
+
     <!-- JavaScript interface -->
     <js-module src="www/phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js"
                name="FacebookConnectPlugin"
                target="phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js">
         <clobbers target="facebookConnectPlugin" />
     </js-module>
-    
+
     <!-- android -->
     <platform name="android">
-        
+
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="FacebookConnectPlugin">
                 <param name="android-package" value="org.apache.cordova.facebook.ConnectPlugin" />
@@ -45,25 +45,25 @@
             <access origin="https://*.fbcdn.net" />
             <access origin="https://*.akamaihd.net" />
         </config-file>
-        
+
         <source-file src="platforms/android/res/values/facebookconnect.xml" target-dir="res/values" />
         <config-file target="res/values/facebookconnect.xml" parent="/*">
             <string name="fb_app_id">$APP_ID</string>
             <string name="fb_app_name">$APP_NAME</string>
         </config-file>
-        
+
         <config-file target="AndroidManifest.xml" parent="application">
             <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/fb_app_id"/>
             <activity android:label="@string/fb_app_name" android:name="com.facebook.LoginActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
         </config-file>
 
         <framework src="platforms/android/FacebookLib" custom="true" />
-        
+
         <!-- cordova plugin src files -->
         <source-file src="platforms/android/src/org/apache/cordova/facebook/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
-         
+
     </platform>
-    
+
     <!-- ios -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
@@ -85,11 +85,11 @@
         <config-file target="*-Info.plist" parent="FacebookAppID">
             <string>$APP_ID</string>
         </config-file>
-        
+
         <config-file target="*-Info.plist" parent="FacebookDisplayName">
             <string>$APP_NAME</string>
         </config-file>
-        
+
         <config-file target="*-Info.plist" parent="CFBundleURLTypes">
           <array>
             <dict>
@@ -103,7 +103,7 @@
 
         <!-- Facebook framework -->
         <framework src="platforms/ios/FacebookSDK.framework" custom="true" />
-                
+
         <!-- System frameworks -->
         <framework src="libsqlite3.dylib" />
         <framework src="Social.framework" weak="true" />
