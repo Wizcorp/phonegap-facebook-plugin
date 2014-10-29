@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    id="com.phonegap.plugins.facebookconnect"
-    version="0.8.0">
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="com.phonegap.plugins.facebookconnect"
+        version="0.8.0">
 
     <name>Facebook Connect</name>
     
@@ -15,21 +15,21 @@
     </description>
     
     <license>Apache 2.0</license>
-    
+
     <preference name="APP_ID" />
     <preference name="APP_NAME" />
     
     <engines>
-    	<!-- Requires > 3.3.* because of the custom Framework tag for iOS [CB-5238] -->
-    	<!-- Requires > 3.5.0 because of the custom Framework tag for Android [CB-6698] -->
-    	<engine name="cordova" version=">=3.5.0" />
+        <!-- Requires > 3.3.* because of the custom Framework tag for iOS [CB-5238] -->
+        <!-- Requires > 3.5.0 because of the custom Framework tag for Android [CB-6698] -->
+        <engine name="cordova" version=">=3.5.0" />
     </engines>
     
     <!-- JavaScript interface -->
-    <js-module src="www/phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js" 
-    		  name="FacebookConnectPlugin" 
-    		target="phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js">
         <clobbers target="window.facebookConnectPlugin" />
+    <js-module src="www/phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js"
+               name="FacebookConnectPlugin"
+               target="phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js">
     </js-module>
     
     <!-- android -->
@@ -40,10 +40,10 @@
                 <param name="android-package" value="org.apache.cordova.facebook.ConnectPlugin" />
             </feature>
             <access origin="https://m.facebook.com" />
-	        <access origin="https://graph.facebook.com" />
-	        <access origin="https://api.facebook.com" />
-	        <access origin="https://*.fbcdn.net" />
-	        <access origin="https://*.akamaihd.net" />
+            <access origin="https://graph.facebook.com" />
+            <access origin="https://api.facebook.com" />
+            <access origin="https://*.fbcdn.net" />
+            <access origin="https://*.akamaihd.net" />
         </config-file>
         
         <source-file src="platforms/android/res/values/facebookconnect.xml" target-dir="res/values" />
@@ -66,18 +66,18 @@
     
     <!-- ios -->
     <platform name="ios">
-	    <config-file target="config.xml" parent="/*">
-		    <feature name="FacebookConnectPlugin">
-			    <param name="ios-package" value="FacebookConnectPlugin"/>
-			    <param name="onload" value="true" />
-		    </feature>
-		    <plugin name="FacebookConnectPlugin" value="FacebookConnectPlugin"/>
-		    <access origin="https://m.facebook.com" />
-	        <access origin="https://graph.facebook.com" />
-	        <access origin="https://api.facebook.com" />
-	        <access origin="https://*.fbcdn.net" />
-	        <access origin="https://*.akamaihd.net" />
-	    </config-file>
+        <config-file target="config.xml" parent="/*">
+            <feature name="FacebookConnectPlugin">
+                <param name="ios-package" value="FacebookConnectPlugin"/>
+                <param name="onload" value="true" />
+            </feature>
+            <plugin name="FacebookConnectPlugin" value="FacebookConnectPlugin"/>
+            <access origin="https://m.facebook.com" />
+            <access origin="https://graph.facebook.com" />
+            <access origin="https://api.facebook.com" />
+            <access origin="https://*.fbcdn.net" />
+            <access origin="https://*.akamaihd.net" />
+        </config-file>
 
         <header-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/FacebookConnectPlugin.h" />
         <source-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/FacebookConnectPlugin.m" />
