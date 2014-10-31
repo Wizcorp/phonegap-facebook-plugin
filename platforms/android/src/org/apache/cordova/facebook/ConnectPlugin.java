@@ -548,7 +548,6 @@ public class ConnectPlugin extends CordovaPlugin {
 		// parameter will include the resulting post id.
 		// Note: If the user clicks on the Cancel button, the parameter will be empty
 		if (values.size() > 0) {
-
 			JSONObject response = new JSONObject();
 			try {
 				Set<String> keys = values.keySet();
@@ -557,14 +556,14 @@ public class ConnectPlugin extends CordovaPlugin {
 					int beginArrayCharIndex = key.indexOf("[");
 					if (beginArrayCharIndex >= 0) {
 						String normalizedKey = key.substring(0, beginArrayCharIndex);
-						ArrayList<String> result;
+						JSONArray result;
 						if (response.has(normalizedKey)) {
-							result = (ArrayList<String>) response.get(normalizedKey);
+							result = (JSONArray) response.get(normalizedKey);
 						} else {
-							result = new ArrayList<String>();
+							result = new JSONArray();
 							response.put(normalizedKey, result);
 						}
-						result.add((String) values.get(key));
+						result.put(result.length(), values.get(key));
 					} else {
 						response.put(key, values.get(key));
 					}
