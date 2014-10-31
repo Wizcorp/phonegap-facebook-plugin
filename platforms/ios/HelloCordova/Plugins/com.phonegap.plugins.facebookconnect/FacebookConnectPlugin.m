@@ -16,6 +16,7 @@
 @property (strong, nonatomic) NSString* loginCallbackId;
 @property (strong, nonatomic) NSString* dialogCallbackId;
 @property (strong, nonatomic) NSString* graphCallbackId;
+@property (strong, nonatomic) NSMutableDictionary* appLink;
 
 @end
 
@@ -48,7 +49,7 @@
 }
 
 - (void)openURL:(NSNotification *)notification {
-    // NSLog(@"handle url: %@", [notification object]);
+    NSLog(@"handle url: %@", [notification object]);
     NSURL *url = [notification object];
 
     if (![url isKindOfClass:[NSURL class]]) {
@@ -56,6 +57,18 @@
     }
 
     [FBSession.activeSession handleOpenURL:url];
+    FBAppCall *appCall = [FBAppCall appCallFromURL:url];
+    if (appCall != nil) {
+        FBAppLinkData *appLinkData = [appCall appLinkData];
+        NSDictionary *originalQueryParams = [appLinkData originalQueryParameters];
+        NSString *appLinkJSONString = [originalQueryParams objectForKey:@"al_applink_data"];
+        NSError *error;
+        self.appLink =
+        [NSJSONSerialization JSONObjectWithData: [appLinkJSONString dataUsingEncoding:NSUTF8StringEncoding]
+                                        options: NSJSONReadingMutableContainers
+                                          error: &error];
+        [self.appLink setValue:[[appLinkData originalURL] absoluteString] forKey:@"data_string"];
+    }
 }
 
 - (void)applicationDidBecomeActive {
@@ -467,6 +480,32 @@
         // We can request the user information
         [self makeGraphCall:graphPath];
     }
+}
+
+- (void) appLink:(CDVInvokedUrlCommand *)command
+{
+    CDVPluginResult *pluginResult;
+    if (self.appLink != nil && [NSJSONSerialization isValidJSONObject:self.appLink]) {
+        NSError* error = nil;
+        NSData* jsonData = [NSJSONSerialization dataWithJSONObject:self.appLink
+                                                           options:NSJSONWritingPrettyPrinted
+                                                             error:&error];
+        NSString* resultString = nil;
+
+        if (error != nil) {
+            NSLog(@"toJSONString error: %@", [error localizedDescription]);
+        } else {
+            resultString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        }
+
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                     messageAsDictionary:self.appLink];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                          messageAsString:@"No app link available"];
+    }
+
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void) makeGraphCall:(NSString *)graphPath
