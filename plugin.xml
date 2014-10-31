@@ -104,9 +104,6 @@
         <!-- Facebook framework -->
         <framework src="platforms/ios/FacebookSDK.framework" custom="true" />
 
-        <!-- Bolts framework -->
-        <framework src="platforms/ios/Bolts.framework" custom="true" />
-
         <!-- System frameworks -->
         <framework src="libsqlite3.dylib" />
         <framework src="Social.framework" weak="true" />
