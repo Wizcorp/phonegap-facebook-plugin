@@ -164,7 +164,7 @@ if (!window.cordova) {
                 cookie     : true,
                 xfbml      : true,
                 version    : version
-            })
+            });
         }
     };
     
