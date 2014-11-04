@@ -43,8 +43,8 @@ if (!window.cordova) {
             if (!options.description) {
                 options.description = "";
             }
-            if (!options.link) {
-                options.link = "";
+            if (!options.href) {
+                options.href = "";
             }
             if (!options.picture) {
                 options.picture = "";
@@ -60,9 +60,7 @@ if (!window.cordova) {
                     description: (
                         options.description
                     ),
-                    link: options.link,
-                    // JS SDK expects href and not link
-                    href: options.link,
+                    href: options.href,
                     picture: options.picture
                 },
                 function (response) {
