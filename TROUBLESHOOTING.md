@@ -18,7 +18,7 @@ Troubleshooting contents
 
 - Android
 	- [No Reply From Login?](#no-reply-from-login) 
-	- [My Hash Does Not Work, I am Using Windows](#my-hash-does-not-work,-i-am-using-windows)
+	- [My Hash Does Not Work, I am Using Windows](#my-hash-does-not-work-i-am-using-windows)
 	- [Jar mismatch! Fix your dependencies](#jar-mismatch-fix-your-dependencies)
 
 	
