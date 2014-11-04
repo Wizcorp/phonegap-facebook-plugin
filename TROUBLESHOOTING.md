@@ -17,9 +17,9 @@ Troubleshooting contents
 	- [How to install with NPM PhoneGap?](#how-to-install-with-npm-phonegap)
 
 - Android
-	- [No reply from Login?](#no-reply-from-login?) 
-	- [My Hash Does Not Work, I am Using Windows](#my-hash-does-not-work,-I-am-using-windows)
-	- [Jar mismatch! Fix your dependencies](#jar-mismatch!-fix-your-dependencies)
+	- [No Reply From Login?](#no-reply-from-login) 
+	- [My Hash Does Not Work, I am Using Windows](#my-hash-does-not-work,-i-am-using-windows)
+	- [Jar mismatch! Fix your dependencies](#jar-mismatch-fix-your-dependencies)
 
 	
 ## How do I Build without Eclipse?
@@ -73,7 +73,7 @@ Im getting the message "[error] Variable(s) missing: APP_ID, APP_NAME"
 
 `phonegap local plugin add /path/to/here/phonegap-facebook-plugin --variable APP_ID="12345678910" --variable APP_NAME="AwesomeApp"`
 
-## No reply from Login?
+## No Reply From Login?
    
 - Problem
     - **facebookConnectPlugin.login doesn't call neither success nor faillure methods.** - When I'm disconnected from Facebook and don't have the native app, the iframe fallback is blank. Checking on chrome inspector, the elements are set to display: none.
