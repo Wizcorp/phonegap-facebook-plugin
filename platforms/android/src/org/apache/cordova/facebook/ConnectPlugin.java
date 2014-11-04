@@ -310,7 +310,7 @@ public class ConnectPlugin extends CordovaPlugin {
 			if (args.length() == 1) {
 				logger.logEvent(eventName);
 			} else {
-				// args is greater than 1
+				// Arguments is greater than 1
 				JSONObject params = args.getJSONObject(1);
 				Bundle parameters = new Bundle();
 
@@ -318,14 +318,16 @@ public class ConnectPlugin extends CordovaPlugin {
 				while (iterator.hasNext()) {
 					try {
 						// Try get a String
-						String value = params.getString((String) iterator.next());
-						parameters.putString((String) iterator.next(), value);
+						String key = (String) iterator.next();
+						String value = params.getString(key);
+						parameters.putString(key, value);
 					} catch (Exception e) {
 						// Maybe it was an int
 						Log.w(TAG, "Type in AppEvent parameters was not String for key: " + (String) iterator.next());
 						try {
-							int value = params.getInt((String) iterator.next());
-							parameters.putInt((String) iterator.next(), value);
+							String key = (String) iterator.next();
+							int value = params.getInt(key);
+							parameters.putInt(key, value);
 						} catch (Exception e2) {
 							// Nope
 							Log.e(TAG, "Unsupported type in AppEvent parameters for key: " + (String) iterator.next());
