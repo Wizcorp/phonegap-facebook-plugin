@@ -15,7 +15,7 @@ Currently these are set as defaults, so please change:
 - Change **FacebookAppID** in project *-info.plist
 - Change URL scheme to `fb<YOUR APPID>` e.g. `fb123456789`
 
-## Install
+### Install
 
 This plugin requires [Cordova CLI](http://cordova.apache.org/docs/en/3.5.0/guide_cli_index.md.html).
 
