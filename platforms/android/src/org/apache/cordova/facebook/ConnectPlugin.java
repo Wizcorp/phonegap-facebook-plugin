@@ -21,7 +21,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -768,26 +767,5 @@ public class ConnectPlugin extends CordovaPlugin {
             e.printStackTrace();
         }
         return new JSONObject();
-    }
-
-    private class WebDialogBuilderRunnable implements Runnable {
-        private Context context;
-        private Session session;
-        private String method;
-        private Bundle paramBundle;
-        private OnCompleteListener dialogCallback;
-
-        public WebDialogBuilderRunnable(Context context, Session session, String method, Bundle paramBundle, OnCompleteListener dialogCallback) {
-            this.context = context;
-            this.session = session;
-            this.method = method;
-            this.paramBundle = paramBundle;
-            this.dialogCallback = dialogCallback;
-        }
-
-        public void run() {
-            WebDialog shareDialog = (new WebDialog.Builder(context, session, method, paramBundle)).setOnCompleteListener(dialogCallback).build();
-            shareDialog.show();
-        }
     }
 }
