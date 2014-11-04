@@ -17,9 +17,9 @@ Troubleshooting contents
 	- [How to install with NPM PhoneGap?](#how-to-install-with-npm-phonegap)
 
 - Android
-	- [No reply from Login?](#no-reply-from-auth?) 
-	- [My Hash Does Not Work, I am Using Windows](#my-hash-does-not-work-I-am-using-windows)
-	- [Jar mismatch! Fix your dependencies](jar-mismatch!-fix-your-dependencies)
+	- [No reply from Login?](#no-reply-from-login?) 
+	- [My Hash Does Not Work, I am Using Windows](#my-hash-does-not-work,-I-am-using-windows)
+	- [Jar mismatch! Fix your dependencies](#jar-mismatch!-fix-your-dependencies)
 
 	
 ## How do I Build without Eclipse?
