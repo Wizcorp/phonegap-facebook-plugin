@@ -111,7 +111,7 @@ Allows access to the Facebook Graph API. This API allows for additional permissi
 
 Example permissions:
 
-	["public_info", "user_birthday"]
+	["public_profile", "user_birthday"]
 
 Success function returns an Object.
 
@@ -161,7 +161,7 @@ In your `onDeviceReady` event add the following
 		alert("UserInfo: " + JSON.stringify(userData));
 	}
 
-	facebookConnectPlugin.login(["public_info"],
+	facebookConnectPlugin.login(["public_profile"],
         fbLoginSuccess,
         function (error) { alert("" + error) }
     );
@@ -179,7 +179,7 @@ If you need the Facebook access token (for example, for validating the login on 
 		});
 	}
 
-	facebookConnectPlugin.login(["public_info"],
+	facebookConnectPlugin.login(["public_profile"],
         fbLoginSuccess,
         function (error) { alert("" + error) }
     );
