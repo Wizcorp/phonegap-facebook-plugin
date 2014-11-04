@@ -12,7 +12,7 @@ The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) a
 
 ## << --- Cordova Registry Warning [iOS]
 
-****Installing this plugin directly from Cordova Registry results in Xcode using a broken `Facebook.framework`, this is because the current publish procedure to NPM breaks symlinks [CB-6092](https://issues.apache.org/jira/browse/CB-6092). Please re-add facebook.framework to Xcode.****
+****Installing this plugin directly from Cordova Registry results in Xcode using a broken `FacebookSDK.framework`, this is because the current publish procedure to NPM breaks symlinks [CB-6092](https://issues.apache.org/jira/browse/CB-6092). Please install the plugin through a locally cloned copy or re-add the `FacebookSDK.framework` to Xcode after installation.****
 
 ## ------------------------------------------ >>
 
@@ -29,6 +29,8 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 - [Android Guide](platforms/android/README.md)
 
 - [Web App Guide](platforms/web/README.md)
+
+- [PhoneGap Build](platforms/pg-build/README.md)
 
 #### Example Apps
 
@@ -109,7 +111,7 @@ Allows access to the Facebook Graph API. This API allows for additional permissi
 
 Example permissions:
 
-	["public_info", "user_birthday"]
+	["public_profile", "user_birthday"]
 
 Success function returns an Object.
 
@@ -159,7 +161,7 @@ In your `onDeviceReady` event add the following
 		alert("UserInfo: " + JSON.stringify(userData));
 	}
 
-	facebookConnectPlugin.login(["public_info"],
+	facebookConnectPlugin.login(["public_profile"],
         fbLoginSuccess,
         function (error) { alert("" + error) }
     );
@@ -177,7 +179,7 @@ If you need the Facebook access token (for example, for validating the login on 
 		});
 	}
 
-	facebookConnectPlugin.login(["public_info"],
+	facebookConnectPlugin.login(["public_profile"],
         fbLoginSuccess,
         function (error) { alert("" + error) }
     );
