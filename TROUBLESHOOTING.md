@@ -8,26 +8,29 @@ When creating a Github issue **remember to**:
 - Provide sample code
 - Provide a log (Xcode console or adb logcat)
 
-Troubleshooting contents
-
-- General
-    - [How do I Build without Eclipse?](#how-do-i-build-without-eclipse) 
-    - [How do I Add a Like Button?](#how-do-i-add-a-like-button)
-    - [Where is the init API?](#where-is-the-init-api)
+### Troubleshooting contents
+- [**General**](#general) 
+	- [How do I Build without Eclipse?](#how-do-i-build-without-eclipse) 
+	- [How do I Add a Like Button?](#how-do-i-add-a-like-button)
+	- [Where is the init API?](#where-is-the-init-api)
 	- [How to install with NPM PhoneGap?](#how-to-install-with-npm-phonegap)
 
-- Android
+- [**Android**](#android)
 	- [No Reply From Login?](#no-reply-from-login) 
 	- [My Hash Does Not Work, I am Using Windows](#my-hash-does-not-work-i-am-using-windows)
 	- [Jar mismatch! Fix your dependencies](#jar-mismatch-fix-your-dependencies)
 
-	
-## How do I Build without Eclipse?
+- [**iOS**](#ios)
+	- [Missing FacebookConnectPlugin](#missing-facebookconnectplugin)
+
+
+## General
+### How do I Build without Eclipse?
 
 - Solution
     - Check the [Android Guide](https://github.com/Wizcorp/phonegap-facebook-plugin/blob/master/platforms/android/README.md)
 
-## How do I Add a Like Button?
+### How do I Add a Like Button?
 
 - Problem
     - I am trying to implement like button functionality in my app. Whenever user likes my facebook page, user will get rewards. So i have tried to implement this like button functionality as described here:
@@ -47,7 +50,7 @@ Troubleshooting contents
 
 The better way to understand this little "workflow" is to manipulate the Graph API on the og.likes endpoint using the [Facebook Graph Explorer](https://developers.facebook.com/tools/explorer) tool.
 
-## Where is the init API?
+### Where is the init API?
 
 - Problem
     - I was using `FB.init()` and now it's not working.
@@ -55,7 +58,7 @@ The better way to understand this little "workflow" is to manipulate the Graph A
 - Solution
     - You are using an out-dated API. Please check the [new API with sample code](https://github.com/Wizcorp/phonegap-facebook-plugin/blob/master/README.md) and sample projects in `platforms/ios` and `platforms/android`.
 
-## How to install with NPM PhoneGap?
+### How to install with NPM PhoneGap?
 
 - Problem
     - I'm trying to install via https the Facebook plugin in iOS, but when I try the following line:
@@ -73,7 +76,8 @@ Im getting the message "[error] Variable(s) missing: APP_ID, APP_NAME"
 
 `phonegap local plugin add /path/to/here/phonegap-facebook-plugin --variable APP_ID="12345678910" --variable APP_NAME="AwesomeApp"`
 
-## No Reply From Login?
+## Android
+### No Reply From Login?
    
 - Problem
     - **facebookConnectPlugin.login doesn't call neither success nor faillure methods.** - When I'm disconnected from Facebook and don't have the native app, the iframe fallback is blank. Checking on chrome inspector, the elements are set to display: none.
@@ -99,7 +103,7 @@ try {
 }
 ```
 
-## My Hash Does Not Work, I am Using Windows
+### My Hash Does Not Work, I am Using Windows
 
 - Problem
     - Windows users have to be careful about openssl-for-windows [http://code.google.com/p/openssl-for-windows/downloads/list](http://code.google.com/p/openssl-for-windows/downloads/list), the latest version, at least on plataform 64bit, does not generate the correct hash that Facebook needs for android apps.
@@ -109,7 +113,7 @@ try {
 
 You should **not** use the openssl-0.9.8k_X64.zip.
 
-## Jar mismatch! Fix your dependencies
+### Jar mismatch! Fix your dependencies
 
 - Problem
     - I get this error:
@@ -121,3 +125,21 @@ BUILD FAILED
 
 - Solution
     - You may have duplicate android-support-v4.jar files. Remove android-support-v4.jar from the `/libs` folder of your project.
+
+## iOS
+### Missing FacebookConnectPlugin
+- Problem:
+	- `CDVPlugin class FacebookConnectPlugin (pluginName: facebookconnectplugin) does not exist.`
+- Solution:
+	1. Open up Xcode
+	2. Go to "Build Phases"
+	3. Ensure that the following file is added under "Compile Sources":
+		- `FacebookConnectPlugin.m`
+	4. Ensure that the following is added under "Link Binary With Libraris":
+		- `FacebookSDK.framework` 
+		- `libsqlite3.dylib`
+		- `Social.framework`
+		- `Accounts.framework`
+		- `Security.framework`
+
+Cordova and plugman seems to have some problems adding frameworks etc. when re-installing/upgrading plugins.
