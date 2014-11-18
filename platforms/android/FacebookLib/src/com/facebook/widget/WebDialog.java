@@ -38,7 +38,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.facebook.*;
 import com.facebook.android.R;
-import com.facebook.android.Util;
 import com.facebook.internal.Logger;
 import com.facebook.internal.ServerProtocol;
 import com.facebook.internal.Utility;
@@ -52,6 +51,7 @@ import com.facebook.internal.Validate;
 public class WebDialog extends Dialog {
     private static final String LOG_TAG = Logger.LOG_TAG_BASE + "WebDialog";
     private static final String DISPLAY_TOUCH = "touch";
+    private static final int API_EC_DIALOG_CANCEL = 4201;
     static final String REDIRECT_URI = "fbconnect://success";
     static final String CANCEL_URI = "fbconnect://cancel";
     static final boolean DISABLE_SSL_CHECK_FOR_TESTING = false;
@@ -73,6 +73,7 @@ public class WebDialog extends Dialog {
     public static final int DEFAULT_THEME = android.R.style.Theme_Translucent_NoTitleBar;
 
     private String url;
+    private String expectedRedirectUrl = REDIRECT_URI;
     private OnCompleteListener onCompleteListener;
     private WebView webView;
     private ProgressDialog spinner;
@@ -80,6 +81,7 @@ public class WebDialog extends Dialog {
     private FrameLayout contentFrameLayout;
     private boolean listenerCalled = false;
     private boolean isDetached = false;
+    private boolean isDismissed = false;
 
     /**
      * Interface that implements a listener to be called when the user's interaction with the
@@ -169,6 +171,19 @@ public class WebDialog extends Dialog {
 
     @Override
     public void dismiss() {
+        if (isDismissed) {
+            // Some paths may cause dismiss() to be called recursively. Break the loop here.
+            return;
+        }
+        isDismissed = true;
+
+        // If dismiss() was called without sending a result to the listener, let's default to a "cancel" result.
+        // This will be the case when the user taps the OS-back-button, or the cross-image, or outside the loading
+        // interstitial.
+        if (!listenerCalled) {
+            sendCancelToListener();
+        }
+
         if (webView != null) {
             webView.stopLoading();
         }
@@ -196,21 +211,13 @@ public class WebDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setOnCancelListener(new OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialogInterface) {
-                sendCancelToListener();
-            }
-        });
-
         spinner = new ProgressDialog(getContext());
         spinner.requestWindowFeature(Window.FEATURE_NO_TITLE);
         spinner.setMessage(getContext().getString(R.string.com_facebook_loading));
         spinner.setOnCancelListener(new OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                sendCancelToListener();
-                WebDialog.this.dismiss();
+                dismiss();
             }
         });
 
@@ -244,6 +251,27 @@ public class WebDialog extends Dialog {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         setContentView(contentFrameLayout);
+    }
+
+    protected void setExpectedRedirectUrl(String expectedRedirectUrl) {
+        this.expectedRedirectUrl = expectedRedirectUrl;
+    }
+
+    protected Bundle parseResponseUri(String urlString) {
+        Uri u = Uri.parse(urlString);
+
+        Bundle b = Utility.parseUrlQueryString(u.getQuery());
+        b.putAll(Utility.parseUrlQueryString(u.getFragment()));
+
+        return b;
+    }
+
+    protected boolean isListenerCalled() {
+        return listenerCalled;
+    }
+
+    protected WebView getWebView() {
+        return webView;
     }
 
     private void calculateSize() {
@@ -292,14 +320,16 @@ public class WebDialog extends Dialog {
         return (int) (screenSize * scaleFactor);
     }
 
-    private void sendSuccessToListener(Bundle values) {
+    protected void sendSuccessToListener(Bundle values) {
         if (onCompleteListener != null && !listenerCalled) {
             listenerCalled = true;
             onCompleteListener.onComplete(values, null);
+
+            dismiss();
         }
     }
 
-    private void sendErrorToListener(Throwable error) {
+    protected void sendErrorToListener(Throwable error) {
         if (onCompleteListener != null && !listenerCalled) {
             listenerCalled = true;
             FacebookException facebookException = null;
@@ -309,10 +339,12 @@ public class WebDialog extends Dialog {
                 facebookException = new FacebookException(error);
             }
             onCompleteListener.onComplete(null, facebookException);
+
+            dismiss();
         }
     }
 
-    private void sendCancelToListener() {
+    protected void sendCancelToListener() {
         sendErrorToListener(new FacebookOperationCanceledException());
     }
 
@@ -322,8 +354,7 @@ public class WebDialog extends Dialog {
         crossImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendCancelToListener();
-                WebDialog.this.dismiss();
+                dismiss();
             }
         });
         Drawable crossDrawable = getContext().getResources().getDrawable(R.drawable.com_facebook_close);
@@ -337,7 +368,18 @@ public class WebDialog extends Dialog {
     @SuppressLint("SetJavaScriptEnabled")
     private void setUpWebView(int margin) {
         LinearLayout webViewContainer = new LinearLayout(getContext());
-        webView = new WebView(getContext());
+        webView = new WebView(getContext()) {
+            /* Prevent NPE on Motorola 2.2 devices
+             * See https://groups.google.com/forum/?fromgroups=#!topic/android-developers/ktbwY2gtLKQ
+             */
+            @Override
+            public void onWindowFocusChanged(boolean hasWindowFocus) {
+                try {
+                    super.onWindowFocusChanged(hasWindowFocus);
+                } catch (NullPointerException e) {
+                }
+            }
+        };
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
         webView.setWebViewClient(new DialogWebViewClient());
@@ -360,8 +402,8 @@ public class WebDialog extends Dialog {
         @SuppressWarnings("deprecation")
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             Utility.logd(LOG_TAG, "Redirect URL: " + url);
-            if (url.startsWith(WebDialog.REDIRECT_URI)) {
-                Bundle values = Util.parseUrl(url);
+            if (url.startsWith(WebDialog.this.expectedRedirectUrl)) {
+                Bundle values = parseResponseUri(url);
 
                 String error = values.getString("error");
                 if (error == null) {
@@ -388,16 +430,15 @@ public class WebDialog extends Dialog {
                 } else if (error != null && (error.equals("access_denied") ||
                         error.equals("OAuthAccessDeniedException"))) {
                     sendCancelToListener();
+                } else if (errorCode == API_EC_DIALOG_CANCEL) {
+                    sendCancelToListener();
                 } else {
                     FacebookRequestError requestError = new FacebookRequestError(errorCode, error, errorMessage);
                     sendErrorToListener(new FacebookServiceException(requestError, errorMessage));
                 }
-
-                WebDialog.this.dismiss();
                 return true;
             } else if (url.startsWith(WebDialog.CANCEL_URI)) {
                 sendCancelToListener();
-                WebDialog.this.dismiss();
                 return true;
             } else if (url.contains(DISPLAY_TOUCH)) {
                 return false;
@@ -413,7 +454,6 @@ public class WebDialog extends Dialog {
                 String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
             sendErrorToListener(new FacebookDialogException(description, errorCode, failingUrl));
-            WebDialog.this.dismiss();
         }
 
         @Override
@@ -423,9 +463,8 @@ public class WebDialog extends Dialog {
             } else {
                 super.onReceivedSslError(view, handler, error);
 
-                sendErrorToListener(new FacebookDialogException(null, ERROR_FAILED_SSL_HANDSHAKE, null));
                 handler.cancel();
-                WebDialog.this.dismiss();
+                sendErrorToListener(new FacebookDialogException(null, ERROR_FAILED_SSL_HANDSHAKE, null));
             }
         }
 
@@ -574,7 +613,7 @@ public class WebDialog extends Dialog {
     }
 
     /**
-     * Provides a builder that allows construction of an arbitary Facebook web dialog.
+     * Provides a builder that allows construction of an arbitrary Facebook web dialog.
      */
     public static class Builder extends BuilderBase<Builder> {
         /**
@@ -746,7 +785,7 @@ public class WebDialog extends Dialog {
         }
 
         /**
-         * Sets the name of the item being shared.
+         * Sets the name of the URL being shared. This method only has effect if setLink is called.
          *
          * @param name the name
          * @return the builder
@@ -757,7 +796,7 @@ public class WebDialog extends Dialog {
         }
 
         /**
-         * Sets the caption to be displayed.
+         * Sets the caption of the URL being shared. This method only has effect if setLink is called.
          *
          * @param caption the caption
          * @return the builder
@@ -768,7 +807,7 @@ public class WebDialog extends Dialog {
         }
 
         /**
-         * Sets the description to be displayed.
+         * Sets the description of the URL being shared. This method only has effect if setLink is called.
          *
          * @param description the description
          * @return the builder
