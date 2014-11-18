@@ -144,6 +144,10 @@ if (!window.cordova) {
             }
         },
 
+        isNativeAppAvailable: function (s, f) {
+            f("No native app available");
+        },
+
         // Browser wrapper API ONLY
         browserInit: function (appId, version) {
             if (!version) {

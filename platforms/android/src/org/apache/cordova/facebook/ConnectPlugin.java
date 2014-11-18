@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -511,6 +512,14 @@ public class ConnectPlugin extends CordovaPlugin {
                 }
             } else {
                 makeGraphCall();
+            }
+            return true;
+        } else if (action.equals("nativeAppAvailable")){
+            try {
+              cordova.getActivity().getPackageManager().getApplicationInfo("com.facebook.katana", 0);
+              callbackContext.success();
+            } catch( PackageManager.NameNotFoundException e) {
+              callbackContext.error("No native app available");
             }
             return true;
         }

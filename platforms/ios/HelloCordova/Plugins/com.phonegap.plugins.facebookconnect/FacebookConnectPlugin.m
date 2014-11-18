@@ -467,6 +467,20 @@
     }
 }
 
+-(void) nativeAppAvailable:(CDVInvokedUrlCommand*)command {
+    CDVPluginResult* pluginResult = nil;
+    NSURL *url = [NSURL URLWithString: @"fb://"];
+    BOOL result = [[UIApplication sharedApplication] canOpenURL: url];
+
+    if (result) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:result];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No native app available"];
+    }
+
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 - (void) makeGraphCall:(NSString *)graphPath
 {
     
