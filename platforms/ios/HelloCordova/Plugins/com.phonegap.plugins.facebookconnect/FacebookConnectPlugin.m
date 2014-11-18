@@ -252,14 +252,15 @@
     BOOL permissionsAllowed = YES;
     NSString *permissionsErrorMessage = @"";
     NSArray *permissions = nil;
+    CDVPluginResult *pluginResult;
     if ([command.arguments count] > 0) {
         permissions = command.arguments;
     }
     if (permissions == nil) {
         // We need permissions
         permissionsErrorMessage = @"No permissions specified at login";
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
-                                                          messageAsString:permissionsErrorMessage];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                         messageAsString:permissionsErrorMessage];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
@@ -334,11 +335,9 @@
     }
     
     if (!permissionsAllowed) {
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
-                                                          messageAsString:permissionsErrorMessage];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                         messageAsString:permissionsErrorMessage];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
-    } else {
-        [super writeJavascript:nil];
     }
 }
 
@@ -415,7 +414,6 @@
              }
              [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
          }];
-        [super writeJavascript:nil];
     }
     
     // For optional ARC support
