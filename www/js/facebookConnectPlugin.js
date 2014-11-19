@@ -52,17 +52,7 @@ if (!window.cordova) {
             
             // Try will catch errors when SDK has not been init
             try {
-                FB.ui({
-                    method: options.method,
-                    message: options.message,
-                    name: options.name,
-                    caption: options.caption,
-                    description: (
-                        options.description
-                    ),
-                    href: options.href,
-                    picture: options.picture
-                },
+                FB.ui(options,
                 function (response) {
                     if (response && (response.request || !response.error_code)) {
                         s(response);
@@ -164,7 +154,7 @@ if (!window.cordova) {
                 cookie     : true,
                 xfbml      : true,
                 version    : version
-            })
+            });
         }
     };
     

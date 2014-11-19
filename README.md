@@ -6,8 +6,8 @@ The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) a
 
 * Supported on PhoneGap (Cordova) v3.3.0 and above.
 * This plugin is built for
-	* iOS FacebookSDK 3.16.1
-	* Android FacebookSDK 3.16.0
+	* iOS FacebookSDK 3.20.0
+	* Android FacebookSDK 3.20.0
 * GitHub URL : [https://github.com/Wizcorp/phonegap-facebook-plugin/](https://github.com/Wizcorp/phonegap-facebook-plugin/)
 
 ## << --- Cordova Registry Warning [iOS]
@@ -30,7 +30,10 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 - [Web App Guide](platforms/web/README.md)
 
-- [PhoneGap Build](platforms/pg-build/README.md)
+- [PhoneGap Build Guide](platforms/pg-build/README.md)
+
+- [Troubleshooting Guide | F.A.Q.](TROUBLESHOOTING.md)
+
 
 #### Example Apps
 
@@ -111,7 +114,7 @@ Allows access to the Facebook Graph API. This API allows for additional permissi
 
 Example permissions:
 
-	["public_info", "user_birthday"]
+	["public_profile", "user_birthday"]
 
 Success function returns an Object.
 
@@ -161,7 +164,7 @@ In your `onDeviceReady` event add the following
 		alert("UserInfo: " + JSON.stringify(userData));
 	}
 
-	facebookConnectPlugin.login(["public_info"],
+	facebookConnectPlugin.login(["public_profile"],
         fbLoginSuccess,
         function (error) { alert("" + error) }
     );
@@ -179,7 +182,7 @@ If you need the Facebook access token (for example, for validating the login on 
 		});
 	}
 
-	facebookConnectPlugin.login(["public_info"],
+	facebookConnectPlugin.login(["public_profile"],
         fbLoginSuccess,
         function (error) { alert("" + error) }
     );
