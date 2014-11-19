@@ -1,6 +1,5 @@
 package org.apache.cordova.facebook;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -465,7 +464,7 @@ public class ConnectPlugin extends CordovaPlugin {
                             uiHelper.trackPendingDialogCall(shareDialog.present());
                         }
                     };
-                                this.trackingPendingCall = true;
+                    this.trackingPendingCall = true;
                     cordova.getActivity().runOnUiThread(runnable);
                 } else {
                     // Fallback. For example, publish the post using the Feed Dialog
@@ -768,19 +767,19 @@ public class ConnectPlugin extends CordovaPlugin {
 
         String response = "{";
 
-    if (error instanceof FacebookDialogException) {
-        errorCode = ((FacebookDialogException) error).getErrorCode();
-    }
+        if (error instanceof FacebookDialogException) {
+            errorCode = ((FacebookDialogException) error).getErrorCode();
+        }
 
         if (errorCode != INVALID_ERROR_CODE) {
             response += "\"errorCode\": \"" + errorCode + "\",";
         }
 
-    if (message == null) {
-        message = error.getMessage();
-    }
+        if (message == null) {
+            message = error.getMessage();
+        }
 
-    response += "\"errorMessage\": \"" + message + "\"}";
+        response += "\"errorMessage\": \"" + message + "\"}";
 
         try {
             return new JSONObject(response);
