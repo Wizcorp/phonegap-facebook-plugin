@@ -134,6 +134,10 @@ BUILD FAILED
 - Solution:
     - One can force the dialog to be displayed fullscreen, providing additional screen space for the dialog
 
+Add this import to `facebookConnectPlugin.java`
+
+`import android.content.res.Configuration;`
+
 Change the feed dialog from:
 
 ```
