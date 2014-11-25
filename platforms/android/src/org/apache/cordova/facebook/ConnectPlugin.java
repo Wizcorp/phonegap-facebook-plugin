@@ -553,7 +553,21 @@ public class ConnectPlugin extends CordovaPlugin {
             try {
                 Set<String> keys = values.keySet();
                 for (String key : keys) {
-                    response.put(key, values.get(key));
+                    //check if key is array
+                    int beginArrayCharIndex = key.indexOf("[");
+                    if (beginArrayCharIndex >= 0) {
+                        String normalizedKey = key.substring(0, beginArrayCharIndex);
+                        JSONArray result;
+                        if (response.has(normalizedKey)) {
+                            result = (JSONArray) response.get(normalizedKey);
+                        } else {
+                            result = new JSONArray();
+                            response.put(normalizedKey, result);
+                        }
+                        result.put(result.length(), values.get(key));
+                    } else {
+                        response.put(key, values.get(key));
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -726,7 +740,7 @@ public class ConnectPlugin extends CordovaPlugin {
                     response += ",\"errorUserMessage\": \"" + cordova.getActivity().getResources().getString(error.getUserActionMessageId()) + "\"";
             }
         }
-    
+
         response += "}";
 
         try {

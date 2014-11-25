@@ -175,7 +175,7 @@ class AuthorizationClient implements Serializable {
     }
 
     boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == pendingRequest.getRequestCode()) {
+        if (pendingRequest != null && requestCode == pendingRequest.getRequestCode()) {
             return currentHandler.onActivityResult(requestCode, resultCode, data);
         }
         return false;
@@ -582,6 +582,9 @@ class AuthorizationClient implements Serializable {
         @Override
         void cancel() {
             if (loginDialog != null) {
+                // Since we are calling dismiss explicitly, we need to remove the completion listener to prevent
+                // responding to the upcoming "Cancel" result.
+                loginDialog.setOnCompleteListener(null);
                 loginDialog.dismiss();
                 loginDialog = null;
             }
@@ -678,14 +681,12 @@ class AuthorizationClient implements Serializable {
 
         private void saveCookieToken(String token) {
             Context context = getStartActivityDelegate().getActivityContext();
-            SharedPreferences sharedPreferences = context.getSharedPreferences(
+            context.getSharedPreferences(
                     WEB_VIEW_AUTH_HANDLER_STORE,
-                    Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(WEB_VIEW_AUTH_HANDLER_TOKEN_KEY, token);
-            if (!editor.commit()) {
-                Utility.logd(TAG, "Could not update saved web view auth handler token.");
-            }
+                    Context.MODE_PRIVATE)
+                .edit()
+                .putString(WEB_VIEW_AUTH_HANDLER_TOKEN_KEY, token)
+                .apply();
         }
 
         private String loadCookieToken() {
