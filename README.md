@@ -210,7 +210,7 @@ For a more instructive example change the above `fbLoginSuccess` to;
 
 ### Getting a User's Birthday
 
-Using the graph api this is a very simple task: [currently iOS only!]
+Using the graph api this is a very simple task:
 
 	facebookConnectPlugin.api("<user-id>/?fields=id,email", ["user_birthday"],
 		function (result) {
