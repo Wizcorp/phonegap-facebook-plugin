@@ -1,6 +1,6 @@
 # Troubleshooting
 
-If you cannot solve your issue here please check the **existing issues** on Github, if you still cannot find a solution please [create an issue](https://github.com/Wizcorp/phonegap-facebook-plugin/issues). 
+Can't solve your issue here? Check the [existing issues](https://github.com/Wizcorp/phonegap-facebook-plugin/issues) on Github. If you still cannot find a solution please [create and issue after reading the contributing guide](CONTRIBUTING.md). 
 
 When creating a Github issue **remember to**:
 
