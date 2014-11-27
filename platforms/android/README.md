@@ -30,50 +30,8 @@ $ cordova platform add android
 $ cordova -d plugin add /path/to/cloned/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
 ```
 
-## Setup with Eclipse
+You can now use the plugin right away
 
-**Android requires an additional step which is to reference the FacebookSDK project as a library to your project.**
+## Setup with Eclipse (Removed)
 
-Open your project in Eclipse (New > Project... Existing Android project from source), import everything (***see Img. 1***).
-
-![image](./android_setup_1.png) ***Img. 1***
-
-In Eclipse, right click your project folder in the left-had column. Select "Properties", select Android in the left column and in the right side of the window add FacebookSDK as a library (***see Img. 2***).
-
-![image](./android_setup_2.png) ***Img. 2***
-
-
-## Setup without Eclipse (just CLI)
-
-Follow the steps below:
-
-	cordova create myApp
-
-	cd myApp/
-
-	cordova platform add android
-
-	cordova -d plugin add https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID="123456789" --variable APP_NAME="myApplication"
-	
-	android update project --subprojects --path "platforms/android" --target android-19 --library "CordovaLib"
-	
-	android update project --subprojects --path "platforms/android" --target android-19 --library "com.phonegap.plugins.facebookconnect/FacebookLib"
-	
-	cd platforms/android/
-	
-	ant clean
-	
-	cd com.phonegap.plugins.facebookconnect/FacebookLib
-	
-	ant clean
-	
-	open -e AndroidManifest.xml	
-
-	// change your minSdkVersion and your targetSdkVersion to your environment settings for me it was:
-	// <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="17" />
-	
-	ant release
-	
-	cd ../../..
-	
-	cordova build android
+** You no longer need the additional Eclipse steps.  A custom_rules.xml file was added for configuring ANT properly.

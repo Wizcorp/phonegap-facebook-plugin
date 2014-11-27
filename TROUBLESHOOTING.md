@@ -1,6 +1,6 @@
 # Troubleshooting
 
-If you cannot solve your issue here please check the **existing issues** on Github, if you still cannot find a solution please [create an issue](https://github.com/Wizcorp/phonegap-facebook-plugin/issues). 
+Can't solve your issue here? Check the [existing issues](https://github.com/Wizcorp/phonegap-facebook-plugin/issues) on Github. If you still cannot find a solution please [create and issue after reading the contributing guide](CONTRIBUTING.md). 
 
 When creating a Github issue **remember to**:
 
@@ -19,6 +19,7 @@ When creating a Github issue **remember to**:
 	- [No Reply From Login?](#no-reply-from-login) 
 	- [My Hash Does Not Work, I am Using Windows](#my-hash-does-not-work-i-am-using-windows)
 	- [Jar mismatch! Fix your dependencies](#jar-mismatch-fix-your-dependencies)
+	- [Open Fullscreen Dialog in Landscape Orientation](#open-fullscreen-dialog-in-landscape-orientation)
 
 - [**iOS**](#ios)
 	- [Missing FacebookConnectPlugin](#missing-facebookconnectplugin)
@@ -125,6 +126,52 @@ BUILD FAILED
 
 - Solution
     - You may have duplicate android-support-v4.jar files. Remove android-support-v4.jar from the `/libs` folder of your project.
+
+### Open Fullscreen Dialog in Landscape Orientation
+- Problem:
+    - In landscape orientation the dialog is too small to use keyboard input
+
+- Solution:
+    - One can force the dialog to be displayed fullscreen, providing additional screen space for the dialog
+
+Add this import to `facebookConnectPlugin.java`
+
+`import android.content.res.Configuration;`
+
+Change the feed dialog from:
+
+```
+WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback).build();
+feedDialog.show();
+```
+
+to
+
+```
+WebDialog.FeedDialogBuilder feedDialog = (new WebDialog.FeedDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback);
+if (cordova.getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+	feedDialog.setTheme(android.R.style.Theme_Wallpaper_NoTitleBar_Fullscreen);
+}
+feedDialog.build().show();
+```
+
+Change the feed dialog from:
+
+```
+WebDialog requestsDialog = (new WebDialog.RequestsDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback)
+	.build();
+requestsDialog.show();
+```
+
+to
+
+```
+WebDialog.RequestsDialogBuilder requestsDialog = (new WebDialog.RequestsDialogBuilder(me.cordova.getActivity(), Session.getActiveSession(), paramBundle)).setOnCompleteListener(dialogCallback);
+if (cordova.getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+	requestsDialog.setTheme(android.R.style.Theme_Wallpaper_NoTitleBar_Fullscreen);
+}
+requestsDialog.build().show();
+```
 
 ## iOS
 ### Missing FacebookConnectPlugin
