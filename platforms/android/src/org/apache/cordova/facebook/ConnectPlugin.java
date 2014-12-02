@@ -453,8 +453,37 @@ public class ConnectPlugin extends CordovaPlugin {
                             feedDialog.show();
                         }
                     };
-                cordova.getActivity().runOnUiThread(runnable);
+                    cordova.getActivity().runOnUiThread(runnable);
                 }
+            } else if (this.method.equalsIgnoreCase("send")) {
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        FacebookDialog.MessageDialogBuilder builder = new FacebookDialog.MessageDialogBuilder(me.cordova.getActivity());
+                        if(paramBundle.containsKey("link"))
+                            builder.setLink(paramBundle.getString("link"));
+                        if(paramBundle.containsKey("caption"))
+                            builder.setCaption(paramBundle.getString("caption"));
+                        if(paramBundle.containsKey("name"))
+                            builder.setName(paramBundle.getString("name"));
+                        if(paramBundle.containsKey("picture"))
+                            builder.setPicture(paramBundle.getString("picture"));
+                        if(paramBundle.containsKey("description"))
+                            builder.setDescription(paramBundle.getString("description"));
+                        // Check for native FB Messenger application
+                        if (builder.canPresent()) {
+                            FacebookDialog dialog = builder.build();
+                            dialog.present();
+                        }  else {
+                            // Not found
+                            trackingPendingCall = false;
+                            String errMsg = "Messaging unavailable.";
+                            Log.e(TAG, errMsg);
+                            showDialogContext.error(errMsg);
+                        }
+                    };
+                };
+                this.trackingPendingCall = true;
+                cordova.getActivity().runOnUiThread(runnable);
             } else {
                 callbackContext.error("Unsupported dialog method.");
             }
