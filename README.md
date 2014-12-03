@@ -47,12 +47,18 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 **NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY** (see [Web App Guide](platforms/web/README.md))
 
-Success function returns an Object like;
+Success function returns an Object like:
 
 	{
-		id: "634565435",
-		lastName: "bob"
-		...
+		status: "connected",
+		authResponse: {
+			session_key: true,
+			accessToken: "<long string>",
+			expiresIn: 5183979,
+			sig: "...",
+			secret: "...",
+			userID: "634565435"
+		}
 	}
 
 Failure function returns an error String.
@@ -65,7 +71,7 @@ Failure function returns an error String.
 
 `facebookConnectPlugin.getLoginStatus(Function success, Function failure)`
 
-Success function returns a status Object. Example:
+Success function returns an Object like:
 
 ```
 {
