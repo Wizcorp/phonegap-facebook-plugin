@@ -3,6 +3,10 @@ var path = require('path');
 
 var platformDir = path.join(__dirname, '../../../..', 'platforms', 'ubuntu');
 
+var qmlDir = path.join(platformDir, 'qml');
+if (!fs.existsSync(qmlDir))
+    fs.mkdirSync(qmlDir);
+
 var manifest = JSON.parse(fs.readFileSync(path.join(platformDir, 'manifest.json'), {encoding: "utf8"}))
 manifest.hooks.cordova["account-application"] = "qml/app.application";
 manifest.hooks.cordova["account-service"] = "qml/app.service";
