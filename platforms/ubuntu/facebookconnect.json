@@ -1,0 +1,4 @@
+{
+    "pkgConfig": ["signond", "libsignon-qt5", "accounts-qt5", "OnlineAccountsClient"],
+    "deb": ["signond-dev:ARCH", "libsignon-qt5-dev:ARCH", "libaccounts-qt5-dev:ARCH", "libonline-accounts-client-dev:ARCH"]
+}

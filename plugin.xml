@@ -111,4 +111,34 @@
         <framework src="Security.framework" weak="true" />
 
     </platform>
+
+    <!-- ubuntu -->
+    <platform name="ubuntu">
+        <hook type="after_prepare" src="platforms/ubuntu/install.js" />
+
+        <engines>
+            <engine name="cordova" version=">=3.5.0" />
+        </engines>
+        <dependency id="org.apache.cordova.dialogs" />
+
+        <resource-file src="platforms/android/res/values/facebookconnect.xml" />
+        <config-file target="config.xml" parent="/*">
+            <feature name="FacebookConnect">
+                <param policy_group="accounts" policy_version="1" />
+            </feature>
+        </config-file>
+        <config-file target="qml/facebookconnect.xml" parent="/*">
+            <string name="fb_app_id">$APP_ID</string>
+            <string name="fb_app_name">$APP_NAME</string>
+        </config-file>
+
+        <js-module src="platforms/ubuntu/facebookConnectPlugin.js" name="ubuntuFacebookConnect">
+            <merges target="window.facebookConnectPlugin" />
+        </js-module>
+
+        <header-file src="platforms/ubuntu/facebookconnect.h" />
+        <source-file src="platforms/ubuntu/facebookconnect.cpp" />
+
+        <resource-file src="platforms/ubuntu/facebookconnect.json" target-dir="configs/" />
+    </platform>
 </plugin>
