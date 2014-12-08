@@ -16,7 +16,8 @@ When creating a Github issue **remember to**:
 	- [How to install with NPM PhoneGap?](#how-to-install-with-npm-phonegap)
 
 - [**Android**](#android)
-	- [No Reply From Login?](#no-reply-from-login) 
+	- [No Reply From Login?](#no-reply-from-login)
+	- [Facebook error: Session was closed and was not closed normally](#facebook-error-session-was-closed-and-was-not-closed-normally)
 	- [My Hash Does Not Work, I am Using Windows](#my-hash-does-not-work-i-am-using-windows)
 	- [Jar mismatch! Fix your dependencies](#jar-mismatch-fix-your-dependencies)
 	- [Open Fullscreen Dialog in Landscape Orientation](#open-fullscreen-dialog-in-landscape-orientation)
@@ -103,6 +104,14 @@ try {
 
 }
 ```
+
+### Facebook error: Session was closed and was not closed normally
+
+- Problem
+    - Receiving the above error and no return from login.
+
+- Solution
+    - Your hash is wrong or not updated see [No Reply From Login?](#no-reply-from-login)
 
 ### My Hash Does Not Work, I am Using Windows
 
