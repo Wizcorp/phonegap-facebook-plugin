@@ -39,6 +39,10 @@ if (!window.cordova) {
             //cordova.exec(s, f, "FacebookConnectPlugin", "graphApi", [graphPath, permissions]);
         },
 
+        getAppLink: function (s, f) {
+            //exec(s, f, "FacebookConnectPlugin", "appLink", []);
+        },
+
         // Browser wrapper API ONLY
         browserInit: function(appId, version) {
             if (!version) {
@@ -112,6 +116,10 @@ if (!window.cordova) {
         api: function (graphPath, permissions, s, f) {
             if (!permissions) { permissions = []; }
             exec(s, f, "FacebookConnectPlugin", "graphApi", [graphPath, permissions]);
+        },
+
+        getAppLink: function (s, f) {
+            exec(s, f, "FacebookConnectPlugin", "appLink", []);
         }
     };
 

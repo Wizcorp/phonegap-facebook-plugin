@@ -1,35 +1,15 @@
 package org.apache.cordova.facebook;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Currency;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.PluginResult;
-import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.CordovaInterface;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.facebook.AppEventsLogger;
+import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookDialogException;
 import com.facebook.FacebookException;
 import com.facebook.FacebookOperationCanceledException;
-import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookRequestError;
 import com.facebook.FacebookServiceException;
 import com.facebook.Request;
@@ -43,6 +23,29 @@ import com.facebook.model.GraphUser;
 import com.facebook.widget.FacebookDialog;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
+
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.PluginResult;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Currency;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import bolts.AppLinks;
 
 public class ConnectPlugin extends CordovaPlugin {
 
@@ -68,6 +71,7 @@ public class ConnectPlugin extends CordovaPlugin {
     private String method;
     private String graphPath;
     private String userID;
+    private JSONObject appLink;
     private UiLifecycleHelper uiHelper;
     private boolean trackingPendingCall = false;
 
@@ -106,7 +110,24 @@ public class ConnectPlugin extends CordovaPlugin {
             // Call this method to initialize the session state info
             onSessionStateChange(session.getState(), null);
         }
+
+        Intent intent = cordova.getActivity().getIntent();
+        Uri targetUrl = AppLinks.getTargetUrl(intent);
+        if (targetUrl != null) {
+                appLink = getAppLink(intent);
+        }
+
         super.initialize(cordova, webView);
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        final String intentString = intent.getDataString();
+
+        Uri targetUrl = AppLinks.getTargetUrl(intent);
+        if (targetUrl != null) {
+                appLink = getAppLink(intent);
+        }
     }
 
     @Override
@@ -807,6 +828,62 @@ public class ConnectPlugin extends CordovaPlugin {
             return new JSONObject(response);
         } catch (JSONException e) {
 
+            e.printStackTrace();
+        }
+        return new JSONObject();
+    }
+
+    private JSONObject getAppLink(Intent intent) {
+        String response;
+        Bundle appLinkData = AppLinks.getAppLinkData(intent);
+
+        if (appLinkData != null) {
+            Bundle refererAppData = appLinkData.getBundle("referer_app_link");
+            //{ "extras": {
+            //      "fb_app_id": 12345678910,
+            //      "fb_access_token": "ACCESS_TOKEN",
+            //      "referer": "REFERER"
+            //  },
+            //  "target_url": "https://fb.me/708882319205526",
+            //  "referer_app_link": {
+            //      "package": "com.facebook.katana",
+            //      "url": "fb:///",
+            //      "app_name": "Facebook"
+            // }
+            //}
+            response = "{";
+
+            response += "\"data_string\":\"" + intent.getDataString() + "\",";
+
+            if (refererAppData != null) {
+                response += "\"referer_app_link\": {"
+                                + "\"package\": \"" + refererAppData.getString("package") + "\","
+                                + "\"url\": \"" + refererAppData.getString("url") + "\","
+                                + "\"app_name\": " + refererAppData.getString("app_name") + "\""
+                                + "},";
+            }
+
+            Uri targetUrl = AppLinks.getTargetUrl(intent);
+            if (targetUrl != null) {
+                response += "\"target_url\": \"" + targetUrl.toString() + "\",";
+            }
+
+            Bundle extras = AppLinks.getAppLinkExtras(intent);
+            if (extras != null) {
+                    response += "\"extras\": {"
+                                    + "\"fb_app_id\": \"" + extras.getString("fb_app_id") + "\","
+                                    + "\"fb_access_token\": \"" + extras.getString("fb_access_token") + "\","
+                                    + "\"referer\": " + extras.getString("referer") + "\""
+                                    + "}";
+            }
+            response += "}";
+        } else {
+            response = "{\"data_string\":\"" + intent.getDataString() + "\"}";
+        }
+
+        try {
+            return new JSONObject(response);
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         return new JSONObject();
