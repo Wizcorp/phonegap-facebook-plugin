@@ -24,7 +24,7 @@ When creating a Github issue **remember to**:
 
 - [**iOS**](#ios)
 	- [Missing FacebookConnectPlugin](#missing-facebookconnectplugin)
-
+	- [Login Always Opens Web Dialog Even Though Native App is Installed](#login-always-opens-web-dialog-even-though-native-app-is-installed)
 
 ## General
 ### How do I Build without Eclipse?
@@ -199,3 +199,10 @@ requestsDialog.build().show();
 		- `Security.framework`
 
 Cordova and plugman seems to have some problems adding frameworks etc. when re-installing/upgrading plugins.
+
+
+### Login Always Opens Web Dialog Even Though Native App is Installed
+- Problem:
+	- Calling the login function always opens the web dialog even though the native app is installed on the device.
+- Solution:
+	- Switch "deep linking" to ON in the Facebook developer website settings for your application 
