@@ -28,7 +28,7 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 - [Android Guide](platforms/android/README.md)
 
-- [Web App Guide](platforms/web/README.md)
+- [Browser Guide](platforms/browser/README.md)
 
 - [PhoneGap Build Guide](platforms/pg-build/README.md)
 
