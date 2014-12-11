@@ -26,7 +26,7 @@
     </engines>
 
     <!-- JavaScript interface -->
-    <js-module src="platforms/browser/www/phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js"
+    <js-module src="facebookConnectPlugin.js"
                name="FacebookConnectPlugin"
                target="phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js">
         <clobbers target="facebookConnectPlugin" />
