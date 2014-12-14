@@ -358,11 +358,7 @@ public class ConnectPlugin extends CordovaPlugin {
             callbackContext.success();
             return true;
         } else if (action.equals("showDialog")) {
-            Session session = Session.getActiveSession();
-            if (!checkActiveSession(session)) {
-                callbackContext.error("No active session");
-                return true;
-            }
+            // First get the parameters to determine if method requires or not an active session
             Bundle collect = new Bundle();
             JSONObject params = null;
             try {
@@ -370,8 +366,6 @@ public class ConnectPlugin extends CordovaPlugin {
             } catch (JSONException e) {
                 params = new JSONObject();
             }
-
-            final ConnectPlugin me = this;
             Iterator<?> iter = params.keys();
             while (iter.hasNext()) {
                 String key = (String) iter.next();
@@ -390,6 +384,19 @@ public class ConnectPlugin extends CordovaPlugin {
                     }
                 }
             }
+            
+            //The Share dialog prompts a person to publish an individual story or an Open Graph story to their timeline.
+            //This does not require Facebook Login or any extended permissions, so it is the easiest way to enable sharing on web.
+            boolean isShareDialog = this.method.equalsIgnoreCase("share") || this.method.equalsIgnoreCase("share_open_graph");
+            if (!isShareDialog) {
+                Session session = Session.getActiveSession();
+                if (!checkActiveSession(session)) {
+                    callbackContext.error("No active session");
+                    return true;
+                }
+            }
+
+            final ConnectPlugin me = this;
             this.paramBundle = new Bundle(collect);
 
             // Begin by sending a callback pending notice to Cordova
