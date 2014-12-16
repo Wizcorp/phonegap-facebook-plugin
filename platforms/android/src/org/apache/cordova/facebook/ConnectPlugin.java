@@ -390,7 +390,12 @@ public class ConnectPlugin extends CordovaPlugin {
             //The Share dialog prompts a person to publish an individual story or an Open Graph story to their timeline.
             //This does not require Facebook Login or any extended permissions, so it is the easiest way to enable sharing on web.
             boolean isShareDialog = this.method.equalsIgnoreCase("share") || this.method.equalsIgnoreCase("share_open_graph");
-            if (!isShareDialog) {
+            //If is a Share dialog but FB app is not installed the WebDialog Builder fails. 
+            //In Android all WebDialogs require a not null Session object.
+            boolean canPresentShareDialog = isShareDialog && (FacebookDialog.canPresentShareDialog(me.cordova.getActivity(), FacebookDialog.ShareDialogFeature.SHARE_DIALOG));
+            //Must be an active session when is not a Shared dialog or if the Share dialog cannot be presented.
+            boolean requiresAnActiveSession = (!isShareDialog) || (!canPresentShareDialog);
+            if (requiresAnActiveSession) {
                 Session session = Session.getActiveSession();
                 if (!checkActiveSession(session)) {
                     callbackContext.error("No active session");
@@ -434,8 +439,8 @@ public class ConnectPlugin extends CordovaPlugin {
                     }
                 };
                 cordova.getActivity().runOnUiThread(runnable);
-            } else if (this.method.equalsIgnoreCase("share") || this.method.equalsIgnoreCase("share_open_graph")) {
-                if (FacebookDialog.canPresentShareDialog(me.cordova.getActivity(), FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
+            } else if (isShareDialog) {
+                if (canPresentShareDialog) {
                     Runnable runnable = new Runnable() {
                         public void run() {
                             // Publish the post using the Share Dialog
