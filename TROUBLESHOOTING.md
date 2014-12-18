@@ -16,14 +16,15 @@ When creating a Github issue **remember to**:
 	- [How to install with NPM PhoneGap?](#how-to-install-with-npm-phonegap)
 
 - [**Android**](#android)
-	- [No Reply From Login?](#no-reply-from-login) 
+	- [No Reply From Login?](#no-reply-from-login)
+	- [Facebook error: Session was closed and was not closed normally](#facebook-error-session-was-closed-and-was-not-closed-normally)
 	- [My Hash Does Not Work, I am Using Windows](#my-hash-does-not-work-i-am-using-windows)
 	- [Jar mismatch! Fix your dependencies](#jar-mismatch-fix-your-dependencies)
 	- [Open Fullscreen Dialog in Landscape Orientation](#open-fullscreen-dialog-in-landscape-orientation)
 
 - [**iOS**](#ios)
 	- [Missing FacebookConnectPlugin](#missing-facebookconnectplugin)
-
+	- [Login Always Opens Web Dialog Even Though Native App is Installed](#login-always-opens-web-dialog-even-though-native-app-is-installed)
 
 ## General
 ### How do I Build without Eclipse?
@@ -103,6 +104,14 @@ try {
 
 }
 ```
+
+### Facebook error: Session was closed and was not closed normally
+
+- Problem
+    - Receiving the above error and no return from login.
+
+- Solution
+    - Your hash is wrong or not updated see [No Reply From Login?](#no-reply-from-login)
 
 ### My Hash Does Not Work, I am Using Windows
 
@@ -190,3 +199,10 @@ requestsDialog.build().show();
 		- `Security.framework`
 
 Cordova and plugman seems to have some problems adding frameworks etc. when re-installing/upgrading plugins.
+
+
+### Login Always Opens Web Dialog Even Though Native App is Installed
+- Problem:
+	- Calling the login function always opens the web dialog even though the native app is installed on the device.
+- Solution:
+	- Switch "deep linking" to ON in the Facebook developer website settings for your application 
