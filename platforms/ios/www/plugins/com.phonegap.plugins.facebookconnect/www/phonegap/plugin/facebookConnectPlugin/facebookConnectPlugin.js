@@ -124,18 +124,38 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                 }
             },
 
-            api: function (graphPath, permissions, s, f) {
-                // JS API does not take additional permissions
+            api: function (graphPath, method, params, s, f) {
+                function cb(response) {
+                    !!response.error
+                        ? f && f(response)
+                        : s(response);
+                }
+
+                var args = [graphPath], 
+                    isFunc = function(obj) { return typeof(obj) === 'function' };
+
+                // case where method holds the success callback
+                if(isFunc(method)) {
+                    isFunc(params) && (f = params);
+                    s = method;
+                } else {
+                    args.push(method);
+                    
+                    // case where the params hold the success callback
+                    if(isFunc(params)) {
+                        s = params;
+                        isFunc(s) && (f = s);
+                    } else {
+                        // all arguments were specified (path, method, params)
+                        args.push(params);
+                    }
+                }
+
+                args.push(cb);
                 
                 // Try will catch errors when SDK has not been init
                 try {
-                    FB.api(graphPath, function (response) {
-                        if (response.error) {
-                            f(response);
-                        } else {
-                            s(response);
-                        }
-                    });
+                    FB.api.apply(FB, args);
                 } catch (error) {
                     if (!f) {
                         console.error(error.message);
