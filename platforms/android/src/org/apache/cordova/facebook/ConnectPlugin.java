@@ -358,11 +358,6 @@ public class ConnectPlugin extends CordovaPlugin {
             callbackContext.success();
             return true;
         } else if (action.equals("showDialog")) {
-            Session session = Session.getActiveSession();
-            if (!checkActiveSession(session)) {
-                callbackContext.error("No active session");
-                return true;
-            }
             Bundle collect = new Bundle();
             JSONObject params = null;
             try {
@@ -391,6 +386,22 @@ public class ConnectPlugin extends CordovaPlugin {
                 }
             }
             this.paramBundle = new Bundle(collect);
+            
+            //The Share dialog prompts a person to publish an individual story or an Open Graph story to their timeline.
+            //This does not require Facebook Login or any extended permissions, so it is the easiest way to enable sharing on web.
+            boolean isShareDialog = this.method.equalsIgnoreCase("share") || this.method.equalsIgnoreCase("share_open_graph");
+            //If is a Share dialog but FB app is not installed the WebDialog Builder fails. 
+            //In Android all WebDialogs require a not null Session object.
+            boolean canPresentShareDialog = isShareDialog && (FacebookDialog.canPresentShareDialog(me.cordova.getActivity(), FacebookDialog.ShareDialogFeature.SHARE_DIALOG));
+            //Must be an active session when is not a Shared dialog or if the Share dialog cannot be presented.
+            boolean requiresAnActiveSession = (!isShareDialog) || (!canPresentShareDialog);
+            if (requiresAnActiveSession) {
+                Session session = Session.getActiveSession();
+                if (!checkActiveSession(session)) {
+                    callbackContext.error("No active session");
+                    return true;
+                }
+            }
 
             // Begin by sending a callback pending notice to Cordova
             showDialogContext = callbackContext;
@@ -428,8 +439,8 @@ public class ConnectPlugin extends CordovaPlugin {
                     }
                 };
                 cordova.getActivity().runOnUiThread(runnable);
-            } else if (this.method.equalsIgnoreCase("share") || this.method.equalsIgnoreCase("share_open_graph")) {
-                if (FacebookDialog.canPresentShareDialog(me.cordova.getActivity(), FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
+            } else if (isShareDialog) {
+                if (canPresentShareDialog) {
                     Runnable runnable = new Runnable() {
                         public void run() {
                             // Publish the post using the Share Dialog
@@ -453,8 +464,37 @@ public class ConnectPlugin extends CordovaPlugin {
                             feedDialog.show();
                         }
                     };
-                cordova.getActivity().runOnUiThread(runnable);
+                    cordova.getActivity().runOnUiThread(runnable);
                 }
+            } else if (this.method.equalsIgnoreCase("send")) {
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        FacebookDialog.MessageDialogBuilder builder = new FacebookDialog.MessageDialogBuilder(me.cordova.getActivity());
+                        if(paramBundle.containsKey("link"))
+                            builder.setLink(paramBundle.getString("link"));
+                        if(paramBundle.containsKey("caption"))
+                            builder.setCaption(paramBundle.getString("caption"));
+                        if(paramBundle.containsKey("name"))
+                            builder.setName(paramBundle.getString("name"));
+                        if(paramBundle.containsKey("picture"))
+                            builder.setPicture(paramBundle.getString("picture"));
+                        if(paramBundle.containsKey("description"))
+                            builder.setDescription(paramBundle.getString("description"));
+                        // Check for native FB Messenger application
+                        if (builder.canPresent()) {
+                            FacebookDialog dialog = builder.build();
+                            dialog.present();
+                        }  else {
+                            // Not found
+                            trackingPendingCall = false;
+                            String errMsg = "Messaging unavailable.";
+                            Log.e(TAG, errMsg);
+                            showDialogContext.error(errMsg);
+                        }
+                    };
+                };
+                this.trackingPendingCall = true;
+                cordova.getActivity().runOnUiThread(runnable);
             } else {
                 callbackContext.error("Unsupported dialog method.");
             }

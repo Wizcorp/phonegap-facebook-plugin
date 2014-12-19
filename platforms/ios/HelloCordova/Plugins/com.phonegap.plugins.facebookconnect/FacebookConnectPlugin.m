@@ -354,6 +354,7 @@
 
 - (void) showDialog:(CDVInvokedUrlCommand*)command
 {
+    CDVPluginResult *pluginResult;
     // Save the callback ID
     self.dialogCallbackId = command.callbackId;
     
@@ -385,10 +386,78 @@
     }];
     
     if (!paramsOK) {
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
                                          messageAsString:@"Error completing dialog."];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
     } else {
+        // Check method
+        if ([method isEqualToString:@"send"]) {
+            // Send private message dialog
+            // Create native params
+            FBLinkShareParams *fbparams = [[FBLinkShareParams alloc] init];
+            fbparams.link = [NSURL URLWithString:[params objectForKey:@"link"]];
+            fbparams.name = [params objectForKey:@"name"];
+            fbparams.caption = [params objectForKey:@"caption"];
+            fbparams.picture = [NSURL URLWithString:[params objectForKey:@"picture"]];
+            fbparams.linkDescription = [params objectForKey:@"description"];
+            // Do we have the messaging app installed?
+            if ([FBDialogs canPresentMessageDialogWithParams:fbparams]) {
+                // We cannot use the Web Dialog Builder API, must use FBDialog for messaging
+                // Present message dialog
+                [FBDialogs presentMessageDialogWithLink:[NSURL URLWithString:[params objectForKey:@"link"]]
+                                                handler:^(FBAppCall *call, NSDictionary *results, NSError *error) {
+                                                    CDVPluginResult *pluginResult = nil;
+                                                    if (error) {
+                                                        // An error occurred, we need to handle the error
+                                                        // See: https://developers.facebook.com/docs/ios/errors
+                                                        NSLog(@"Error messaging link: %@", error.localizedDescription);
+                                                        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Error messaging link."];
+                                                    } else {
+                                                        // Success
+                                                        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:results];
+                                                    }
+                                                }];
+            } else {
+                // Do not have the messaging application installed
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Messaging unavailable."];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
+            }
+            return;
+        } else if ([method isEqualToString:@"share"] || [method isEqualToString:@"share_open_graph"]) {
+            // Create native params
+            FBLinkShareParams *fbparams = [[FBLinkShareParams alloc] init];
+            fbparams.link = [NSURL URLWithString:[params objectForKey:@"href"]];
+            fbparams.name = [params objectForKey:@"name"];
+            fbparams.caption = [params objectForKey:@"caption"];
+            fbparams.picture = [NSURL URLWithString:[params objectForKey:@"picture"]];
+            fbparams.linkDescription = [params objectForKey:@"description"];
+
+            // If the Facebook app is installed and we can present the share dialog
+            if ([FBDialogs canPresentShareDialogWithParams:fbparams]) {
+                // Present the share dialog
+                [FBDialogs presentShareDialogWithLink:fbparams.link
+                                              handler:^(FBAppCall *call, NSDictionary *results, NSError *error) {
+                                                  CDVPluginResult *pluginResult = nil;
+                                                  if ([[results objectForKey:@"completionGesture"] isEqualToString:@"cancel"]) {
+                                                      // User cancelled
+                                                      pluginResult = [CDVPluginResult resultWithStatus:
+                                                                      CDVCommandStatus_ERROR messageAsString:@"User cancelled."];
+                                                  } else {
+                                                      if (error) {
+                                                          // An error occurred, we need to handle the error
+                                                          // See: https://developers.facebook.com/docs/ios/errors
+                                                          pluginResult = [CDVPluginResult resultWithStatus:
+                                                                    CDVCommandStatus_ERROR messageAsString:[NSString stringWithFormat:@"Error: %@", error.description]];
+                                                      } else {
+                                                          // Success
+                                                          pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:results];
+                                                      }
+                                                  }
+                                                  [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
+                                              }];
+                return;
+            } // Else we run through into the WebDialog
+        }
         // Show the web dialog
         [FBWebDialogs
          presentDialogModallyWithSession:FBSession.activeSession
