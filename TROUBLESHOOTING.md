@@ -14,6 +14,7 @@ When creating a Github issue **remember to**:
 	- [How do I Add a Like Button?](#how-do-i-add-a-like-button)
 	- [Where is the init API?](#where-is-the-init-api)
 	- [How to install with NPM PhoneGap?](#how-to-install-with-npm-phonegap)
+	- [Can I still use v1 APIs?](#can-i-still-use-v1-apis) 
 
 - [**Android**](#android)
 	- [No Reply From Login?](#no-reply-from-login)
@@ -77,6 +78,39 @@ Im getting the message "[error] Variable(s) missing: APP_ID, APP_NAME"
 `cd to/your/project`
 
 `phonegap local plugin add /path/to/here/phonegap-facebook-plugin --variable APP_ID="12345678910" --variable APP_NAME="AwesomeApp"`
+
+### Can I still use v1 APIs?
+
+- Problem
+    - Can I still use Facebook version 1 APIs?
+- Solution
+    - Yes, make the following changes to the plugin:
+
+***Android***
+
+`src/org/apache/cordova/facebook/ConnectPlugin.java`
+
+Add this import:
+```
+import com.facebook.Settings;
+```
+
+Add this line of code to `public void initialize`
+
+```
+Settings.setPlatformCompatibilityEnabled(true);
+```
+
+***iOS***
+
+`FacebookConnectPlugin.m`
+
+Add this line to `initWithWebView` before `[FBSession openActiveSessionWithReadPermissions...`
+
+```
+[FBSettings enablePlatformCompatibility: YES];
+```
+
 
 ## Android
 ### No Reply From Login?
