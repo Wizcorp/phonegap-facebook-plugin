@@ -28,7 +28,7 @@ $ cordova -d plugin add https://github.com/Wizcorp/phonegap-facebook-plugin/ --v
 
 ## Setup
 
-- You must add the following somewhere in your `index.js`:
+- You must add the following somewhere in your `index.html`:
 
 ```html
 <div id="fb-root"></div>
