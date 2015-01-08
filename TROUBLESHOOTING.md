@@ -47,7 +47,7 @@ When creating a Github issue **remember to**:
 
     2. When you display your page / button you have to call the getLoginStatus method first to know if the current user is connected to its Facebook account. If he is connected then call `GET` [https://graph.facebook.com/me/og.likes?access_token=FB_ACCESS_TOKEN&object=URL_TO_LIKE](https://graph.facebook.com/me/og.likes?access_token=FB_ACCESS_TOKEN&object=URL_TO_LIKE) with the Facebook Access Token returned by the g3. etAccessToken method (if this returns data then style your like button with a red heart for example, a grey heart if the call returns an empty array).
 
-    3. To create a like (when your user clicks on your like button and your like button is a grey heart) do a POST on [https://graph.facebook.com/me/og.likes?access_token=FB_ACCESS_TOKEN&object=URL_TO_LIKE](https://graph.facebook.com/me/og.likes?access_token=FB_ACCESS_TOKEN&object=URL_TO_LIKE)
+    3. To create a like (when your user clicks on your like button and your like button is a grey heart) do a POST on [https://graph.facebook.com/me/og.likes?access_token=FB_ACCESS_TOKEN&object=URL_TO_LIKE](https://graph.facebook.com/me/og.likes?access_token=FB_ACCESS_TOKEN&object=URL_TO_LIKE) ***NOTE: You must have `publish_actions` permission to do this***
 
     4. To remove a like (when your user clicks on your like button and your like button is a red heart) do a `DELETE` on [https://graph.facebook.com/LIKE_IDENTIFIER?access_token=FB_ACCESS_TOKEN](https://graph.facebook.com/LIKE_IDENTIFIER?access_token=FB_ACCESS_TOKEN). The `LIKE_IDENTIFIER` is returned from steps 2 or 3.
 
