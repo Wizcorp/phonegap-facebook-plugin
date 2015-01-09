@@ -161,7 +161,7 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
         
         // Bake in the JS SDK
         (function () {
-            // Retrieve the root element to append the script tags to. Use the body if no fb-root was found
+            // Retrieve the root element to append the script tags to
             var root = document.getElementById('fb-root') || document.getElementsByTagName('body')[0];
 
             if (!window.FB) {
@@ -169,25 +169,16 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                 var e = document.createElement('script');
                 e.async = true;
                 e.src = document.location.protocol + '//connect.facebook.net/en_US/sdk.js';
-                e.onload = e.onreadystatechange = e.onerror = loadLocalSDK;
+                e.onerror = onSDKError;
 
                 root.appendChild(e);
             }
 
             /**
-             * If something happens when loading the remote script, then check if
-             * window.FB exists, if not, load the local script.
+             * If an error occurs, show it in the console.
              */
-            function loadLocalSDK() {
-                if (!window.FB) {
-                    var e = document.createElement('script');
-                    e.async = true;
-                    e.src = 'phonegap/plugin/facebookConnectPlugin/fbsdk.js';
-
-                    root.appendChild(e);
-
-                    console.log("Attempt local load: ", e);
-                }
+            function onSDKError(e) {
+                console.error('Could not load the Facebook SDK.', e);
             }
         }());
 
