@@ -50,6 +50,9 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                 if (!options.picture) {
                     options.picture = "";
                 }
+                if (options.link && !options.href) {
+                    options.href = options.link;
+                }
                 
                 // Try will catch errors when SDK has not been init
                 try {
@@ -195,6 +198,9 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
             },
 
             showDialog: function (options, s, f) {
+                if (!options.link && options.href) {
+                    options.link = options.href;
+                }
                 exec(s, f, "FacebookConnectPlugin", "showDialog", [options]);
             },
 
@@ -235,4 +241,5 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
 
         module.exports = facebookConnectPlugin;
     }
+
 });

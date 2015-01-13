@@ -48,6 +48,9 @@ if (cordova.platformId == "browser") {
             if (!options.picture) {
                 options.picture = "";
             }
+            if (options.link && !options.href) {
+                options.href = options.link;
+            }
             
             // Try will catch errors when SDK has not been init
             try {
@@ -193,6 +196,9 @@ if (cordova.platformId == "browser") {
         },
 
         showDialog: function (options, s, f) {
+            if (!options.link && options.href) {
+                options.link = options.href;
+            }
             exec(s, f, "FacebookConnectPlugin", "showDialog", [options]);
         },
 
