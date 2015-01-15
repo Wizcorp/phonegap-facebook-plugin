@@ -125,6 +125,8 @@
         <config-file target="config.xml" parent="/*">
             <feature name="FacebookConnect">
                 <param policy_group="accounts" policy_version="1" />
+                <param hook="account-application" value="qml/app.application" />
+                <param hook="account-service" value="qml/app.service" />
             </feature>
         </config-file>
         <config-file target="qml/facebookconnect.xml" parent="/*">
