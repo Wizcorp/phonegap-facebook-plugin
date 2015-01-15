@@ -30,9 +30,9 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 - [Browser Guide](platforms/browser/README.md)
 
-- [PhoneGap Build Guide](platforms/pg-build/README.md)
+- [PhoneGap Build Notice](platforms/pg-build/README.md)
 
-- [Troubleshooting Guide | F.A.Q.](TROUBLESHOOTING.md)
+- [Troubleshooting / F.A.Q.](TROUBLESHOOTING.md)
 
 
 #### Example Apps
