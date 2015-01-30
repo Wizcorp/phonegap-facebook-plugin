@@ -30,6 +30,14 @@ $ cordova platform add android
 $ cordova -d plugin add /path/to/cloned/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
 ```
 
+Add following lines to your MainActivity Class importing com.facebook.AppEventsLogger Class:
+```java
+protected void onResume() {
+    super.onResume();
+    AppEventsLogger.activateApp(this, getString(R.string.fb_app_id));
+}
+```
+
 You can now use the plugin right away
 
 ## Setup with Eclipse (Removed)
