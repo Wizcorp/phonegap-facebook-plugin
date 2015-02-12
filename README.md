@@ -232,7 +232,7 @@ Using the graph api this is a very simple task:
 			alert("Failed: " + error);
 		});
 
-### Plublish a Photo
+### Publish a Photo
 
 Send a photo to a user's feed
 
