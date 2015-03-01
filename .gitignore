@@ -1,4 +1,4 @@
-.DS_Store
+*.DS_Store
 test/www/*.js
 *.pbxuser
 !default.pbxuser
@@ -11,3 +11,19 @@ test/www/*.js
 *.xcworkspace
 !default.xcworkspace
 xcuserdata
+
+# Android Projects
+
+*.apk
+*.ap_
+*.dex
+*.class
+
+bin/
+gen/
+
+.gradle/
+build/
+
+local.properties
+proguard/
