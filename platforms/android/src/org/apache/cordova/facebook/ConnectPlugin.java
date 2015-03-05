@@ -63,7 +63,6 @@ public class ConnectPlugin extends CordovaPlugin {
     private String applicationId = null;
     private CallbackContext loginContext = null;
     private CallbackContext showDialogContext = null;
-    private CallbackContext graphContext = null;
     private Bundle paramBundle;
     private String method;
     private String graphPath;
@@ -500,7 +499,7 @@ public class ConnectPlugin extends CordovaPlugin {
             }
             return true;
         } else if (action.equals("graphApi")) {
-            graphContext = callbackContext;
+            CallbackContext graphContext = callbackContext;
             PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
             pr.setKeepCallback(true);
             graphContext.sendPluginResult(pr);
@@ -533,7 +532,7 @@ public class ConnectPlugin extends CordovaPlugin {
                 } else {
                     Session session = Session.getActiveSession();
                     if (session.getPermissions().containsAll(permissionsList)) {
-                        makeGraphCall();
+                        makeGraphCall(graphContext);
                     } else {
                         // Set up the new permissions request
                         Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(cordova.getActivity(), permissionsList);
@@ -550,7 +549,7 @@ public class ConnectPlugin extends CordovaPlugin {
                     }
                 }
             } else {
-                makeGraphCall();
+                makeGraphCall(graphContext);
             }
             return true;
         }
@@ -625,7 +624,7 @@ public class ConnectPlugin extends CordovaPlugin {
         }
     }
 
-    private void makeGraphCall() {
+    private void makeGraphCall(final CallbackContext graphContext) {
         Session session = Session.getActiveSession();
 
         Request.Callback graphCallback = new Request.Callback() {
@@ -640,7 +639,6 @@ public class ConnectPlugin extends CordovaPlugin {
                         graphContext.success(graphObject.getInnerJSONObject());
                     }
                     graphPath = null;
-                    graphContext = null;
                 }
             }
         };
@@ -711,9 +709,6 @@ public class ConnectPlugin extends CordovaPlugin {
                             }
                         }
                     });
-                } else if (graphContext != null) {
-                    // Make the graph call
-                    makeGraphCall();
                 }
             } else if (state == SessionState.CLOSED_LOGIN_FAILED && loginContext != null){
                 handleError(new FacebookAuthorizationException("Session was closed and was not closed normally"), loginContext);
