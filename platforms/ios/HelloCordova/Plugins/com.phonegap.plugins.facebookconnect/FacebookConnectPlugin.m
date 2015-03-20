@@ -140,7 +140,7 @@
             alertMessage = @"Permission denied.";
         } else {
             // For simplicity, this sample treats other errors blindly.
-            alertMessage = @"Error. Please try again later.";
+            alertMessage = [error localizedDescription];
         }
         
         if (alertMessage && self.loginCallbackId) {
