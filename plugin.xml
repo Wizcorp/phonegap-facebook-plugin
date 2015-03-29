@@ -111,20 +111,4 @@
         <framework src="Security.framework" weak="true" />
 
     </platform>
-
-    <!-- browser -->
-    <platform name="browser">
-        <config-file target="config.xml" parent="/*">
-            <feature name="FacebookConnectPlugin">
-                <param name="browser-package" value="FacebookConnectPlugin"/>
-                <param name="onload" value="true" />
-            </feature>
-            <plugin name="FacebookConnectPlugin" value="FacebookConnectPlugin"/>
-            <access origin="https://m.facebook.com" />
-            <access origin="https://graph.facebook.com" />
-            <access origin="https://api.facebook.com" />
-            <access origin="https://*.fbcdn.net" />
-            <access origin="https://*.akamaihd.net" />
-        </config-file>
-    </platform>
 </plugin>
