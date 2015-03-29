@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
-    <target name="-post-compile">
-        <copy todir="bin">
-            <fileset dir="ant-build"/>
-        </copy>
-    </target>
+  <target name="-post-compile">
+    <copy todir="bin" failonerror="false">
+      <fileset dir="ant-build"/>
+    </copy>
+  </target>
 </project>
