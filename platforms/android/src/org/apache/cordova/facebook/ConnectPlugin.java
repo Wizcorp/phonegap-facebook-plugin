@@ -37,6 +37,7 @@ import com.facebook.Request.GraphUserCallback;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.Settings;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphUser;
@@ -298,6 +299,9 @@ public class ConnectPlugin extends CordovaPlugin {
                     callbackContext.error("Session not open.");
                 }
             }
+            return true;
+        } else if (action.equals("getApplicationSignature")) {
+            callbackContext.success(Settings.getApplicationSignature(webView.getContext()));
             return true;
         } else if (action.equals("logEvent")) {
             if (args.length() == 0) {

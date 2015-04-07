@@ -143,6 +143,21 @@ if (cordova.platformId == "browser") {
             }
         },
 
+      getApplicationSignature: function (s, f) {
+            // Try will catch errors when SDK has not been init
+            try {
+                FB.getApplicationSignature(function (response) {
+                    s(response);
+                });
+            } catch (error) {
+                if (!f) {
+                    console.error(error.message);
+                } else {
+                    f(error.message);
+                }
+            }
+        },
+
         // Browser wrapper API ONLY
         browserInit: function (appId, version) {
             if (!version) {
@@ -217,6 +232,10 @@ if (cordova.platformId == "browser") {
 
         logout: function (s, f) {
             exec(s, f, "FacebookConnectPlugin", "logout", []);
+        },
+
+      getApplicationSignature: function (s, f) {
+            exec(s, f, "FacebookConnectPlugin", "getApplicationSignature", []);
         },
 
         api: function (graphPath, permissions, s, f) {
