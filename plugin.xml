@@ -4,7 +4,7 @@
         id="com.phonegap.plugins.facebookconnect"
         version="0.11.1">
 
-    <name>Facebook Connect</name>
+    <name>Facebook</name>
 
     <description>
       This is the official plugin for Facebook in Apache Cordova/PhoneGap!
