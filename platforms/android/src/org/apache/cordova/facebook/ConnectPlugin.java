@@ -1,6 +1,7 @@
 package org.apache.cordova.facebook;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.System;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import com.facebook.Request.GraphUserCallback;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.Settings;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphUser;
@@ -298,6 +300,21 @@ public class ConnectPlugin extends CordovaPlugin {
                     callbackContext.error("Session not open.");
                 }
             }
+            return true;
+        } else if (action.equals("getApplicationSignature")) {
+            String sig = Settings.getApplicationSignature(webView.getContext());
+            if (sig == null) {
+              callbackContext.error("Could not determine signature.");
+            } else {
+              // strip the linefeed..
+              sig = sig.replace(System.lineSeparator(), "");
+              // .. and pad the result with ='s because it needs to be 28 bytes per Fb's requirements
+              while (sig.length() < 28) {
+                sig += "=";
+              }
+            }
+            Log.w(TAG, "getApplicationSignature result: " + sig);
+            callbackContext.success(sig);
             return true;
         } else if (action.equals("logEvent")) {
             if (args.length() == 0) {
