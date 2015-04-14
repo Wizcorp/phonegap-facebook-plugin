@@ -8,7 +8,7 @@ As a convenience you can use the plugin function `facebookConnectPlugin.getAppli
 
 ```js
 facebookConnectPlugin.getApplicationSignature(function(response) {
-		console.log("App signature: " + response); // copy-paste the response to the Facebook App Settings
+    console.log("App signature: " + response); // copy-paste the response to the Facebook App Settings
 });
 ```
 
