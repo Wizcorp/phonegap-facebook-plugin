@@ -234,7 +234,7 @@ if (cordova.platformId == "browser") {
             exec(s, f, "FacebookConnectPlugin", "logout", []);
         },
 
-      getApplicationSignature: function (s, f) {
+        getApplicationSignature: function (s, f) {
             exec(s, f, "FacebookConnectPlugin", "getApplicationSignature", []);
         },
 
