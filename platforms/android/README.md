@@ -4,8 +4,13 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 If you plan on rolling this out on Android, please note that you will need to [generate a hash of your Android key(s) and submit those to the Developers page on Facebook](https://developers.facebook.com/docs/android/getting-started/facebook-sdk-for-android/) to get it working. Furthermore, if you are generating this hash on Windows (specifically 64 bit versions), please use version 0.9.8e or 0.9.8d of [OpenSSL for Windows](http://code.google.com/p/openssl-for-windows/downloads/list) and *not* 0.9.8k. Big ups to [fernandomatos](http://github.com/fernandomatos) for pointing this out!
 
-As a convenience you can use the plugin function `facebookConnectPlugin.getApplicationSignature()` to get the hash key.
-See [this document](http://plugins.telerik.com/plugin/facebook) on how to use this method.
+As a convenience you can use the plugin function `facebookConnectPlugin.getApplicationSignature()` to get the hash key:
+
+```js
+facebookConnectPlugin.getApplicationSignature(function(response) {
+  console.log("App signature: " + response); // copy-paste the response to the Facebook App Settings
+});
+```
 
 ## Example Apps
 

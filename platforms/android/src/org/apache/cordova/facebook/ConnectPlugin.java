@@ -304,14 +304,14 @@ public class ConnectPlugin extends CordovaPlugin {
         } else if (action.equals("getApplicationSignature")) {
             String sig = Settings.getApplicationSignature(webView.getContext());
             if (sig == null) {
-              callbackContext.error("Could not determine signature.");
+                callbackContext.error("Could not determine signature.");
             } else {
-              // strip the linefeed..
-              sig = sig.replace(System.lineSeparator(), "");
-              // .. and pad the result with ='s because it needs to be 28 bytes per Fb's requirements
-              while (sig.length() < 28) {
-                sig += "=";
-              }
+                // strip the linefeed..
+                sig = sig.replace(System.lineSeparator(), "");
+                // .. and pad the result with ='s because it needs to be 28 bytes per Fb's requirements
+                while (sig.length() < 28) {
+                    sig += "=";
+                }
             }
             Log.w(TAG, "getApplicationSignature result: " + sig);
             callbackContext.success(sig);

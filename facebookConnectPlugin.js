@@ -143,7 +143,7 @@ if (cordova.platformId == "browser") {
             }
         },
 
-      getApplicationSignature: function (s, f) {
+        getApplicationSignature: function (s, f) {
             // Try will catch errors when SDK has not been init
             try {
                 FB.getApplicationSignature(function (response) {
