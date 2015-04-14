@@ -70,9 +70,14 @@ if (cordova.platformId == "browser") {
         // Attach this to a UI element, this requires user interaction.
         login: function (permissions, s, f) {
             // JS SDK takes an object here but the native SDKs use array.
-            var permissionObj = {};
+            var options = {};
             if (permissions && permissions.length > 0) {
-                permissionObj.scope = permissions.toString();
+                var index = permissions.indexOf('rerequest');
+                if (index > -1) {
+                    permissions.splice(index, 1);
+                    options.auth_type = 'rerequest';
+                }
+                options.scope = permissions.toString();
             }
             
             FB.login(function (response) {
@@ -81,7 +86,7 @@ if (cordova.platformId == "browser") {
                 } else {
                     f(response.status);
                 }
-            }, permissionObj);
+            }, options);
         },
 
         getAccessToken: function (s, f) {
