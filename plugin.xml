@@ -8,7 +8,7 @@
 
     <description>
       This is the official plugin for Facebook in Apache Cordova/PhoneGap!
-      
+
       The Facebook plugin for Apache Cordova allows you to use the same JavaScript code in your
       Cordova application as you use in your web application.
       Docs: https://github.com/Wizcorp/phonegap-facebook-plugin.
@@ -127,4 +127,36 @@
             <access origin="https://*.akamaihd.net" />
         </config-file>
     </platform>
+
+    <!-- wp8 -->
+    <platform name="wp8">
+        <dependency id="org.apache.cordova.inappbrowser" />
+
+        <!-- Custom override for JS interface, required since WP8 uses custom logic inside of some public methods -->
+        <js-module src="platforms/wp8/www/facebookConnectPlugin.js"
+                   name="FacebookConnectPluginWP8"
+                   target="platforms/wp8/www/facebookConnectPlugin.js">
+            <clobbers target="facebookConnectPlugin" />
+        </js-module>
+
+        <source-file src="platforms/wp8/src/FacebookConnectProxy.cs" />
+        <source-file src="platforms/wp8/src/FacebookConfig.xml" target-dir="../../" />
+
+        <config-file target="config.xml" parent="/*">
+            <feature name="FacebookConnectPlugin">
+                <param name="wp-package" value="FacebookConnectPlugin"/>
+            </feature>
+        </config-file>
+
+        <config-file target="FacebookConfig.xml" parent="/Extensions">
+            <Facebook AppId="$APP_ID" />
+        </config-file>
+
+        <framework src="platforms/wp8/lib/Facebook.dll" custom="true" />
+        <framework src="platforms/wp8/lib/Facebook.Client.dll" custom="true" />
+        <framework src="platforms/wp8/lib/System.Net.Http.dll" custom="true" />
+        <framework src="platforms/wp8/lib/System.Net.Http.Extensions.dll" custom="true" />
+        <framework src="platforms/wp8/lib/System.Net.Http.Primitives.dll" custom="true" />
+    </platform>
+
 </plugin>
