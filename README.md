@@ -5,14 +5,15 @@ This is the official plugin for Facebook in Apache Cordova/PhoneGap!
 The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) allows you to use the same JavaScript code in your Cordova application as you use in your web application. However, unlike in the browser, the Cordova application will use the native Facebook app to perform Single Sign On for the user.  If this is not possible then the sign on will degrade gracefully using the standard dialog based authentication.
 
 * Supported on PhoneGap (Cordova) v3.5.0 and above.
+* JDK version 1.7 or above is required
 * This plugin is built for
-	* iOS FacebookSDK 3.21.1
-	* Android FacebookSDK 3.21.1
+	* iOS Facebook SDK 4.1.0
+	* Android Facebook SDK 4.1.2
 * GitHub URL : [https://github.com/Wizcorp/phonegap-facebook-plugin/](https://github.com/Wizcorp/phonegap-facebook-plugin/)
 
 ## << --- Cordova Registry Warning [iOS]
 
-****Installing this plugin directly from Cordova Registry results in Xcode using a broken `FacebookSDK.framework`, this is because the current publish procedure to NPM breaks symlinks [CB-6092](https://issues.apache.org/jira/browse/CB-6092). Please install the plugin through a locally cloned copy or re-add the `FacebookSDK.framework` to Xcode after installation.****
+****Installing this plugin directly from Cordova Registry results in Xcode using a broken `FBSDKCoreKit.framework`, etc. This is because the current publish procedure to NPM breaks symlinks [CB-6092](https://issues.apache.org/jira/browse/CB-6092). Please install the plugin through a locally cloned copy or re-add `FBSDKCoreKit.framework`, etc to Xcode after installation.****
 
 ## ------------------------------------------ >>
 
@@ -237,15 +238,15 @@ Using the graph api this is a very simple task:
 Send a photo to a user's feed
 
 ```
-facebookConnectPlugin.showDialog( 
+facebookConnectPlugin.showDialog(
     {
         method: "feed",
         picture:'https://www.google.co.jp/logos/doodles/2014/doodle-4-google-2014-japan-winner-5109465267306496.2-hp.png',
         name:'Test Post',
-        message:'First photo post',    
+        message:'First photo post',
         caption: 'Testing using phonegap plugin',
         description: 'Posting photo using phonegap facebook plugin'
-    }, 
+    },
     function (response) { alert(JSON.stringify(response)) },
     function (response) { alert(JSON.stringify(response)) });
 ```

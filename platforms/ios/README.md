@@ -19,7 +19,7 @@ Currently these are set as defaults, so please change:
 
 This plugin requires [Cordova CLI](http://cordova.apache.org/docs/en/3.5.0/guide_cli_index.md.html).
 
-Installing this plugin directly from Cordova Registry currently breaks the symlinks in `FacebookSDK.framework` [CB-6092](https://issues.apache.org/jira/browse/CB-6092). Easiest solution for now is to just `git clone` this project and install it with *Cordova CLI* using the local clone.
+Installing this plugin directly from Cordova Registry currently breaks the symlinks in `FBSDKCoreKit.framework`, etc [CB-6092](https://issues.apache.org/jira/browse/CB-6092). Easiest solution for now is to just `git clone` this project and install it with *Cordova CLI* using the local clone.
 ```sh
 $ git clone https://github.com/Wizcorp/phonegap-facebook-plugin.git
 ```
