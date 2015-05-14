@@ -1,0 +1,26 @@
+build_config(
+  name = 'config-debug',
+  package = 'com.facebook',
+  debug = True,
+)
+
+android_resource(
+  name = 'res',
+  res = 'res',
+  package = 'com.facebook',
+  deps = [
+  ],
+)
+
+android_library(
+  name = 'android-sdk',
+  srcs = glob(['src/**/*.java']) + [':config-debug'],
+  deps = [
+    ':res',
+    '//libs:android-support-v4',
+    '//libs:bolts',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)

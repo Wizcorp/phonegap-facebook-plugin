@@ -7,8 +7,8 @@ repositories {
 project.group = 'com.facebook.android'
 
 dependencies {
-    compile 'com.android.support:support-v4:[20,21)'
-    compile 'com.parse.bolts:bolts-android:1.1.2'
+    compile 'com.android.support:support-v4:[21,22)'
+    compile 'com.parse.bolts:bolts-android:1.2.0'
 }
 
 android {
@@ -83,7 +83,7 @@ uploadArchives {
 
             licenses {
                 license {
-                    name 'The Apache Software License, Version 2.0'
+                    name 'Facebook Platform License'
                     url 'https://github.com/facebook/facebook-android-sdk/blob/master/LICENSE.txt'
                     distribution 'repo'
                 }
