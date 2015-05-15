@@ -26,7 +26,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <Cordova/CDVViewController.h>
 
 @interface AppDelegate : NSObject <UIApplicationDelegate>{}

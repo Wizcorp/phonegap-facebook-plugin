@@ -99,6 +99,11 @@
         return NO;
     }
     
+    return [[FBSDKApplicationDelegate sharedInstance] application:application
+                                                          openURL:url
+                                                sourceApplication:sourceApplication
+                                                       annotation:annotation];
+    
     // calls into javascript global function 'handleOpenURL'
     NSString* jsString = [NSString stringWithFormat:@"handleOpenURL(\"%@\");", url];
     [self.viewController.webView stringByEvaluatingJavaScriptFromString:jsString];
@@ -121,7 +126,7 @@
    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     // re-post ( broadcast )
-    NSString* token = [[[[deviceToken description]
+    NSString *token = [[[[deviceToken description]
                          stringByReplacingOccurrencesOfString: @"<" withString: @""]
                         stringByReplacingOccurrencesOfString: @">" withString: @""]
                        stringByReplacingOccurrencesOfString: @" " withString: @""];

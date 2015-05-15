@@ -188,6 +188,10 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                 exec(s, f, "FacebookConnectPlugin", "getLoginStatus", []);
             },
 
+            getProfile: function (s, f) {
+                exec(s, f, "FacebookConnectPlugin", "getProfile", []);
+            },
+
             showDialog: function (options, s, f) {
                 exec(s, f, "FacebookConnectPlugin", "showDialog", [options]);
             },

@@ -101,8 +101,10 @@
           </array>
         </config-file>
 
-        <!-- Facebook framework -->
-        <framework src="platforms/ios/FacebookSDK.framework" custom="true" />
+        <!-- Facebook frameworks -->
+        <framework src="platforms/ios/FBSDKCoreKit.framework" custom="true" />
+        <framework src="platforms/ios/FBSDKLoginKit.framework" custom="true" />
+        <framework src="platforms/ios/FBSDKShareKit.framework" custom="true" />
 
         <!-- System frameworks -->
         <framework src="libsqlite3.dylib" />

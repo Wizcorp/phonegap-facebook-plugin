@@ -186,6 +186,10 @@ if (cordova.platformId == "browser") {
             exec(s, f, "FacebookConnectPlugin", "getLoginStatus", []);
         },
 
+        getProfile: function (s, f) {
+            exec(s, f, "FacebookConnectPlugin", "getProfile", []);
+        },
+
         showDialog: function (options, s, f) {
             exec(s, f, "FacebookConnectPlugin", "showDialog", [options]);
         },
