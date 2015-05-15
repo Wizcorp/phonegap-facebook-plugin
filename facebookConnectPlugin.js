@@ -28,6 +28,21 @@ if (cordova.platformId == "browser") {
             }
         },
 
+        getProfile: function (s, f) {
+            // Try will catch errors when SDK has not been init
+            try {
+                FB.api('/me', function (response) {
+                    s(response);
+                });
+            } catch (error) {
+                if (!f) {
+                    console.error(error.message);
+                } else {
+                    f(error.message);
+                }
+            }
+        },
+
         showDialog: function (options, s, f) {
 
             if (!options.name) {
