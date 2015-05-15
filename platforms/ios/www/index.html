@@ -34,12 +34,15 @@
                 <p class="event received">Device is Ready</p>
             </div>
             <div class="event listening button" onclick="login();">Login with Facebook</div>
-            <div class="event listening button" onclick="showDialog();">Show Dialog with Facebook</div>
+            <div class="event listening button" onclick="sharingDialog();">Sharing dialog with Facebook</div>
+            <div class="event listening button" onclick="feedDialog();">Feed dialog with Facebook</div>
+            <div class="event listening button" onclick="appInviteDialog();">AppInvite dialog with Facebook</div>
             <div class="event listening button" onclick="apiTest();">Test API with Facebook</div>
             <div class="event listening button" onclick="getAccessToken();">Get access token with Facebook</div>
             <div class="event listening button" onclick="logPurchase();">Log Purchase Event</div>
             <div class="event listening button" onclick="logEvent();">Log Regular Event</div>
             <div class="event listening button" onclick="getStatus();">Get login status with Facebook</div>
+            <div class="event listening button" onclick="getProfile();">Get current user profile</div>
             <div class="event listening button" onclick="logout();">Logout with Facebook</div>
         </div>
         <div id="fb-root"></div>
@@ -56,10 +59,25 @@
                     function (response) { alert(JSON.stringify(response)) });
             }
             
-            var showDialog = function () { 
-                facebookConnectPlugin.showDialog( { method: "feed" }, 
+            var sharingDialog = function () {
+                facebookConnectPlugin.showDialog( { method: "share" },
                     function (response) { alert(JSON.stringify(response)) },
                     function (response) { alert(JSON.stringify(response)) });
+            }
+        
+            var feedDialog = function () {
+                facebookConnectPlugin.showDialog( { method: "feed" },
+                     function (response) { alert(JSON.stringify(response)) },
+                     function (response) { alert(JSON.stringify(response)) });
+            }
+        
+            var appInviteDialog = function () {
+                facebookConnectPlugin.showDialog( {
+                         method: "appinvite",
+                         link: "http://affinity.is"
+                     },
+                     function (response) { alert(JSON.stringify(response)) },
+                     function (response) { alert(JSON.stringify(response)) });
             }
             
             var apiTest = function () { 
@@ -99,6 +117,12 @@
                 facebookConnectPlugin.getLoginStatus( 
                     function (response) { alert(JSON.stringify(response)) },
                     function (response) { alert(JSON.stringify(response)) });
+            }
+        
+            var getProfile = function () {
+                facebookConnectPlugin.getProfile(
+                     function (response) { alert(JSON.stringify(response)) },
+                     function (response) { alert(JSON.stringify(response)) });
             }
 
             var logout = function () { 
