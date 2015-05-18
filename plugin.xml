@@ -102,6 +102,7 @@
         </config-file>
 
         <!-- Facebook frameworks -->
+        <framework src="platforms/ios/Bolts.framework" custom="true" />
         <framework src="platforms/ios/FBSDKCoreKit.framework" custom="true" />
         <framework src="platforms/ios/FBSDKLoginKit.framework" custom="true" />
         <framework src="platforms/ios/FBSDKShareKit.framework" custom="true" />
