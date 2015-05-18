@@ -432,9 +432,9 @@
         [self dialogErrorWithMessage:@"Error completing dialog."];
     }
     // AppInvite dialog
-    else if ([method isEqualToString:@"appinvite"]) {
+    else if ([method isEqualToString:@"appinvites"]) {
         FBSDKAppInviteContent *content = [[FBSDKAppInviteContent alloc] init];
-        content.appLinkURL = [NSURL URLWithString:[params objectForKey:@"link"]];
+        content.appLinkURL = [NSURL URLWithString:[params objectForKey:@"link"]]; // required
         content.previewImageURL = [NSURL URLWithString:[params objectForKey:@"preview"]];
         FBSDKAppInviteDialog *dialog = [[FBSDKAppInviteDialog alloc] init];
         if ([dialog canShow]) {
@@ -442,7 +442,7 @@
             [dialog setContent:content];
             [dialog show];
         } else {
-            [self dialogErrorWithMessage:@"Unable to show appinvite dialog."];
+            [self dialogErrorWithMessage:@"Unable to show appinvites dialog."];
         }
     }
     // GameRequest dialog
