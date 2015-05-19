@@ -19,12 +19,9 @@
 /*!
  @typedef FBProfilePictureCropping enum
 
- @abstract
- Type used to specify the cropping treatment of the profile picture.
-
- @discussion
+ @abstract Specify the cropping treatment of the profile picture.
  */
-typedef enum {
+typedef NS_ENUM(NSUInteger, FBProfilePictureCropping) {
 
     /*! Square (default) - the square version that the Facebook user defined. */
     FBProfilePictureCroppingSquare      = 0,
@@ -32,7 +29,7 @@ typedef enum {
     /*! Original - the original profile picture, as uploaded. */
     FBProfilePictureCroppingOriginal    = 1
 
-} FBProfilePictureCropping;
+};
 
 /*!
  @class

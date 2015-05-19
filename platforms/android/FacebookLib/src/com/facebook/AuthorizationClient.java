@@ -37,7 +37,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 class AuthorizationClient implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -72,10 +75,6 @@ class AuthorizationClient implements Serializable {
     static final String EVENT_EXTRAS_MISSING_INTERNET_PERMISSION = "no_internet_permission";
     static final String EVENT_EXTRAS_NOT_TRIED = "not_tried";
     static final String EVENT_EXTRAS_NEW_PERMISSIONS = "new_permissions";
-    static final String EVENT_EXTRAS_SERVICE_DISABLED = "service_disabled";
-    static final String EVENT_EXTRAS_APP_CALL_ID = "call_id";
-    static final String EVENT_EXTRAS_PROTOCOL_VERSION = "protocol_version";
-    static final String EVENT_EXTRAS_WRITE_PRIVACY = "write_privacy";
 
     List<AuthHandler> handlersToTry;
     AuthHandler currentHandler;
@@ -176,7 +175,7 @@ class AuthorizationClient implements Serializable {
     }
 
     boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == pendingRequest.getRequestCode()) {
+        if (pendingRequest != null && requestCode == pendingRequest.getRequestCode()) {
             return currentHandler.onActivityResult(requestCode, resultCode, data);
         }
         return false;
@@ -583,6 +582,9 @@ class AuthorizationClient implements Serializable {
         @Override
         void cancel() {
             if (loginDialog != null) {
+                // Since we are calling dismiss explicitly, we need to remove the completion listener to prevent
+                // responding to the upcoming "Cancel" result.
+                loginDialog.setOnCompleteListener(null);
                 loginDialog.dismiss();
                 loginDialog = null;
             }
@@ -597,6 +599,9 @@ class AuthorizationClient implements Serializable {
                 parameters.putString(ServerProtocol.DIALOG_PARAM_SCOPE, scope);
                 addLoggingExtra(ServerProtocol.DIALOG_PARAM_SCOPE, scope);
             }
+
+            SessionDefaultAudience audience = request.getDefaultAudience();
+            parameters.putString(ServerProtocol.DIALOG_PARAM_DEFAULT_AUDIENCE, audience.getNativeProtocolAudience());
 
             String previousToken = request.getPreviousAccessToken();
             if (!Utility.isNullOrEmpty(previousToken) && (previousToken.equals(loadCookieToken()))) {
@@ -676,14 +681,12 @@ class AuthorizationClient implements Serializable {
 
         private void saveCookieToken(String token) {
             Context context = getStartActivityDelegate().getActivityContext();
-            SharedPreferences sharedPreferences = context.getSharedPreferences(
+            context.getSharedPreferences(
                     WEB_VIEW_AUTH_HANDLER_STORE,
-                    Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(WEB_VIEW_AUTH_HANDLER_TOKEN_KEY, token);
-            if (!editor.commit()) {
-                Utility.logd(TAG, "Could not update saved web view auth handler token.");
-            }
+                    Context.MODE_PRIVATE)
+                .edit()
+                .putString(WEB_VIEW_AUTH_HANDLER_TOKEN_KEY, token)
+                .apply();
         }
 
         private String loadCookieToken() {
@@ -810,7 +813,7 @@ class AuthorizationClient implements Serializable {
 
             String e2e = getE2E();
             Intent intent = NativeProtocol.createProxyAuthIntent(context, request.getApplicationId(),
-                    request.getPermissions(), e2e, request.isRerequest());
+                    request.getPermissions(), e2e, request.isRerequest(), request.getDefaultAudience());
 
             addLoggingExtra(ServerProtocol.DIALOG_PARAM_E2E, e2e);
 

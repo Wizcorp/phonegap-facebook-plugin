@@ -32,10 +32,13 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.animation.AlphaAnimation;
 import android.widget.*;
-import com.facebook.*;
+import com.facebook.FacebookException;
+import com.facebook.Request;
+import com.facebook.Session;
+import com.facebook.SessionState;
 import com.facebook.android.R;
-import com.facebook.model.GraphObject;
 import com.facebook.internal.SessionTracker;
+import com.facebook.model.GraphObject;
 
 import java.util.*;
 
@@ -94,6 +97,7 @@ public abstract class PickerFragment<T extends GraphObject> extends Fragment {
     private final Class<T> graphObjectClass;
     private LoadingStrategy loadingStrategy;
     private SelectionStrategy selectionStrategy;
+    private Set<String> selectionHint;
     private ProgressBar activityCircle;
     private SessionTracker sessionTracker;
     private String titleText;
@@ -484,9 +488,21 @@ public abstract class PickerFragment<T extends GraphObject> extends Fragment {
      *                    if false, data will not be re-loaded if it is already displayed (or loading)
      */
     public void loadData(boolean forceReload) {
+        loadData(forceReload, null);
+    }
+
+    /**
+     * Causes the picker to load data from the service and display it to the user.
+     *
+     * @param forceReload if true, data will be loaded even if there is already data being displayed (or loading);
+     *                    if false, data will not be re-loaded if it is already displayed (or loading)
+     * @param selectIds ids to select, if they are present in the loaded data
+     */
+    public void loadData(boolean forceReload, Set<String> selectIds) {
         if (!forceReload && loadingStrategy.isDataPresentOrLoading()) {
             return;
         }
+        selectionHint = selectIds;
         loadDataSkippingRoundTripIfCached();
     }
 
@@ -747,6 +763,32 @@ public abstract class PickerFragment<T extends GraphObject> extends Fragment {
 
             if (dataChanged && onDataChangedListener != null) {
                 onDataChangedListener.onDataChanged(PickerFragment.this);
+            }
+            if (selectionHint != null && !selectionHint.isEmpty() && data != null) {
+                data.moveToFirst();
+                boolean changed = false;
+                for (int i = 0; i < data.getCount(); i++) {
+                    data.moveToPosition(i);
+                    T graphObject = data.getGraphObject();
+                    if (!graphObject.asMap().containsKey("id"))
+                        continue;
+                    Object obj = graphObject.getProperty("id");
+                    if (!(obj instanceof String)) {
+                        continue;
+                    }
+                    String id = (String) obj;
+                    if (selectionHint.contains(id)) {
+                        selectionStrategy.toggleSelection(id);
+                        selectionHint.remove(id);
+                        changed = true;
+                    }
+                    if (selectionHint.isEmpty()) {
+                        break;
+                    }
+                }
+                if (onSelectionChangedListener != null && changed) {
+                    onSelectionChangedListener.onSelectionChanged(PickerFragment.this);
+                }
             }
         }
     }

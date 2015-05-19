@@ -19,7 +19,10 @@ package com.facebook.internal;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Looper;
 import android.util.Log;
+
+import com.facebook.FacebookException;
 
 import java.lang.reflect.Method;
 
@@ -51,6 +54,11 @@ public class AttributionIdentifiers {
     private static AttributionIdentifiers getAndroidId(Context context) {
         AttributionIdentifiers identifiers = new AttributionIdentifiers();
         try {
+            // We can't call getAdvertisingIdInfo on the main thread or the app will potentially
+            // freeze, if this is the case throw:
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+              throw new FacebookException("getAndroidId cannot be called on the main thread.");
+            }
             Method isGooglePlayServicesAvailable = Utility.getMethodQuietly(
                     "com.google.android.gms.common.GooglePlayServicesUtil",
                     "isGooglePlayServicesAvailable",
@@ -100,12 +108,12 @@ public class AttributionIdentifiers {
         }
 
         AttributionIdentifiers identifiers = getAndroidId(context);
-
+        Cursor c = null;
         try {
             String [] projection = {ATTRIBUTION_ID_COLUMN_NAME, ANDROID_ID_COLUMN_NAME, LIMIT_TRACKING_COLUMN_NAME};
-            Cursor c = context.getContentResolver().query(ATTRIBUTION_ID_CONTENT_URI, projection, null, null, null);
+            c = context.getContentResolver().query(ATTRIBUTION_ID_CONTENT_URI, projection, null, null, null);
             if (c == null || !c.moveToFirst()) {
-                return null;
+                return identifiers;
             }
             int attributionColumnIndex = c.getColumnIndex(ATTRIBUTION_ID_COLUMN_NAME);
             int androidIdColumnIndex = c.getColumnIndex(ANDROID_ID_COLUMN_NAME);
@@ -119,10 +127,13 @@ public class AttributionIdentifiers {
                 identifiers.androidAdvertiserId = c.getString(androidIdColumnIndex);
                 identifiers.limitTracking = Boolean.parseBoolean(c.getString(limitTrackingColumnIndex));
             }
-            c.close();
         } catch (Exception e) {
             Log.d(TAG, "Caught unexpected exception in getAttributionId(): " + e.toString());
             return null;
+        } finally {
+            if (c != null) {
+                c.close();
+            }
         }
 
         identifiers.fetchTime = System.currentTimeMillis();

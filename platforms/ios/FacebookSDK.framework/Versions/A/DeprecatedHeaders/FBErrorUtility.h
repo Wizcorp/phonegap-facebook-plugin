@@ -35,9 +35,27 @@
  The error category can be used to understand the class of error received from Facebook.  For more infomation on this
  see https://developers.facebook.com/docs/reference/api/errors/
 
- @param error the error to be categorized.
+ @param error The error to be categorized.
  */
 + (FBErrorCategory)errorCategoryForError:(NSError *)error;
+
+/*!
+ @abstract
+ Retrieves the underlying error code from an FBError that is wrapped within an NSError.
+ Returns NSNotFound if no error code was found.
+
+ @param error The error whose error code should be retrieved.
+ */
++ (NSUInteger)errorCodeForError:(NSError *)error;
+
+/*!
+ @abstract
+ Retrieves the underlying error subcode from an FBError that is wrapped within an NSError.
+ Returns NSNotFound if no error subcode was found.
+
+ @param error The error whose error subcode should be retrieved.
+ */
++ (NSUInteger)errorSubcodeForError:(NSError *)error;
 
 /*!
  @abstract
@@ -49,7 +67,7 @@
  take an action before the application continues to attempt a Facebook connection. For more infomation on this
  see https://developers.facebook.com/docs/reference/api/errors/
 
- @param error the error to inspect.
+ @param error The error to inspect.
  */
 + (BOOL)shouldNotifyUserForError:(NSError *)error;
 
@@ -57,11 +75,29 @@
  @abstract
  A message suitable for display to the user, describing a user action necessary to enable Facebook functionality.
  Not all Facebook errors yield a message suitable for user display; however in all cases where
- fberrorShouldNotifyUser is YES, this property returns a localizable message suitable for display.
+ +shouldNotifyUserForError: returns YES, this method returns a localizable message suitable for display.
 
- @param error the error to inspect.
+ @param error The error to inspect.
  */
 + (NSString *)userMessageForError:(NSError *)error;
 
+/*!
+ @abstract
+ A short summary of the error suitable for display to the user.
+ Not all Facebook errors yield a localized message/title suitable for user display; however in all cases when title is
+ available, user should be notified.
+
+ @param error The error to inspect.
+ */
++ (NSString *)userTitleForError:(NSError *)error;
+
+/*!
+ @abstract
+ YES if given error is transient and may succeed if the initial action is retried as-is.
+ Application may use this information to display a "Retry" button, if user should be notified about this error.
+
+ @param error The error to inspect.
+ */
++ (BOOL)isTransientError:(NSError *)error;
 
 @end
