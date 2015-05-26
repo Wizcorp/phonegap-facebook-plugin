@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="HelloCordova" default="help">
-	
-	<!-- Java 7 dependency -->
-	<property name="java.target" value="1.7" />
-    <property name="java.source" value="1.7" />
 
     <!-- The local.properties file is created and updated by the 'android' tool.
          It contains the path to the SDK. It should *NOT* be checked into
