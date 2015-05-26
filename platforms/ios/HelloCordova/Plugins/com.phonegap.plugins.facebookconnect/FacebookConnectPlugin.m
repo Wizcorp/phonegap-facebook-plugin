@@ -5,6 +5,7 @@
 //  Created by Jesse MacFadyen on 11-04-22.
 //  Updated by Mathijs de Bruin on 11-08-25.
 //  Updated by Christine Abernathy on 13-01-22
+//  Updated by Michael Go on 14-12-29
 //  Copyright 2011 Nitobi, Mathijs de Bruin. All rights reserved.
 //
 
@@ -15,7 +16,6 @@
 @property (strong, nonatomic) NSString *userid;
 @property (strong, nonatomic) NSString* loginCallbackId;
 @property (strong, nonatomic) NSString* dialogCallbackId;
-@property (strong, nonatomic) NSString* graphCallbackId;
 
 @end
 
@@ -140,7 +140,7 @@
             alertMessage = @"Permission denied.";
         } else {
             // For simplicity, this sample treats other errors blindly.
-            alertMessage = @"Error. Please try again later.";
+            alertMessage = [error localizedDescription];
         }
         
         if (alertMessage && self.loginCallbackId) {
@@ -235,7 +235,7 @@
      there is a helper method that explicitly takes a currency indicator.
      */
     CDVPluginResult *res;
-    if (!command.arguments == 2) {
+    if ([command.arguments count] != 2) {
         res = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Invalid arguments"];
         [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
         return;
@@ -496,9 +496,6 @@
 
 - (void) graphApi:(CDVInvokedUrlCommand *)command
 {
-    // Save the callback ID
-    self.graphCallbackId = command.callbackId;
-    
     NSString *graphPath = [command argumentAtIndex:0];
     NSArray *permissionsNeeded = [command argumentAtIndex:1];
     
@@ -523,7 +520,7 @@
                  // Permission granted
                  NSLog(@"new permissions %@", [FBSession.activeSession permissions]);
                  // We can request the user information
-                 [self makeGraphCall:graphPath];
+                 [self makeGraphCall:graphPath callbackId:command.callbackId];
              } else {
                  // An error occurred, we need to handle the error
                  // See: https://developers.facebook.com/docs/ios/errors
@@ -532,11 +529,11 @@
     } else {
         // Permissions are present
         // We can request the user information
-        [self makeGraphCall:graphPath];
+        [self makeGraphCall:graphPath callbackId:command.callbackId];
     }
 }
 
-- (void) makeGraphCall:(NSString *)graphPath
+- (void) makeGraphCall:(NSString *)graphPath callbackId:(NSString *)callbackId
 {
     
     NSLog(@"Graph Path = %@", graphPath);
@@ -552,7 +549,7 @@
              pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
                                               messageAsString:[error localizedDescription]];
          }
-         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.graphCallbackId];
+         [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
      }];
 }
 
