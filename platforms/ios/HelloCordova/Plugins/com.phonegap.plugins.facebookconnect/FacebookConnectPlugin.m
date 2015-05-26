@@ -139,7 +139,7 @@
  * Check if a permision is an extended permission.
  * https://developers.facebook.com/docs/facebook-login/permissions#reference-extended
  */
-- (BOOL)isExtendedPermission:(NSString *)permission
+/*- (BOOL)isExtendedPermission:(NSString *)permission
 {
     return [self isPublishPermission:permission] ||
     [permission isEqualToString:@"read_friendlists"] ||
@@ -147,7 +147,7 @@
     [permission isEqualToString:@"read_mailbox"] ||
     [permission isEqualToString:@"read_page_mailboxes"] ||
     [permission isEqualToString:@"read_stream"];
-}
+}*/
 
 /*
  * Check if all permissions are read permissions.
@@ -446,7 +446,7 @@
         }
     }
     // GameRequest dialog
-    else if ([method isEqualToString:@"gamerequest"]) {
+    else if ([method isEqualToString:@"apprequests"]) { // gamerequests
         
         FBSDKGameRequestContent *content = [[FBSDKGameRequestContent alloc] init];
         // FINISH: https://developers.facebook.com/docs/reference/ios/current/class/FBSDKGameRequestContent/
@@ -462,7 +462,7 @@
         }
     }
     // AppGroupJoin dialog
-    else if ([method isEqualToString:@"joingroup"]) {
+    else if ([method isEqualToString:@"game_group_create"]) { // joingroup
         FBSDKAppGroupJoinDialog *dialog = [[FBSDKAppGroupJoinDialog alloc] init];
         if ([dialog canShow]) {
             [dialog setDelegate:self];
@@ -588,6 +588,9 @@
     }];
 }
 
+/*
+ * Create a Facebook Response object that matches the one for the Javascript SDK
+ */
 - (NSDictionary *)sessionInfo
 {
     NSString *status = @"unknown";
@@ -621,6 +624,9 @@
     return statusDict;
 }
 
+/*
+ * TODO: Match to the profile response of the JavaScript SDK
+ */
 - (NSDictionary *)profileInfo
 {
     NSDictionary *profileDict = nil;
