@@ -412,7 +412,7 @@ public class ConnectPlugin extends CordovaPlugin {
                         public void onSuccess(Sharer.Result result) {
                             Log.i(TAG, "ShareDialog onSuccess");
                             try {
-                                final JSONObject json = BundleJSONConverter.convertToJSON(result.getData());
+                                final JSONObject json = new JSONObject("{\"post_id\": \"" + result.getPostId() + "\"}");
                                 showDialogContext.success(json);
                             } catch(JSONException e) {
                                 Log.e(TAG, "JSONException");
