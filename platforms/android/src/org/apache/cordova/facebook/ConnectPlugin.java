@@ -402,7 +402,7 @@ public class ConnectPlugin extends CordovaPlugin {
                 ShareLinkContent shareContent = new ShareLinkContent.Builder()
                         .setContentTitle(title)
                         .setContentDescription(paramBundle.getString("description"))
-                        .setContentUrl(Uri.parse(url))
+                        .setContentUrl(Uri.parse(url)) // TODO: Fails when url == null
                         .build();
 
                 ShareDialog shareDialog = new ShareDialog(cordova.getActivity());
@@ -410,25 +410,33 @@ public class ConnectPlugin extends CordovaPlugin {
                     new FacebookCallback<Sharer.Result>() {
                         @Override
                         public void onSuccess(Sharer.Result result) {
-                            Log.i(TAG, "ShareDialog FacebookCallback onSuccess");
-                            // FINISH
+                            Log.i(TAG, "ShareDialog onSuccess");
+                            try {
+                                final JSONObject json = BundleJSONConverter.convertToJSON(result.getData());
+                                showDialogContext.success(json);
+                            } catch(JSONException e) {
+                                Log.e(TAG, "JSONException");
+                                showDialogContext.error("JSONException");
+                            }
                         }
 
                         @Override
                         public void onCancel() {
-                            Log.i(TAG, "ShareDialog FacebookCallback onCancel");
-                            // FINISH
+                            Log.i(TAG, "ShareDialog onCancel");
+                            showDialogContext.error("User cancelled dialog.");
                         }
 
                         @Override
                         public void onError(FacebookException e) {
-                            Log.i(TAG, "ShareDialog FacebookCallback onError");
-                            // FINISH
+                            Log.i(TAG, "ShareDialog onError");
+                            showDialogContext.error("AppInviteDialog failed.");
                         }
                 });
 
                 if (ShareDialog.canShow(ShareLinkContent.class)) {
                     shareDialog.show(shareContent);
+                } else {
+                    showDialogContext.error("Could not show dialog.");
                 }
             }
 
@@ -436,40 +444,43 @@ public class ConnectPlugin extends CordovaPlugin {
              * App Invites
              */
             else if (this.method.equalsIgnoreCase("appinvites")) {
+                AppInviteContent content = new AppInviteContent.Builder()
+                        .setApplinkUrl(paramBundle.getString("link"))
+                        .setPreviewImageUrl(paramBundle.getString("preview"))
+                        .build();
+
+                AppInviteDialog appInviteDialog = new AppInviteDialog(cordova.getActivity());
+                appInviteDialog.registerCallback(callbackManager,
+                    new FacebookCallback<AppInviteDialog.Result>() {
+                        @Override
+                        public void onSuccess(AppInviteDialog.Result result) {
+                            Log.i(TAG, "AppInviteDialog onSuccess");
+                            try {
+                                final JSONObject json = BundleJSONConverter.convertToJSON(result.getData());
+                                showDialogContext.success(json);
+                            } catch(JSONException e) {
+                                Log.e(TAG, "JSONException");
+                                showDialogContext.error("JSONException");
+                            }
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            Log.i(TAG, "AppInviteDialog onCancel");
+                            showDialogContext.error("User cancelled dialog.");
+                        }
+
+                        @Override
+                        public void onError(FacebookException e) {
+                            Log.i(TAG, "AppInviteDialog onError");
+                            showDialogContext.error("AppInviteDialog failed.");
+                        }
+                });
+
                 if (AppInviteDialog.canShow()) {
-                    AppInviteContent content = new AppInviteContent.Builder()
-                            .setApplinkUrl(paramBundle.getString("link"))
-                            .setPreviewImageUrl(paramBundle.getString("preview"))
-                            .build();
-
-                    AppInviteDialog appInviteDialog = new AppInviteDialog(cordova.getActivity());
-                    appInviteDialog.registerCallback(callbackManager,
-                        new FacebookCallback<AppInviteDialog.Result>() {
-                            @Override
-                            public void onSuccess(AppInviteDialog.Result result) {
-                                Log.i(TAG, "AppInviteDialog onSuccess");
-                                try {
-                                    final JSONObject json = BundleJSONConverter.convertToJSON(result.getData());
-                                    showDialogContext.success(json);
-                                } catch(JSONException e) {
-                                    Log.e(TAG, "JSONException");
-                                }
-
-                            }
-
-                            @Override
-                            public void onCancel() {
-                                Log.i(TAG, "AppInviteDialog onCancel");
-                                showDialogContext.error("User cancelled dialog.");
-                            }
-
-                            @Override
-                            public void onError(FacebookException e) {
-                                Log.i(TAG, "AppInviteDialog onError");
-                                // FINISH
-                            }
-                    });
                     appInviteDialog.show(content);
+                } else {
+                    showDialogContext.error("Could not show dialog.");
                 }
             }
 
