@@ -7,13 +7,16 @@
 //  Updated by Christine Abernathy on 13-01-22
 //  Updated by Michael Go on 14-12-29
 //  Copyright 2011 Nitobi, Mathijs de Bruin. All rights reserved.
+
+// AppGyver: *** The FacebookConnectPlugin class was modified to use the Plugin Wrapper Singleton which is reused across multiple webviews ***
 //
+
+
 
 #import "FacebookConnectPlugin.h"
 
 @interface FacebookConnectPlugin ()
 
-@property (strong, nonatomic) NSString *userid;
 @property (strong, nonatomic) NSString* loginCallbackId;
 @property (strong, nonatomic) NSString* dialogCallbackId;
 
@@ -21,134 +24,51 @@
 
 @implementation FacebookConnectPlugin
 
-
 - (CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
-    NSLog(@"Init FacebookConnect Session");
     self = (FacebookConnectPlugin *)[super initWithWebView:theWebView];
-    self.userid = @"";
     
-    [FBSession openActiveSessionWithReadPermissions:nil
-                                       allowLoginUI:NO
-                                  completionHandler:^(FBSession *session,
-                                                      FBSessionState state,
-                                                      NSError *error) {
-                                      [self sessionStateChanged:session
-                                                          state:state
-                                                          error:error];
-                                  }];
-    // Add notification listener for tracking app activity with FB Events
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationDidBecomeActive)
-                                                 name:UIApplicationDidBecomeActiveNotification object:nil];
-    // Add notification listener for handleOpenURL
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(openURL:)
-                                                 name:CDVPluginHandleOpenURLNotification object:nil];
+    [self setupNotificationHandlers];
+    
     return self;
 }
 
-- (void)openURL:(NSNotification *)notification {
-    // NSLog(@"handle url: %@", [notification object]);
-    NSURL *url = [notification object];
 
-    if (![url isKindOfClass:[NSURL class]]) {
-        return;
-    }
-
-    [FBSession.activeSession handleOpenURL:url];
-}
-
-- (void)applicationDidBecomeActive {
-    // Call the 'activateApp' method to log an app event for use in analytics and advertising reporting.
-    [FBAppEvents activateApp];
-}
-
-/*
- * Callback for session changes.
- */
-- (void)sessionStateChanged:(FBSession *)session
-                      state:(FBSessionState) state
-                      error:(NSError *)error
-{
-    switch (state) {
-        case FBSessionStateOpen:
-        case FBSessionStateOpenTokenExtended:
-            if (!error) {
-                // We have a valid session
-                
-                if (state == FBSessionStateOpen) {
-                    // Get the user's info
-                    [FBRequestConnection startForMeWithCompletionHandler:
-                     ^(FBRequestConnection *connection, id <FBGraphUser>user, NSError *error) {
-                         if (!error) {
-                             self.userid = [user objectForKey:@"id"];
-                             
-                             // Send the plugin result. Wait for a successful fetch of user info.
-                             if (self.loginCallbackId) {
-                                CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                                                           messageAsDictionary:[self responseObject]];
-                                [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
-                             }
-                         } else {
-                             self.userid = @"";
-                         }
-                     }];
-                } else {
-                    // Don't get user's info but trigger success callback
-                    // Send the plugin result. Wait for a successful fetch of user info.
-                    if (self.loginCallbackId) {
-                        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK 
-                                                                messageAsDictionary:[self responseObject]];
-                        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
-                    }
-                }
-            }
-            break;
-        case FBSessionStateClosed:
-        case FBSessionStateClosedLoginFailed:
-            [FBSession.activeSession closeAndClearTokenInformation];
-            self.userid = @"";
-            break;
-        default:
-            break;
-    }
+- (void) setupNotificationHandlers {
     
-    if (error) {
-        NSString *alertMessage = nil;
-        
-        if (error.fberrorShouldNotifyUser) {
-            // If the SDK has a message for the user, surface it.
-            alertMessage = error.fberrorUserMessage;
-        } else if (error.fberrorCategory == FBErrorCategoryAuthenticationReopenSession) {
-            // Handles session closures that can happen outside of the app.
-            // Here, the error is inspected to see if it is due to the app
-            // being uninstalled. If so, this is surfaced. Otherwise, a
-            // generic session error message is displayed.
-            NSInteger underlyingSubCode = [[error userInfo]
-                                           [@"com.facebook.sdk:ParsedJSONResponseKey"]
-                                           [@"body"]
-                                           [@"error"]
-                                           [@"error_subcode"] integerValue];
-            if (underlyingSubCode == 458) {
-                alertMessage = @"The app was removed. Please log in again.";
-            } else {
-                alertMessage = @"Your current session is no longer valid. Please log in again.";
-            }
-        } else if (error.fberrorCategory == FBErrorCategoryUserCancelled) {
-            // The user has cancelled a login. You can inspect the error
-            // for more context. In the plugin, we will simply ignore it.
-            alertMessage = @"Permission denied.";
-        } else {
-            // For simplicity, this sample treats other errors blindly.
-            alertMessage = [error localizedDescription];
-        }
-        
-        if (alertMessage && self.loginCallbackId) {
-            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
-                                                              messageAsString:alertMessage];
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:self.loginCallbackId];
-        }
-    }
+     __weak typeof (self) weakSelf = self;
+    
+    [[NSNotificationCenter defaultCenter]
+     addObserverForName:@"FB_PLUGIN_SESSION_STATE_OPEN"
+     object:[FacebookWrapperSingleton instance]
+     queue:nil
+     usingBlock:^(NSNotification *note) {
+         
+         __strong typeof (self) strongSelf = weakSelf;
+         
+         if(strongSelf.loginCallbackId){
+             CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                                           messageAsDictionary:[[FacebookWrapperSingleton instance] getStatusDictionary]];
+             [strongSelf.commandDelegate sendPluginResult:pluginResult callbackId:strongSelf.loginCallbackId];
+             
+         }
+     }];
+    
+    [[NSNotificationCenter defaultCenter]
+     addObserverForName:@"FB_PLUGIN_SESSION_STATE_ERROR"
+     object:[FacebookWrapperSingleton instance]
+     queue:nil
+     usingBlock:^(NSNotification *note) {
+         
+         __strong typeof (self) strongSelf = weakSelf;
+         
+         if(strongSelf.loginCallbackId){
+             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                               messageAsString:note.userInfo[@"errorMessage"]];
+             [strongSelf.commandDelegate sendPluginResult:pluginResult callbackId:strongSelf.loginCallbackId];
+             
+         }
+     }];
+    
 }
 
 /*
@@ -176,7 +96,7 @@
 
 - (void)getLoginStatus:(CDVInvokedUrlCommand *)command {
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                                  messageAsDictionary:[self responseObject]];
+                                                  messageAsDictionary:[[FacebookWrapperSingleton instance] getStatusDictionary]];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -296,38 +216,20 @@
             permissionsErrorMessage = @"Your app can't ask for both read and write permissions.";
         } else if (publishPermissionFound) {
             // Only publish permissions
-            [FBSession.activeSession
-             requestNewPublishPermissions:permissions
-             defaultAudience:FBSessionDefaultAudienceFriends
-             completionHandler:^(FBSession *session, NSError *error) {
-                [self sessionStateChanged:session
-                                    state:session.state
-                                    error:error];
-             }];
+            [[FacebookWrapperSingleton instance] requestNewPublishPermissions:permissions defaultAudience:FBSessionDefaultAudienceFriends];
+            
         } else {
             // Only read permissions
-            [FBSession.activeSession
-             requestNewReadPermissions:permissions
-             completionHandler:^(FBSession *session, NSError *error) {
-                 [self sessionStateChanged:session
-                                     state:session.state
-                                     error:error];
-             }];
+            [[FacebookWrapperSingleton instance] requestNewReadPermissions:permissions];
+            
         }
     } else {
         // Initial log in, can only ask to read
         // type permissions
         if ([self areAllPermissionsReadPermissions:permissions]) {
-            [FBSession
-             openActiveSessionWithReadPermissions:permissions
-             allowLoginUI:YES
-             completionHandler:^(FBSession *session,
-                                 FBSessionState state,
-                                 NSError *error) {
-                 [self sessionStateChanged:session
-                                     state:state
-                                     error:error];
-             }];
+            
+            [[FacebookWrapperSingleton instance] openActiveSessionWithReadPermissions:permissions allowLoginUI:YES];
+            
         } else {
             permissionsAllowed = NO;
             permissionsErrorMessage = @"You can only ask for read permissions initially";
@@ -343,10 +245,9 @@
 
 - (void) logout:(CDVInvokedUrlCommand*)command
 {
-    if (FBSession.activeSession.isOpen) {
-        // Close the session and clear the cache
-        [FBSession.activeSession closeAndClearTokenInformation];
-    }
+ 
+    [[FacebookWrapperSingleton instance] logout];
+    
     // Else just return OK we are already logged out
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -512,20 +413,20 @@
     
     // If we have permissions to request
     if ([requestPermissions count] > 0){
+        
         // Ask for the missing permissions
-        [FBSession.activeSession
-         requestNewReadPermissions:requestPermissions
-         completionHandler:^(FBSession *session, NSError *error) {
-             if (!error) {
-                 // Permission granted
-                 NSLog(@"new permissions %@", [FBSession.activeSession permissions]);
-                 // We can request the user information
-                 [self makeGraphCall:graphPath callbackId:command.callbackId];
-             } else {
-                 // An error occurred, we need to handle the error
-                 // See: https://developers.facebook.com/docs/ios/errors
-             }
-         }];
+        [[FacebookWrapperSingleton instance] requestNewReadPermissions:requestPermissions withBlock:^(FBSession *session, NSError *error) {
+            if (!error) {
+                // Permission granted
+                NSLog(@"new permissions %@", [FBSession.activeSession permissions]);
+                // We can request the user information
+                [self makeGraphCall:graphPath callbackId:command.callbackId];
+            } else {
+                // An error occurred, we need to handle the error
+                // See: https://developers.facebook.com/docs/ios/errors
+            }
+        }];
+        
     } else {
         // Permissions are present
         // We can request the user information
@@ -553,36 +454,6 @@
      }];
 }
 
-- (NSDictionary *)responseObject {
-    NSString *status = @"unknown";
-    NSDictionary *sessionDict = nil;
-    
-    NSTimeInterval expiresTimeInterval = [FBSession.activeSession.accessTokenData.expirationDate timeIntervalSinceNow];
-    NSString *expiresIn = @"0";
-    if (expiresTimeInterval > 0) {
-        expiresIn = [NSString stringWithFormat:@"%0.0f", expiresTimeInterval];
-    }
-    
-    if (FBSession.activeSession.isOpen) {
-        
-        status = @"connected";
-        sessionDict = @{
-                        @"accessToken" : FBSession.activeSession.accessTokenData.accessToken,
-                        @"expiresIn" : expiresIn,
-                        @"secret" : @"...",
-                        @"session_key" : [NSNumber numberWithBool:YES],
-                        @"sig" : @"...",
-                        @"userID" : self.userid
-                        };
-    }
-    
-    NSMutableDictionary *statusDict = [NSMutableDictionary dictionaryWithObject:status forKey:@"status"];
-    if (nil != sessionDict) {
-        [statusDict setObject:sessionDict forKey:@"authResponse"];
-    }
-        
-    return statusDict;
-}
 
 /**
  * A method for parsing URL parameters.
