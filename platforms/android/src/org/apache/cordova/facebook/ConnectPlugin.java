@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +29,7 @@ import android.net.Uri;
 
 import com.facebook.*;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.internal.BundleJSONConverter;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.ProfilePictureView;
@@ -42,12 +44,6 @@ import com.facebook.share.widget.AppInviteDialog;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.GameRequestDialog;
 import com.facebook.share.model.GameRequestContent;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.FacebookAuthorizationException;
-import com.facebook.FacebookRequestError;
-import com.facebook.FacebookServiceException;
 
 public class ConnectPlugin extends CordovaPlugin {
 
@@ -60,9 +56,10 @@ public class ConnectPlugin extends CordovaPlugin {
             add("ads_management");
             add("create_event");
             add("rsvp_event");
+            // TODO: Any changes?
         }
     };
-    private final String TAG = "ConnectPlugin";
+    private static final String TAG = "ConnectPlugin";
 
     private AppEventsLogger logger;
     private String applicationId = null;
@@ -75,6 +72,15 @@ public class ConnectPlugin extends CordovaPlugin {
     private String graphPath;
     private String userID;
     private boolean trackingPendingCall = false;
+    private static boolean initialized = false;
+
+    public static void initializeFacebookSdkWithApplication(Application app) {
+        // Initialize the SDK
+        FacebookSdk.sdkInitialize(app);
+        // TODO: LoggingBehavior.GRAPH_API_DEBUG_INFO
+        // TODO: LoggingBehavior.GRAPH_API_DEBUG_WARNING
+        initialized = true;
+    }
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
@@ -84,13 +90,6 @@ public class ConnectPlugin extends CordovaPlugin {
         // Set up the activity result callback to this class
         cordova.setActivityResultCallback(this);
 
-        int appResId = cordova.getActivity().getResources().getIdentifier("fb_app_id", "string", cordova.getActivity().getPackageName());
-        applicationId = cordova.getActivity().getString(appResId);
-
-        // Initialize the SDK
-        FacebookSdk.sdkInitialize(cordova.getActivity().getApplicationContext());
-        Log.d(TAG, "sdkInitialize");
-
         // Initialize callback manager
         callbackManager = CallbackManager.Factory.create();
 
@@ -99,17 +98,26 @@ public class ConnectPlugin extends CordovaPlugin {
             new FacebookCallback<LoginResult>() {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
-                    Log.i(TAG, "LoginManager FacebookCallback onSuccess");
+                    Log.i(TAG, "LoginManager onSuccess");
+                    final AccessToken accessToken = loginResult.getAccessToken();
+                    updateWithToken(accessToken);
+                    if (loginContext != null) {
+                        loginContext.success(getResponse());
+                    }
                 }
 
                 @Override
                 public void onCancel() {
-                     Log.i(TAG, "LoginManager FacebookCallback onCancel");
+                    Log.i(TAG, "LoginManager onCancel");
+                    if (loginContext != null) {
+                        loginContext.error("Login cancelled.");
+                    }
                 }
 
                 @Override
                 public void onError(FacebookException e) {
-                     Log.i(TAG, "LoginManager FacebookCallback onError");
+                    Log.i(TAG, "LoginManager onError");
+                    loginContext.error("Login error.");
                 }
         });
 
@@ -122,10 +130,6 @@ public class ConnectPlugin extends CordovaPlugin {
             }
         };
 
-        // TODO: You should check AccessToken.getCurrentAccessToken()
-        // at onCreate(), and if not null, skip login...
-        // TODO: Set userID on change in profile
-
         super.initialize(cordova, webView);
     }
 
@@ -135,20 +139,6 @@ public class ConnectPlugin extends CordovaPlugin {
         // Observe how frequently users activate their app by logging an app activation event.
         AppEventsLogger.activateApp(cordova.getActivity());
     }
-
-    /*protected void onSaveInstanceState(Bundle outState) {
-        uiHelper.onSaveInstanceState(outState);
-    }
-
-    public void onPause() {
-        uiHelper.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        uiHelper.onDestroy();
-    }*/
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -161,12 +151,14 @@ public class ConnectPlugin extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+        // Get the current access token
+        final AccessToken accessToken = AccessToken.getCurrentAccessToken();
 
         /*
          * Initialize
          */
         if (action.equals("initialize")) {
-            Log.d(TAG, "initialize");
+            Log.d(TAG, "initialize FB");
         }
 
         /**
@@ -185,22 +177,14 @@ public class ConnectPlugin extends CordovaPlugin {
                 permissions = Arrays.asList(arrayPermissions);
             }
 
-            // Get the current access token
-            AccessToken token = AccessToken.getCurrentAccessToken();
-
             // Set a pending callback to cordova
             loginContext = callbackContext;
             PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
             pr.setKeepCallback(true);
             loginContext.sendPluginResult(pr);
 
-            Log.d(TAG, "login");
-
             // Check for active access token
-            if (token != null) {
-
-                Log.d(TAG, "login (already)");
-
+            if (accessToken != null) {
                 // Reauthorize flow
                 boolean publishPermissions = false;
                 boolean readPermissions = false;
@@ -239,9 +223,6 @@ public class ConnectPlugin extends CordovaPlugin {
             }
             // Initial login
             else {
-
-                Log.d(TAG, "login (new)");
-
                 // Set up the activity result callback to this class
                 cordova.setActivityResultCallback(this);
                 // Only ask for read permissions initially
@@ -264,8 +245,9 @@ public class ConnectPlugin extends CordovaPlugin {
          * getLoginStatus
          */
         else if (action.equals("getLoginStatus")) {
-            if (userID == null && AccessToken.getCurrentAccessToken() != null) {
+            if (userID == null && accessToken != null) {
                 Log.e(TAG, "Active token but no user ID");
+                callbackContext.error("Active token but no user ID.");
             } else {
                 callbackContext.success(getResponse());
             }
@@ -276,9 +258,8 @@ public class ConnectPlugin extends CordovaPlugin {
          * getAccessToken
          */
         else if (action.equals("getAccessToken")) {
-            AccessToken token = AccessToken.getCurrentAccessToken();
-            if (token != null) {
-                callbackContext.success(token.getToken());
+            if (accessToken != null) {
+                callbackContext.success(accessToken.getToken());
             } else {
                 callbackContext.error("AccessToken is null.");
             }
@@ -384,23 +365,24 @@ public class ConnectPlugin extends CordovaPlugin {
             }
             this.paramBundle = new Bundle(collect);
 
-            AccessToken accessToken = AccessToken.getCurrentAccessToken();
             // The Share dialog prompts a person to publish an individual story or an Open Graph story to their timeline.
             // This does not require Facebook Login or any extended permissions, so it is the easiest way to enable sharing on web.
             boolean isShareDialog = this.method.equalsIgnoreCase("share") ||
                 this.method.equalsIgnoreCase("share_open_graph") ||
                 this.method.equalsIgnoreCase("feed") ||
                 this.method.equalsIgnoreCase("send");
+
             // Must be an active session when is not a Shared dialog or if the Share dialog cannot be presented.
             boolean requiresAnActiveToken = (!isShareDialog);
             if (requiresAnActiveToken) {
                 if (accessToken == null) {
-                    callbackContext.error("No active token");
-                    return true;
-                } else if (!accessToken.getPermissions().contains("publish_actions")) {
-                    callbackContext.error("Requires publish_actions permission");
+                    callbackContext.error("No active token.");
                     return true;
                 }
+                /*else if (!accessToken.getPermissions().contains("publish_actions")) {
+                    callbackContext.error("Required permission: publish_actions");
+                    return true;
+                }*/
             }
 
             // Begin by sending a callback pending notice to Cordova
@@ -413,11 +395,9 @@ public class ConnectPlugin extends CordovaPlugin {
              * Sharing
              */
             if (isShareDialog) {
-                // TODO: Better way to test multiple keys
-                String title = (paramBundle.getString("title") != null) ?
-                    paramBundle.getString("title") : paramBundle.getString("name");
-                String url = (paramBundle.getString("link") != null) ?
-                    paramBundle.getString("link") : paramBundle.getString("href");
+                // TODO: Better way to test multiple keys?
+                String title = (paramBundle.getString("title") != null) ? paramBundle.getString("title") : paramBundle.getString("name");
+                String url = (paramBundle.getString("link") != null) ? paramBundle.getString("link") : paramBundle.getString("href");
 
                 ShareLinkContent shareContent = new ShareLinkContent.Builder()
                         .setContentTitle(title)
@@ -431,16 +411,19 @@ public class ConnectPlugin extends CordovaPlugin {
                         @Override
                         public void onSuccess(Sharer.Result result) {
                             Log.i(TAG, "ShareDialog FacebookCallback onSuccess");
+                            // FINISH
                         }
 
                         @Override
                         public void onCancel() {
                             Log.i(TAG, "ShareDialog FacebookCallback onCancel");
+                            // FINISH
                         }
 
                         @Override
                         public void onError(FacebookException e) {
                             Log.i(TAG, "ShareDialog FacebookCallback onError");
+                            // FINISH
                         }
                 });
 
@@ -464,17 +447,26 @@ public class ConnectPlugin extends CordovaPlugin {
                         new FacebookCallback<AppInviteDialog.Result>() {
                             @Override
                             public void onSuccess(AppInviteDialog.Result result) {
-                                Log.i(TAG, "AppInviteDialog FacebookCallback onSuccess");
+                                Log.i(TAG, "AppInviteDialog onSuccess");
+                                try {
+                                    final JSONObject json = BundleJSONConverter.convertToJSON(result.getData());
+                                    showDialogContext.success(json);
+                                } catch(JSONException e) {
+                                    Log.e(TAG, "JSONException");
+                                }
+
                             }
 
                             @Override
                             public void onCancel() {
-                                Log.i(TAG, "AppInviteDialog FacebookCallback onCancel");
+                                Log.i(TAG, "AppInviteDialog onCancel");
+                                showDialogContext.error("User cancelled dialog.");
                             }
 
                             @Override
                             public void onError(FacebookException e) {
-                                Log.i(TAG, "AppInviteDialog FacebookCallback onError");
+                                Log.i(TAG, "AppInviteDialog onError");
+                                // FINISH
                             }
                     });
                     appInviteDialog.show(content);
@@ -498,13 +490,14 @@ public class ConnectPlugin extends CordovaPlugin {
             else {
                 callbackContext.error("Unsupported dialog method.");
             }
+
             return true;
         }
 
         /**
          * graphApi
          */
-        /*else if (action.equals("graphApi")) {
+        else if (action.equals("graphApi")) {
             graphContext = callbackContext;
             PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
             pr.setKeepCallback(true);
@@ -535,21 +528,19 @@ public class ConnectPlugin extends CordovaPlugin {
                 if (publishPermissions && readPermissions) {
                     graphContext.error("Cannot ask for both read and publish permissions.");
                 } else {
-                    Session session = Session.getActiveSession();
-                    if (session.getPermissions().containsAll(permissionsList)) {
+                    if (accessToken.getPermissions().containsAll(permissionsList)) {
                         makeGraphCall();
                     } else {
-                        // Set up the new permissions request
-                        Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(cordova.getActivity(), permissionsList);
                         // Set up the activity result callback to this class
+                        // TODO: Complete the graph call?
                         cordova.setActivityResultCallback(this);
                         // Check for write permissions, the default is read (empty)
                         if (publishPermissions) {
                             // Request new publish permissions
-                            session.requestNewPublishPermissions(newPermissionsRequest);
+                            LoginManager.getInstance().logInWithPublishPermissions(cordova.getActivity(), permissionsList);
                         } else {
                             // Request new read permissions
-                            session.requestNewReadPermissions(newPermissionsRequest);
+                            LoginManager.getInstance().logInWithReadPermissions(cordova.getActivity(), permissionsList);
                         }
                     }
                 }
@@ -557,82 +548,31 @@ public class ConnectPlugin extends CordovaPlugin {
                 makeGraphCall();
             }
             return true;
-        }*/
+        }
 
         return false;
     }
 
-    private void updateWithToken(AccessToken token) {
-        Log.d(TAG, "New token: " + token);
-        // TODO: get user profile
-        // TODO: Record user ID
-    }
-
-    /*private void handleError(Exception exception, CallbackContext context) {
-        String errMsg = "Facebook error: " + exception.getMessage();
-        int errorCode = INVALID_ERROR_CODE;
-        // User clicked "x"
-        if (exception instanceof FacebookOperationCanceledException) {
-            errMsg = "User cancelled dialog";
-            errorCode = 4201;
-        } else if (exception instanceof FacebookDialogException) {
-            // Dialog error
-            errMsg = "Dialog error: " + exception.getMessage();
-        }
-
-        Log.e(TAG, exception.toString());
-        context.error(getErrorResponse(exception, errMsg, errorCode));
-    }*/
-
-    // TODO: Can we rename this handleDialogSuccess?
-    private void handleSuccess(Bundle values) {
-        // Handle a successful dialog:
-        // Send the URL parameters back, for a requests dialog, the "request" parameter
-        // will include the resulting request id. For a feed dialog, the "post_id"
-        // parameter will include the resulting post id.
-        // Note: If the user clicks on the Cancel button, the parameter will be empty
-        if (values.size() > 0) {
-            JSONObject response = new JSONObject();
-            try {
-                Set<String> keys = values.keySet();
-                for (String key : keys) {
-                    //check if key is array
-                    int beginArrayCharIndex = key.indexOf("[");
-                    if (beginArrayCharIndex >= 0) {
-                        String normalizedKey = key.substring(0, beginArrayCharIndex);
-                        JSONArray result;
-                        if (response.has(normalizedKey)) {
-                            result = (JSONArray) response.get(normalizedKey);
-                        } else {
-                            result = new JSONArray();
-                            response.put(normalizedKey, result);
-                        }
-                        result.put(result.length(), values.get(key));
-                    } else {
-                        response.put(key, values.get(key));
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+    private void updateWithToken(AccessToken accessToken) {
+        GraphRequestAsyncTask request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject user, GraphResponse graphResponse) {
+                // Record user id
+                userID = user.optString("id");
             }
-            showDialogContext.success(response);
-        } else {
-            Log.e(TAG, "User cancelled dialog");
-            showDialogContext.error("User cancelled dialog");
-        }
+        }).executeAsync();
     }
 
-    /*private void makeGraphCall() {
-        Request.Callback graphCallback = new Request.Callback() {
+    private void makeGraphCall() {
+        GraphRequest.Callback graphCallback = new GraphRequest.Callback() {
 
             @Override
-            public void onCompleted(Response response) {
+            public void onCompleted(GraphResponse response) {
                 if (graphContext != null) {
                     if (response.getError() != null) {
                         graphContext.error(getFacebookRequestErrorResponse(response.getError()));
                     } else {
-                        GraphObject graphObject = response.getGraphObject();
-                        graphContext.success(graphObject.getInnerJSONObject());
+                        graphContext.success(response.getJSONObject());
                     }
                     graphPath = null;
                     graphContext = null;
@@ -649,7 +589,7 @@ public class ConnectPlugin extends CordovaPlugin {
 
         String[] urlParts = graphPath.split("\\?");
         String graphAction = urlParts[0];
-        Request graphRequest = Request.newGraphPathRequest(null, graphAction, graphCallback);
+        GraphRequest graphRequest = GraphRequest.newGraphPathRequest(null, graphAction, graphCallback);
         Bundle params = graphRequest.getParameters();
 
         if (urlParts.length > 1) {
@@ -670,7 +610,7 @@ public class ConnectPlugin extends CordovaPlugin {
 
         graphRequest.setParameters(params);
         graphRequest.executeAsync();
-    }*/
+    }
 
     /*
      * Checks for publish permissions
@@ -716,22 +656,18 @@ public class ConnectPlugin extends CordovaPlugin {
         return new JSONObject();
     }
 
-    /*public JSONObject getFacebookRequestErrorResponse(FacebookRequestError error) {
+    public JSONObject getFacebookRequestErrorResponse(FacebookRequestError error) {
 
         String response = "{"
             + "\"errorCode\": \"" + error.getErrorCode() + "\","
             + "\"errorType\": \"" + error.getErrorType() + "\","
             + "\"errorMessage\": \"" + error.getErrorMessage() + "\"";
 
-        int messageId = error.getUserActionMessageId();
+        String errorUserMessage = error.getErrorUserMessage();
 
-        // Check for INVALID_MESSAGE_ID
-        if (messageId != 0) {
-            String errorUserMessage = cordova.getActivity().getResources().getString(messageId);
-            // Safe check for null
-            if (errorUserMessage != null) {
-                response += ",\"errorUserMessage\": \"" + cordova.getActivity().getResources().getString(error.getUserActionMessageId()) + "\"";
-            }
+        // Safe check for null
+        if (errorUserMessage != null) {
+            response += ",\"errorUserMessage\": \"" + errorUserMessage + "\"";
         }
 
         response += "}";
@@ -742,19 +678,19 @@ public class ConnectPlugin extends CordovaPlugin {
             e.printStackTrace();
         }
         return new JSONObject();
-    }*/
+    }
 
     public JSONObject getErrorResponse(Exception error, String message, int errorCode) {
 
-        /*if (error instanceof FacebookServiceException) {
+        if (error instanceof FacebookServiceException) {
             return getFacebookRequestErrorResponse(((FacebookServiceException) error).getRequestError());
-        }*/
+        }
 
         String response = "{";
 
-        /*if (error instanceof FacebookDialogException) {
+        if (error instanceof FacebookDialogException) {
             errorCode = ((FacebookDialogException) error).getErrorCode();
-        }*/
+        }
 
         if (errorCode != INVALID_ERROR_CODE) {
             response += "\"errorCode\": \"" + errorCode + "\",";
