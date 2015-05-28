@@ -12,7 +12,9 @@ The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) a
 
 ## << --- Cordova Registry Warning [iOS]
 
-****Installing this plugin directly from Cordova Registry results in Xcode using a broken `FacebookSDK.framework`, this is because the current publish procedure to NPM breaks symlinks [CB-6092](https://issues.apache.org/jira/browse/CB-6092). Please install the plugin through a locally cloned copy or re-add the `FacebookSDK.framework` to Xcode after installation.****
+****Installing this plugin directly from Cordova Registry results in Xcode using a broken `FacebookSDK.framework` if you're using cordova version lower than 4.0.0. This is because the current publish procedure to NPM breaks symlinks [CB-6092](https://issues.apache.org/jira/browse/CB-6092). Please install the plugin through a locally cloned copy or re-add the `FacebookSDK.framework` to Xcode after installation.****
+
+****If you're using cordova@4.0.0 or greater, symlinks inside of FacebookSDK.framework will be restored automatically in `before_compile` hook. If you want to build project using Xcode, you will need to build it using CLI first to repair broken framework.****
 
 ## ------------------------------------------ >>
 

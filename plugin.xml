@@ -66,6 +66,9 @@
 
     <!-- ios -->
     <platform name="ios">
+
+        <hook type="before_compile" src="scripts/restoreframeworksmetadata.js" />
+
         <config-file target="config.xml" parent="/*">
             <feature name="FacebookConnectPlugin">
                 <param name="ios-package" value="FacebookConnectPlugin"/>

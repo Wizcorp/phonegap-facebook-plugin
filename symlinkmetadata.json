@@ -1,0 +1,20 @@
+{
+    "FacebookSDK.framework": [
+        {
+            "link": "FacebookSDK",
+            "target": "Versions/A/FacebookSDK"
+        },
+        {
+            "link": "Headers",
+            "target": "Versions/A/Headers"
+        },
+        {
+            "link": "Resources",
+            "target": "Versions/A/Resources"
+        },
+        {
+            "link": "Versions/Current",
+            "target": "A"
+        }
+    ]
+}
