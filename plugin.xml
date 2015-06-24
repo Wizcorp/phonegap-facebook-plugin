@@ -22,7 +22,7 @@
     <engines>
         <!-- Requires > 3.3.* because of the custom Framework tag for iOS [CB-5238] -->
         <!-- Requires > 3.5.0 because of the custom Framework tag for Android [CB-6698] -->
-        <engine name="cordova" version=">=3.5.0" />
+        <engine name="cordova" version=">=5.0.0" />
     </engines>
 
     <!-- JavaScript interface -->
