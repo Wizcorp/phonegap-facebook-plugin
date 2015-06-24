@@ -432,11 +432,16 @@
         }
     }
     // GameRequest dialog
-    else if ([method isEqualToString:@"apprequests"]) { // gamerequests
+    else if ([method isEqualToString:@"apprequests"]) { // i.e. gamerequests
 
         FBSDKGameRequestContent *content = [[FBSDKGameRequestContent alloc] init];
-        // FINISH: https://developers.facebook.com/docs/reference/ios/current/class/FBSDKGameRequestContent/
-        // actionType<FBSDKGameRequestActionType>, data, filters, message, objectID, suggesetions, title, to
+        content.title = [params objectForKey:@"title"];
+        content.message = [params objectForKey:@"message"];
+        content.to = [params objectForKey:@"to"]; // array
+        // content.actionType = (FBSDKGameRequestActionType)[params objectForKey:@"actionType"];
+        content.suggestions = [params objectForKey:@"suggestions"]; // array
+        content.objectID = [params objectForKey:@"objectID"];
+        content.data = [params objectForKey:@"data"];
 
         FBSDKGameRequestDialog *dialog = [[FBSDKGameRequestDialog alloc] init];
         if ([dialog canShow]) {
@@ -448,7 +453,7 @@
         }
     }
     // AppGroupJoin dialog
-    else if ([method isEqualToString:@"game_group_create"]) { // joingroup
+    else if ([method isEqualToString:@"game_group_create"]) {
         FBSDKAppGroupJoinDialog *dialog = [[FBSDKAppGroupJoinDialog alloc] init];
         if ([dialog canShow]) {
             [dialog setDelegate:self];
