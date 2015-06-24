@@ -10,6 +10,8 @@
 //
 
 #import "FacebookConnectPlugin.h"
+#import <objc/runtime.h>
+#import <objc/message.h>
 
 @interface FacebookConnectPlugin ()
 
@@ -21,7 +23,7 @@
 
 @implementation FacebookConnectPlugin
 
-
+#pragma mark - Constructor
 
 - (CDVPlugin *)initWithWebView:(UIWebView *)theWebView
 {
@@ -39,10 +41,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationBecameActive:)
                                                  name:UIApplicationDidBecomeActiveNotification object:nil];
-    // Add notification listener for deep link URLs
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(openURL:)
-                                                 name:CDVPluginHandleOpenURLNotification object:nil];
     // Add notification listener for profile change
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(profileChange:)
@@ -77,18 +75,6 @@
         }
     }];
 }
-
-- (void)openURL:(NSNotification *)notification
- {
-     NSLog(@"handle url: %@", [notification object]);
-     NSURL *url = [notification object];
-
-     if (![url isKindOfClass:[NSURL class]]) {
-         return;
-     }
-     // FIXME: Need a way to run from here rather than app delegate
-     // [[FBSDKApplicationDelegate sharedInstance] application:[UIApplication sharedApplication] openURL:url sourceApplication:nil annotation:nil];
- }
 
 
 
@@ -716,6 +702,55 @@
 - (void)appGroupJoinDialogDidCancel:(FBSDKAppGroupJoinDialog *)appGroupJoinDialog
 {
     [self dialogErrorWithMessage:@"Join group cancelled."];
+}
+
+@end
+
+
+
+#pragma mark - AppDelegate Overrides
+
+@implementation AppDelegate (FacebookConnectPlugin)
+
+void FBMethodSwizzle(Class c, SEL originalSelector) {
+    NSString *selectorString = NSStringFromSelector(originalSelector);
+    SEL newSelector = NSSelectorFromString([@"swizzled_" stringByAppendingString:selectorString]);
+    SEL noopSelector = NSSelectorFromString([@"noop_" stringByAppendingString:selectorString]);
+    Method originalMethod, newMethod, noop;
+    originalMethod = class_getInstanceMethod(c, originalSelector);
+    newMethod = class_getInstanceMethod(c, newSelector);
+    noop = class_getInstanceMethod(c, noopSelector);
+    if (class_addMethod(c, originalSelector, method_getImplementation(newMethod), method_getTypeEncoding(newMethod))) {
+        class_replaceMethod(c, newSelector, method_getImplementation(originalMethod) ?: method_getImplementation(noop), method_getTypeEncoding(originalMethod));
+    } else {
+        method_exchangeImplementations(originalMethod, newMethod);
+    }
+}
+
++ (void)load
+{
+    FBMethodSwizzle([self class], @selector(application:openURL:sourceApplication:annotation:));
+}
+
+- (void)noop_application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+}
+
+- (void)swizzled_application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    if (!url) {
+        return;
+    }
+    // Required by FBSDKCoreKit for deep linking/to complete login
+    [[FBSDKApplicationDelegate sharedInstance] application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+
+    // Call existing method
+    [self swizzled_application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+
+    // NOTE: Cordova will run a JavaScript method here named handleOpenURL. This functionality is deprecated
+    // but will cause you to see JavaScript errors if you do not have window.handleOpenURL defined:
+    // https://github.com/Wizcorp/phonegap-facebook-plugin/issues/703#issuecomment-63748816
+    NSLog(@"FB handle url: %@", url);
 }
 
 @end
