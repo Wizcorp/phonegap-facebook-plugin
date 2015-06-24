@@ -44,7 +44,35 @@ If you use Gradle to build your project, modify the compileOptions block in buil
 		targetCompatibility JavaVersion.VERSION_1_7
 	}
 
-You can now use the plugin right away
+## Quirks
+
+The FacebookSDK needs to be initialized once in the `onCreate` method of your application class using the `initializeFacebookSdkWithApplication` method.
+
+If you don’t have an application class (which is most likely the case for a Cordova app), you can create one using this template:
+
+```java
+package my.package.namespace;
+
+import android.app.Application;
+import org.apache.cordova.facebook.ConnectPlugin;
+
+public class App extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        ConnectPlugin.initializeFacebookSdkWithApplication(this);
+    }
+
+}
+```
+
+And add your application name to `AndroidManifest.xml`:
+
+```xml
+<application android:name="my.package.namespace.App" ... >...</application>
+```
+
 
 ## Setup with Eclipse (Removed)
 
