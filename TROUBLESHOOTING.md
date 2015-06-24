@@ -191,7 +191,7 @@ requestsDialog.build().show();
 	2. Go to "Build Phases"
 	3. Ensure that the following file is added under "Compile Sources":
 		- `FacebookConnectPlugin.m`
-	4. Ensure that the following are added under "Link Binary With Libraris":
+	4. Ensure that the following are added under "Link Binary With Libraries":
 		- `FBSDKCoreKit.framework`
 		- `FBSDKLoginKit.framework`
 		- `FBSDKShareKit.framework`
@@ -207,4 +207,4 @@ Cordova and plugman seems to have some problems adding frameworks etc. when re-i
 - Problem:
 	- Calling the login function always opens the web dialog even though the native app is installed on the device.
 - Solution:
-	- Switch "deep linking" to ON in the Facebook developer website settings for your application
+	- Switch "deep linking" to ON in the Facebook developer website settings for your application.
