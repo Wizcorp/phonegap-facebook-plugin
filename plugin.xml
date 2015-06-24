@@ -79,8 +79,8 @@
             <access origin="https://*.akamaihd.net" />
         </config-file>
 
-        <header-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/FacebookConnectPlugin.h" />
-        <source-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/FacebookConnectPlugin.m" />
+        <header-file src="platforms/ios/FacebookConnectPlugin.h" />
+        <source-file src="platforms/ios/FacebookConnectPlugin.m" />
 
         <config-file target="*-Info.plist" parent="FacebookAppID">
             <string>$APP_ID</string>
