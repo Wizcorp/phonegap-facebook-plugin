@@ -55,16 +55,16 @@
         <config-file target="AndroidManifest.xml" parent="application">
             <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/fb_app_id"/>
             <activity android:name="com.facebook.FacebookActivity"
-			          android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-			          android:theme="@android:style/Theme.Translucent.NoTitleBar"
-			          android:label="@string/fb_app_name" />
-			<provider android:authorities="com.facebook.app.FacebookContentProvider$APP_ID"
-			          android:name="com.facebook.FacebookContentProvider"
-			          android:exported="true" />
+                      android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+                      android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                      android:label="@string/fb_app_name" />
+            <provider android:authorities="com.facebook.app.FacebookContentProvider$APP_ID"
+                      android:name="com.facebook.FacebookContentProvider"
+                      android:exported="true" />
         </config-file>
 
+        <!-- custom framework -->
         <framework src="platforms/android/FacebookLib" custom="true" />
-
         <!-- cordova plugin src files -->
         <source-file src="platforms/android/src/org/apache/cordova/facebook/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
 
