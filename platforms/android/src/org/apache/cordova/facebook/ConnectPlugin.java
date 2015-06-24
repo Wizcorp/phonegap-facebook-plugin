@@ -44,6 +44,8 @@ import com.facebook.share.widget.AppInviteDialog;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.GameRequestDialog;
 import com.facebook.share.model.GameRequestContent;
+import com.facebook.share.widget.CreateAppGroupDialog;
+import com.facebook.share.model.AppGroupCreationContent;
 
 public class ConnectPlugin extends CordovaPlugin {
 
@@ -56,7 +58,7 @@ public class ConnectPlugin extends CordovaPlugin {
             add("ads_management");
             add("create_event");
             add("rsvp_event");
-            // TODO: Any changes?
+            // TODO: Any changes here?
         }
     };
     private static final String TAG = "ConnectPlugin";
@@ -358,7 +360,7 @@ public class ConnectPlugin extends CordovaPlugin {
                     try {
                         collect.putString(key, params.getString(key));
                     } catch (JSONException e) {
-                        // Need to handle JSON parameters
+                        // FINISH: Need to handle JSON parameters
                         Log.w(TAG, "Non-string parameter provided to dialog discarded");
                     }
                 }
@@ -412,31 +414,30 @@ public class ConnectPlugin extends CordovaPlugin {
                         public void onSuccess(Sharer.Result result) {
                             Log.i(TAG, "ShareDialog onSuccess");
                             try {
-                                final JSONObject json = new JSONObject("{\"post_id\": \"" + result.getPostId() + "\"}");
+                                JSONObject json = new JSONObject();
+                                json.put("post_id", result.getPostId());
                                 showDialogContext.success(json);
                             } catch(JSONException e) {
                                 Log.e(TAG, "JSONException");
                                 showDialogContext.error("JSONException");
                             }
                         }
-
                         @Override
                         public void onCancel() {
                             Log.i(TAG, "ShareDialog onCancel");
                             showDialogContext.error("User cancelled dialog.");
                         }
-
                         @Override
                         public void onError(FacebookException e) {
                             Log.i(TAG, "ShareDialog onError");
-                            showDialogContext.error("AppInviteDialog failed.");
+                            showDialogContext.error("ShareDialog failed.");
                         }
                 });
 
                 if (ShareDialog.canShow(ShareLinkContent.class)) {
                     shareDialog.show(shareContent);
                 } else {
-                    showDialogContext.error("Could not show dialog.");
+                    showDialogContext.error("Could not show ShareDialog.");
                 }
             }
 
@@ -463,13 +464,11 @@ public class ConnectPlugin extends CordovaPlugin {
                                 showDialogContext.error("JSONException");
                             }
                         }
-
                         @Override
                         public void onCancel() {
                             Log.i(TAG, "AppInviteDialog onCancel");
                             showDialogContext.error("User cancelled dialog.");
                         }
-
                         @Override
                         public void onError(FacebookException e) {
                             Log.i(TAG, "AppInviteDialog onError");
@@ -480,7 +479,7 @@ public class ConnectPlugin extends CordovaPlugin {
                 if (AppInviteDialog.canShow()) {
                     appInviteDialog.show(content);
                 } else {
-                    showDialogContext.error("Could not show dialog.");
+                    showDialogContext.error("Could not show AppInviteDialog.");
                 }
             }
 
@@ -488,14 +487,93 @@ public class ConnectPlugin extends CordovaPlugin {
              * Game Requests
              */
             else if (this.method.equalsIgnoreCase("apprequests")) {
-                // FINISH
+                GameRequestContent content = new GameRequestContent.Builder()
+                        .setTitle(paramBundle.getString("title"))
+                        .setMessage(paramBundle.getString("message"))
+                        .setTo(paramBundle.getString("to"))
+                        //.setSuggestions(paramBundle.getArray("suggestions"))
+                        //.setActionType(<ActionType>) // e.g. SEND, ASKFOR
+                        .setObjectId(paramBundle.getString("objectId"))
+                        .setData(paramBundle.getString("data"))
+                        .build();
+
+                GameRequestDialog gameRequestDialog = new GameRequestDialog(cordova.getActivity());
+                gameRequestDialog.registerCallback(callbackManager,
+                    new FacebookCallback<GameRequestDialog.Result>() {
+                        @Override
+                        public void onSuccess(GameRequestDialog.Result result) {
+                            Log.i(TAG, "GameRequestDialog onSuccess");
+                            try {
+                                JSONObject json = new JSONObject();
+                                json.put("request_id", result.getRequestId());
+                                json.put("request_recipients", new JSONArray(result.getRequestRecipients()));
+                                showDialogContext.success(json);
+                            } catch(JSONException e) {
+                                Log.e(TAG, "JSONException");
+                                showDialogContext.error("JSONException");
+                            }
+                        }
+                        @Override
+                        public void onCancel() {
+                            Log.i(TAG, "GameRequestDialog onCancel");
+                            showDialogContext.error("User cancelled dialog.");
+                        }
+                        @Override
+                        public void onError(FacebookException e) {
+                            Log.i(TAG, "GameRequestDialog onError");
+                            showDialogContext.error("GameRequestDialog failed.");
+                        }
+                });
+
+                if (GameRequestDialog.canShow()) {
+                    gameRequestDialog.show(content);
+                } else {
+                    showDialogContext.error("Could not show GameRequestDialog.");
+                }
             }
 
             /*
-             * Join Game Group
+             * Join App Group
              */
             else if (this.method.equalsIgnoreCase("game_group_create")) {
-                // FINISH
+                AppGroupCreationContent content = new AppGroupCreationContent.Builder()
+                        .setName(paramBundle.getString("name"))
+                        .setDescription(paramBundle.getString("description"))
+                        //.setAppGroupPrivacy(<AppGroupPrivacy>)
+                        .build();
+
+                CreateAppGroupDialog createAppGroupDialog = new CreateAppGroupDialog(cordova.getActivity());
+                createAppGroupDialog.registerCallback(callbackManager,
+                    new FacebookCallback<CreateAppGroupDialog.Result>() {
+                        @Override
+                        public void onSuccess(CreateAppGroupDialog.Result result) {
+                            Log.i(TAG, "CreateAppGroupDialog onSuccess");
+                            try {
+                                JSONObject json = new JSONObject();
+                                json.put("group_id", result.getId());
+                                showDialogContext.success(json);
+                            } catch(JSONException e) {
+                                Log.e(TAG, "JSONException");
+                                showDialogContext.error("JSONException");
+                            }
+                        }
+                        @Override
+                        public void onCancel() {
+                            Log.i(TAG, "CreateAppGroupDialog onCancel");
+                            showDialogContext.error("User cancelled dialog.");
+                        }
+                        @Override
+                        public void onError(FacebookException e) {
+                            Log.i(TAG, "CreateAppGroupDialog onError");
+                            showDialogContext.error("CreateAppGroupDialog failed.");
+                        }
+                });
+
+                if (CreateAppGroupDialog.canShow()) {
+                    createAppGroupDialog.show(content);
+                } else {
+                    showDialogContext.error("Could not show CreateAppGroupDialog.");
+                }
             }
 
             else {
