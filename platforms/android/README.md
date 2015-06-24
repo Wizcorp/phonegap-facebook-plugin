@@ -11,8 +11,8 @@ If you plan on rolling this out on Android, please note that you will need to [g
 For Android sample app remember to configure the project with your FB app id in the `res/values/facebookconnect.xml` file. For example:
 
 	<resources>
-    	<string name="fb_app_id">123456789</string>
-    	<string name="fb_app_name">TEST</string>
+		<string name="fb_app_id">123456789</string>
+		<string name="fb_app_name">TEST</string>
 	</resources>
 
 ## Install
