@@ -30,6 +30,20 @@ $ cordova platform add android
 $ cordova -d plugin add /path/to/cloned/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
 ```
 
+## Java 7
+
+The latest Facebook SDK requires Java 7 (or higher), which does not come installed on OS X.  To use this plugin you will need to [install the Java 7 JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html) and add it to your environment.  You should also add the following to the custom_rules.xml file of your Cordova project if building with Ant:
+
+	<property name="java.target" value="1.7" />
+	<property name="java.source" value="1.7" />
+
+If you use Gradle to build your project, modify the compileOptions block in build.gradle to the following:
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_7
+		targetCompatibility JavaVersion.VERSION_1_7
+	}
+
 You can now use the plugin right away
 
 ## Setup with Eclipse (Removed)
