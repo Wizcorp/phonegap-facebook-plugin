@@ -22,13 +22,12 @@
     <engines>
         <!-- Requires > 3.3.* because of the custom Framework tag for iOS [CB-5238] -->
         <!-- Requires > 3.5.0 because of the custom Framework tag for Android [CB-6698] -->
-        <engine name="cordova" version=">=3.5.0" />
+        <engine name="cordova-android" version=">=4.0.0-dev" />
+        <engine name="cordova-ios" version=">=3.5.0" />
     </engines>
 
     <!-- JavaScript interface -->
-    <js-module src="facebookConnectPlugin.js"
-               name="FacebookConnectPlugin"
-               target="phonegap/plugin/facebookConnectPlugin/facebookConnectPlugin.js">
+    <js-module src="www/facebookConnectPlugin.js" name="FacebookConnectPlugin">
         <clobbers target="facebookConnectPlugin" />
     </js-module>
 
@@ -46,7 +45,7 @@
             <access origin="https://*.akamaihd.net" />
         </config-file>
 
-        <source-file src="platforms/android/res/values/facebookconnect.xml" target-dir="res/values" />
+        <source-file src="src/android/facebookconnect.xml" target-dir="res/values" />
         <config-file target="res/values/facebookconnect.xml" parent="/*">
             <string name="fb_app_id">$APP_ID</string>
             <string name="fb_app_name">$APP_NAME</string>
@@ -60,7 +59,7 @@
         <framework src="com.facebook.android:facebook-android-sdk:3.22.0"/>
 
         <!-- cordova plugin src files -->
-        <source-file src="platforms/android/src/org/apache/cordova/facebook/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
+        <source-file src="src/android/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
 
     </platform>
 
@@ -79,8 +78,8 @@
             <access origin="https://*.akamaihd.net" />
         </config-file>
 
-        <header-file src="platforms/ios/FacebookConnectPlugin.h" />
-        <source-file src="platforms/ios/FacebookConnectPlugin.m" />
+        <header-file src="src/ios/FacebookConnectPlugin.h" />
+        <source-file src="src/ios/FacebookConnectPlugin.m" />
 
         <config-file target="*-Info.plist" parent="FacebookAppID">
             <string>$APP_ID</string>
@@ -102,7 +101,7 @@
         </config-file>
 
         <!-- Facebook framework -->
-        <framework src="platforms/ios/FacebookSDK.framework" custom="true" />
+        <framework src="src/ios/FacebookSDK.framework" custom="true" />
 
         <!-- System frameworks -->
         <framework src="libsqlite3.dylib" />
