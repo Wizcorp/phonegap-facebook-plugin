@@ -33,6 +33,7 @@ import com.facebook.FacebookRequestError;
 import com.facebook.FacebookSdk;
 import com.facebook.FacebookServiceException;
 import com.facebook.GraphRequest;
+import com.facebook.GraphRequestAsyncTask;
 import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
@@ -80,7 +81,7 @@ public class ConnectPlugin extends CordovaPlugin {
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(final LoginResult loginResult) {
-                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject jsonObject, GraphResponse response) {
                         if (loginContext == null) return;
@@ -94,8 +95,7 @@ public class ConnectPlugin extends CordovaPlugin {
                         loginContext.success(getResponse());
                         loginContext = null;
                     }
-                });
-                request.executeAsync();
+                }).executeAsync();
             }
 
             @Override
@@ -159,49 +159,53 @@ public class ConnectPlugin extends CordovaPlugin {
             loginContext.sendPluginResult(pr);
 
             // Check if the active session is open
-            if (hasAccessToken()) {
-                // Reauthorize flow
-                boolean publishPermissions = false;
-                boolean readPermissions = false;
-                // Figure out if this will be a read or publish reauthorize
-                if (permissions == null) {
-                    // No permissions, read
-                    readPermissions = true;
-                }
-                // Loop through the permissions to see what
-                // is being requested
-                for (String permission : arrayPermissions) {
-                    if (isPublishPermission(permission)) {
-                        publishPermissions = true;
-                    } else {
-                        readPermissions = true;
-                    }
-                    // Break if we have a mixed bag, as this is an error
-                    if (publishPermissions && readPermissions) {
-                        break;
-                    }
-                }
-                if (publishPermissions && readPermissions) {
-                    callbackContext.error("Cannot ask for both read and publish permissions.");
-                } else {
-                    // Set up the activity result callback to this class
-                    cordova.setActivityResultCallback(this);
-                    // Check for write permissions, the default is read (empty)
-                    if (publishPermissions) {
-                        // Request new publish permissions
-                        LoginManager.getInstance().logInWithPublishPermissions(cordova.getActivity(), permissions);
-                    } else {
-                        // Request new read permissions
-                        LoginManager.getInstance().logInWithReadPermissions(cordova.getActivity(), permissions);
-                    }
-                }
-            } else {
+            if (!hasAccessToken()) {
                 // Set up the activity result callback to this class
                 cordova.setActivityResultCallback(this);
 
                 // Create the request
                 LoginManager.getInstance().logInWithReadPermissions(cordova.getActivity(), permissions);
+                return true;
             }
+
+            // Reauthorize flow
+            boolean publishPermissions = false;
+            boolean readPermissions = false;
+            // Figure out if this will be a read or publish reauthorize
+            if (permissions == null) {
+                // No permissions, read
+                readPermissions = true;
+            }
+            // Loop through the permissions to see what
+            // is being requested
+            for (String permission : arrayPermissions) {
+                if (isPublishPermission(permission)) {
+                    publishPermissions = true;
+                } else {
+                    readPermissions = true;
+                }
+                // Break if we have a mixed bag, as this is an error
+                if (publishPermissions && readPermissions) {
+                    break;
+                }
+            }
+
+            if (publishPermissions && readPermissions) {
+                callbackContext.error("Cannot ask for both read and publish permissions.");
+                return true;
+            }
+
+            // Set up the activity result callback to this class
+            cordova.setActivityResultCallback(this);
+            // Check for write permissions, the default is read (empty)
+            if (publishPermissions) {
+                // Request new publish permissions
+                LoginManager.getInstance().logInWithPublishPermissions(cordova.getActivity(), permissions);
+            } else {
+                // Request new read permissions
+                LoginManager.getInstance().logInWithReadPermissions(cordova.getActivity(), permissions);
+            }
+
             return true;
         } else if (action.equals("logout")) {
 
@@ -232,40 +236,45 @@ public class ConnectPlugin extends CordovaPlugin {
             String eventName = args.getString(0);
             if (args.length() == 1) {
                 logger.logEvent(eventName);
-            } else {
-                // Arguments is greater than 1
-                JSONObject params = args.getJSONObject(1);
-                Bundle parameters = new Bundle();
+                callbackContext.success();
+                return true;
+            }
 
-                Iterator<?> iterator = params.keys();
-                while (iterator.hasNext()) {
+            // Arguments is greater than 1
+            JSONObject params = args.getJSONObject(1);
+            Bundle parameters = new Bundle();
+
+            Iterator<?> iterator = params.keys();
+            while (iterator.hasNext()) {
+                try {
+                    // Try get a String
+                    String key = (String) iterator.next();
+                    String value = params.getString(key);
+                    parameters.putString(key, value);
+                } catch (Exception e) {
+                    // Maybe it was an int
+                    Log.w(TAG, "Type in AppEvent parameters was not String for key: " + (String) iterator.next());
                     try {
-                        // Try get a String
                         String key = (String) iterator.next();
-                        String value = params.getString(key);
-                        parameters.putString(key, value);
-                    } catch (Exception e) {
-                        // Maybe it was an int
-                        Log.w(TAG, "Type in AppEvent parameters was not String for key: " + (String) iterator.next());
-                        try {
-                            String key = (String) iterator.next();
-                            int value = params.getInt(key);
-                            parameters.putInt(key, value);
-                        } catch (Exception e2) {
-                            // Nope
-                            Log.e(TAG, "Unsupported type in AppEvent parameters for key: " + (String) iterator.next());
-                        }
+                        int value = params.getInt(key);
+                        parameters.putInt(key, value);
+                    } catch (Exception e2) {
+                        // Nope
+                        Log.e(TAG, "Unsupported type in AppEvent parameters for key: " + (String) iterator.next());
                     }
                 }
-                if (args.length() == 2) {
-                    logger.logEvent(eventName, parameters);
-                }
-                if (args.length() == 3) {
-                    double value = args.getDouble(2);
-                    logger.logEvent(eventName, value, parameters);
-                }
             }
-            callbackContext.success();
+
+            if (args.length() == 2) {
+                logger.logEvent(eventName, parameters);
+                callbackContext.success();
+            }
+
+            if (args.length() == 3) {
+                double value = args.getDouble(2);
+                logger.logEvent(eventName, value, parameters);
+                callbackContext.success();
+            }
             return true;
         } else if (action.equals("logPurchase")) {
             /*
@@ -440,44 +449,49 @@ public class ConnectPlugin extends CordovaPlugin {
 //
 //            boolean publishPermissions = false;
 //            boolean readPermissions = false;
-//            if (permissionsList.size() > 0) {
-//                for (String permission : permissionsList) {
-//                    if (isPublishPermission(permission)) {
-//                        publishPermissions = true;
-//                    } else {
-//                        readPermissions = true;
-//                    }
-//                    // Break if we have a mixed bag, as this is an error
-//                    if (publishPermissions && readPermissions) {
-//                        break;
-//                    }
-//                }
-//                if (publishPermissions && readPermissions) {
-//                    graphContext.error("Cannot ask for both read and publish permissions.");
-//                } else {
-//                    Session session = Session.getActiveSession();
-//                    if (session.getPermissions().containsAll(permissionsList)) {
-//                        makeGraphCall();
-//                    } else {
-//                        // Set up the new permissions request
-//                        Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(cordova.getActivity(), permissionsList);
-//                        // Set up the activity result callback to this class
-//                        cordova.setActivityResultCallback(this);
-//                        // Check for write permissions, the default is read (empty)
-//                        if (publishPermissions) {
-//                            // Request new publish permissions
-//                            session.requestNewPublishPermissions(newPermissionsRequest);
-//                        } else {
-//                            // Request new read permissions
-//                            session.requestNewReadPermissions(newPermissionsRequest);
-//                        }
-//                    }
-//                }
-//            } else {
+//            if (permissionsList.size() <= 0) {
 //                makeGraphCall();
+//                return true;
 //            }
-            return true;
-        }
+//
+//            // Figure out if we have all permissions
+//            for (String permission : permissionsList) {
+//                if (isPublishPermission(permission)) {
+//                    publishPermissions = true;
+//                } else {
+//                    readPermissions = true;
+//                }
+//                // Break if we have a mixed bag, as this is an error
+//                if (publishPermissions && readPermissions) {
+//                    break;
+//                }
+//            }
+//            if (publishPermissions && readPermissions) {
+//                graphContext.error("Cannot ask for both read and publish permissions.");
+//                return true;
+//            }
+//
+//            Session session = Session.getActiveSession();
+//            if (session.getPermissions().containsAll(permissionsList)) {
+//                makeGraphCall();
+//                return true;
+//            }
+//
+//            // Set up the new permissions request
+//            Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(cordova.getActivity(), permissionsList);
+//            // Set up the activity result callback to this class
+//            cordova.setActivityResultCallback(this);
+//            // Check for write permissions, the default is read (empty)
+//            if (publishPermissions) {
+//                // Request new publish permissions
+//                session.requestNewPublishPermissions(newPermissionsRequest);
+//            } else {
+//                // Request new read permissions
+//                session.requestNewReadPermissions(newPermissionsRequest);
+//            }
+//
+//            return true;
+//        }
         return false;
     }
 
