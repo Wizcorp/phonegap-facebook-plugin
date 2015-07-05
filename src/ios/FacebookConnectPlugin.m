@@ -58,6 +58,8 @@
                                                        annotation:nil];
 }
 
+#pragma mark - Cordova commands
+
 - (void)getLoginStatus:(CDVInvokedUrlCommand *)command {
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                                   messageAsDictionary:[self responseObject]];
@@ -211,7 +213,106 @@
 
 - (void) showDialog:(CDVInvokedUrlCommand*)command
 {
-   // Method not implemented
+    if ([command.arguments count] == 0) {
+        CDVPluginResult *pluginResult;
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                         messageAsString:@"No method provided"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+
+    NSMutableDictionary *options = [[command.arguments lastObject] mutableCopy];
+    NSString* method = options[@"method"];
+    if (!method) {
+        CDVPluginResult *pluginResult;
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                         messageAsString:@"No method provided"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+    
+    [options removeObjectForKey:@"method"];
+    NSDictionary *params = [options copy];
+    
+    // Check method
+    if ([method isEqualToString:@"send"]) {
+        // Send private message dialog
+        // Create native params
+        FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
+        content.contentURL = [NSURL URLWithString:[params objectForKey:@"link"]];
+        content.contentTitle = [params objectForKey:@"caption"];
+        content.imageURL = [NSURL URLWithString:[params objectForKey:@"picture"]];
+        content.contentDescription = [params objectForKey:@"description"];
+
+        self.dialogCallbackId = command.callbackId;
+        [FBSDKMessageDialog showWithContent:content delegate:self];
+        return;
+        
+    } else if ([method isEqualToString:@"share"] || [method isEqualToString:@"share_open_graph"]) {
+        // Create native params
+        FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
+        content.contentURL = [NSURL URLWithString:params[@"href"]];
+        content.contentTitle = params[@"caption"];
+        content.imageURL = [NSURL URLWithString:params[@"picture"]];
+        content.contentDescription = params[@"description"];
+        
+        self.dialogCallbackId = command.callbackId;
+        FBSDKShareDialog *dialog = [[FBSDKShareDialog alloc] init];
+        dialog.fromViewController = self.viewController;
+        dialog.shareContent = content;
+        dialog.delegate = self;
+        // Adopt native share sheets with the following line
+        if (params[@"share_sheet"]) {
+            dialog.mode = FBSDKShareDialogModeShareSheet;
+        }
+        [dialog show];
+        return;
+    } else if ([method isEqualToString:@"apprequests"]) {
+        FBSDKGameRequestDialog *dialog = [[FBSDKGameRequestDialog alloc] init];
+        if (![dialog canShow]) {
+            CDVPluginResult *pluginResult;
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                            messageAsString:@"Cannot show dialog"];
+            return;
+        }
+        
+        FBSDKGameRequestContent *content = [[FBSDKGameRequestContent alloc] init];
+        NSString *actionType = params[@"actionType"];
+        if (!actionType) {
+            CDVPluginResult *pluginResult;
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                             messageAsString:@"Cannot show dialog"];
+            return;
+        }
+        if ([[actionType lowercaseString] isEqualToString:@"askfor"]) {
+            content.actionType = FBSDKGameRequestActionTypeAskFor;
+        } else if ([[actionType lowercaseString] isEqualToString:@"send"]) {
+            content.actionType = FBSDKGameRequestActionTypeSend;
+        } else if ([[actionType lowercaseString] isEqualToString:@"turn"]) {
+            content.actionType = FBSDKGameRequestActionTypeTurn;
+        }
+        
+        NSString *filters = params[@"filters"];
+        if (!filters) {
+            content.filters = FBSDKGameRequestFilterNone;
+        } else if ([filters isEqualToString:@"app_users"]) {
+            content.filters = FBSDKGameRequestFilterAppNonUsers;
+        } else if ([filters isEqualToString:@"app_non_users"]) {
+            content.filters = FBSDKGameRequestFilterAppNonUsers;
+        }
+        
+        content.data = params[@"data"];
+        content.message = params[@"message"];
+        content.objectID = params[@"objectID"];
+        content.recipients = params[@"to"];
+        content.title = params[@"title"];
+        
+        dialog.content = content;
+        [dialog show];
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
 }
 
 - (void) graphApi:(CDVInvokedUrlCommand *)command
@@ -302,6 +403,8 @@
 
 }
 
+#pragma mark - Utility methods
+
 - (void) loginWithPermissions:(NSArray *)permissions withHandler:(void(^)(FBSDKLoginManagerLoginResult *result, NSError *error))handler {
     BOOL publishPermissionFound = NO;
     BOOL readPermissionFound = NO;
@@ -338,35 +441,34 @@
 }
 
 - (NSDictionary *)responseObject {
-    NSString *status = @"unknown";
-    NSDictionary *sessionDict = nil;
+
+    NSDictionary *resp = @{@"status": @"unknown"};
+    if (![FBSDKAccessToken currentAccessToken]) {
+        return resp;
+    }
+
+    NSMutableDictionary *response = [[NSMutableDictionary alloc] initWithDictionary:resp];
+    FBSDKAccessToken *token = [FBSDKAccessToken currentAccessToken];
     
-    if ([FBSDKAccessToken currentAccessToken]) {
-        FBSDKAccessToken *token = [FBSDKAccessToken currentAccessToken];
-        NSTimeInterval expiresTimeInterval = token.expirationDate.timeIntervalSinceNow;
-        NSString *expiresIn = @"0";
-        if (expiresTimeInterval > 0) {
-            expiresIn = [NSString stringWithFormat:@"%0.0f", expiresTimeInterval];
-        }
-        
-        
-        status = @"connected";
-        sessionDict = @{
-                        @"accessToken" : token.tokenString,
-                        @"expiresIn" : expiresIn,
-                        @"secret" : @"...",
-                        @"session_key" : [NSNumber numberWithBool:YES],
-                        @"sig" : @"...",
-                        @"userID" : token.userID
-                        };
+    NSTimeInterval expiresTimeInterval = token.expirationDate.timeIntervalSinceNow;
+    NSString *expiresIn = @"0";
+    if (expiresTimeInterval > 0) {
+        expiresIn = [NSString stringWithFormat:@"%0.0f", expiresTimeInterval];
     }
     
-    NSMutableDictionary *statusDict = [NSMutableDictionary dictionaryWithObject:status forKey:@"status"];
-    if (nil != sessionDict) {
-        [statusDict setObject:sessionDict forKey:@"authResponse"];
-    }
-        
-    return statusDict;
+    
+    response[@"status"] = @"connected";
+    response[@"authResponse"] = @{
+                                  @"accessToken" : token.tokenString,
+                                  @"expiresIn" : expiresIn,
+                                  @"secret" : @"...",
+                                  @"session_key" : [NSNumber numberWithBool:YES],
+                                  @"sig" : @"...",
+                                  @"userID" : token.userID
+                                  };
+    
+    
+    return [response copy];
 }
 
 /**
@@ -429,6 +531,43 @@
         }
     }
     return YES;
+}
+
+# pragma mark - FBSDKSharingDelegate
+
+- (void)sharer:(id<FBSDKSharing>)sharer didCompleteWithResults:(NSDictionary *)results {
+    if (!self.dialogCallbackId) {
+        return;
+    }
+    
+    CDVPluginResult *pluginResult;
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                 messageAsDictionary:results];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
+    self.dialogCallbackId = nil;
+}
+
+- (void)sharer:(id<FBSDKSharing>)sharer didFailWithError:(NSError *)error {
+    if (!self.dialogCallbackId) {
+        return;
+    }
+    
+    CDVPluginResult *pluginResult;
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                     messageAsString:[NSString stringWithFormat:@"Error: %@", error.description]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
+    self.dialogCallbackId = nil;
+}
+
+- (void)sharerDidCancel:(id<FBSDKSharing>)sharer {
+    if (!self.dialogCallbackId) {
+        return;
+    }
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                                      messageAsString:@"User cancelled."];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
+    self.dialogCallbackId = nil;
 }
 
 @end

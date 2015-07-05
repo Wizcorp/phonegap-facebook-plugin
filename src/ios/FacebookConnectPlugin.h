@@ -11,9 +11,10 @@
 #import <Foundation/Foundation.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
+#import <FBSDKShareKit/FBSDKShareKit.h>
 #import <Cordova/CDV.h>
 
-@interface FacebookConnectPlugin : CDVPlugin
+@interface FacebookConnectPlugin : CDVPlugin <FBSDKSharingDelegate>
 - (void)getLoginStatus:(CDVInvokedUrlCommand *)command;
 - (void)getAccessToken:(CDVInvokedUrlCommand *)command;
 - (void)logEvent:(CDVInvokedUrlCommand *)command;
