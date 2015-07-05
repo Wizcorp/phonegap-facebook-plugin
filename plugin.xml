@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-facebook"
-        version="0.11.0">
+        version="1.0.0-dev">
 
     <name>Facebook Connect</name>
 
@@ -105,13 +105,9 @@
         </config-file>
 
         <!-- Facebook framework -->
-        <framework src="src/ios/FacebookSDK.framework" custom="true" />
-
-        <!-- System frameworks -->
-        <framework src="libsqlite3.dylib" />
-        <framework src="Social.framework" weak="true" />
-        <framework src="Accounts.framework" weak="true" />
-        <framework src="Security.framework" weak="true" />
+        <framework src="src/ios/FBSDKCoreKit.framework" custom="true" />
+        <framework src="src/ios/FBSDKLoginKit.framework" custom="true" />
+        <framework src="src/ios/FBSDKShareKit.framework" custom="true" />
 
     </platform>
 
