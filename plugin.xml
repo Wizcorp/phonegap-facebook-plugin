@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-facebook4"
-        version="1.0.0-dev.0">
+        version="1.0.0">
 
     <name>Facebook Connect</name>
 
@@ -20,8 +20,8 @@
     <preference name="APP_NAME" />
 
     <engines>
-        <!-- Requires > 3.3.* because of the custom Framework tag for iOS [CB-5238] -->
-        <!-- Requires > 3.5.0 because of the custom Framework tag for Android [CB-6698] -->
+        <!-- Requires > 3.5.0 because of the custom Framework tag for iOS [CB-6698] -->
+        <!-- Requires > 4.0.0 because of the Framework tag for Android that uses gradle -->
         <engine name="cordova-android" version=">=4.0.0-dev" />
         <engine name="cordova-ios" version=">=3.5.0" />
     </engines>
