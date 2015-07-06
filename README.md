@@ -1,18 +1,14 @@
 # Apache Cordova Facebook Plugin
 
-This is the official plugin for Facebook in Apache Cordova/PhoneGap!
+This is a fork of the official plugin for Facebook in Apache Cordova that implements the latest Facebook SDK
 
-The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) allows you to use the same JavaScript code in your Cordova application as you use in your web application. However, unlike in the browser, the Cordova application will use the native Facebook app to perform Single Sign On for the user.  If this is not possible then the sign on will degrade gracefully using the standard dialog based authentication.
+The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you to use the same JavaScript code in your Cordova application as you use in your web application. However, unlike in the browser, the Cordova application will use the native Facebook app to perform Single Sign On for the user.  If this is not possible then the sign on will degrade gracefully using the standard dialog based authentication.
 
-* Supported on PhoneGap (Cordova) v3.5.0 and above.
+* Supported on PhoneGap (Cordova) v5.0.0 and above.
 * This plugin is built for
-	* iOS FacebookSDK 3.21.1
-	* Android FacebookSDK 3.21.1
+	* iOS FacebookSDK 4.3.0
+	* Android FacebookSDK 4.3.0
 * GitHub URL : [https://github.com/Wizcorp/phonegap-facebook-plugin/](https://github.com/Wizcorp/phonegap-facebook-plugin/)
-
-## << --- Cordova Registry Warning [iOS]
-
-****Installing this plugin directly from Cordova Registry results in Xcode using a broken `FacebookSDK.framework`, this is because the current publish procedure to NPM breaks symlinks [CB-6092](https://issues.apache.org/jira/browse/CB-6092). Please install the plugin through a locally cloned copy or re-add the `FacebookSDK.framework` to Xcode after installation.****
 
 ## ------------------------------------------ >>
 
@@ -24,20 +20,15 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 #### Install Guides
 
-- [iOS Guide](platforms/ios/README.md)
+- [iOS Guide](docs/ios/README.md)
 
-- [Android Guide](platforms/android/README.md)
+- [Android Guide](docs/android/README.md)
 
-- [Browser Guide](platforms/browser/README.md)
+- [Browser Guide](docs/browser/README.md)
 
-- [PhoneGap Build Guide](platforms/pg-build/README.md)
+- [PhoneGap Build Guide](docs/pg-build/README.md)
 
-- [Troubleshooting Guide | F.A.Q.](TROUBLESHOOTING.md)
-
-
-#### Example Apps
-
-`platforms/android` and `platforms/ios` contain example projects and all the native code for the plugin for both Android and iOS platforms. They also include versions of the Android and iOS Facebook SDKs. These are used during automatic installation.
+- [Troubleshooting Guide | F.A.Q.](docs/TROUBLESHOOTING.md)
 
 ## API
 
@@ -92,22 +83,38 @@ For more information see: [Facebook Documentation](https://developers.facebook.c
 `facebookConnectPlugin.showDialog(Object options, Function success, Function failure)`
 
 Example options -
-Feed Dialog:
+Share Dialog:
 
 	{
-		method: "feed",
+		method: "share",
 		link: "http://example.com",
-		caption: "Such caption, very feed."
+		caption: "Such caption, very feed.",
+		description: "Much description",
+		picture: 'http://example.com/image.png'
 	}
 
-App request:
+Game request:
 
 	{
 		method: "apprequests",
-		message: "Come on man, check out my application."
+		message: "Come on man, check out my application.",
+		data: data,
+		title: title,
+		actionType: 'askfor',
+		filters: 'app_non_users'
 	}
 
-For options information see: [Facebook feed dialog documentation](https://developers.facebook.com/docs/sharing/reference/feed-dialog/v2.0), [Facebook share dialog documentation](https://developers.facebook.com/docs/sharing/reference/share-dialog)
+Send Dialog:
+
+	{
+		method: "send",
+		caption: "Check this out.",
+		link: "http://example.com",
+		description: "The site I told you about",
+		picture: "http://example.com/image.png"
+	}
+
+For options information see: [Facebook share dialog documentation](https://developers.facebook.com/docs/sharing/reference/share-dialog) [Facebook send dialog documentation](https://developers.facebook.com/docs/sharing/reference/send-dialog)
 
 Success function returns an Object with `postId` as String or `from` and `to` information when doing `apprequest`.
 Failure function returns an error String.
@@ -237,15 +244,15 @@ Using the graph api this is a very simple task:
 Send a photo to a user's feed
 
 ```
-facebookConnectPlugin.showDialog( 
+facebookConnectPlugin.showDialog(
     {
         method: "feed",
         picture:'https://www.google.co.jp/logos/doodles/2014/doodle-4-google-2014-japan-winner-5109465267306496.2-hp.png',
         name:'Test Post',
-        message:'First photo post',    
+        message:'First photo post',
         caption: 'Testing using phonegap plugin',
         description: 'Posting photo using phonegap facebook plugin'
-    }, 
+    },
     function (response) { alert(JSON.stringify(response)) },
     function (response) { alert(JSON.stringify(response)) });
 ```

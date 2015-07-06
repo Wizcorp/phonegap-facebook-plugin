@@ -8,11 +8,11 @@ This guide is for browser only. View the other guides for native setup.
 
 ## Example App
 
-Host the `platforms/browser/www` folder on a server and configure your Facebook dashboard correctly (see setup) to test the Web APIs. For localhost testing on OS X see the [Jekyll guide](guide/JEKYLL_GUIDE.md)
+For localhost testing on OS X see the [Jekyll guide](guide/JEKYLL_GUIDE.md)
 
 ## Install
 
-This plugin requires [Cordova CLI](http://cordova.apache.org/docs/en/4.0.0/guide_cli_index.md.html).
+This plugin requires [Cordova CLI](https://cordova.apache.org/docs/en/5.0.0/guide_cli_index.md.html).
 
 To install the plugin in your app, execute the following (replace variables where necessary):
 
@@ -23,7 +23,7 @@ $ cd myApp/
 $ cordova platform add browser
 
 # Remember to replace APP_ID and APP_NAME variables
-$ cordova -d plugin add https://github.com/Wizcorp/phonegap-facebook-plugin/ --variable APP_ID="123456789" --variable APP_NAME="myApplication"
+$ cordova plugin add cordova-plugin-facebook4 --save --variable APP_ID="123456789" --variable APP_NAME="myApplication"
 ```
 
 ## Setup

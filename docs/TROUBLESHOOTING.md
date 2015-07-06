@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Can't solve your issue here? Check the [existing issues](https://github.com/Wizcorp/phonegap-facebook-plugin/issues) on Github. If you still cannot find a solution please [create and issue after reading the contributing guide](CONTRIBUTING.md). 
+Can't solve your issue here? Check the [existing issues](https://github.com/Wizcorp/phonegap-facebook-plugin/issues) on Github. If you still cannot find a solution please [create and issue after reading the contributing guide](../CONTRIBUTING.md). 
 
 When creating a Github issue **remember to**:
 
@@ -9,8 +9,8 @@ When creating a Github issue **remember to**:
 - Provide a log (Xcode console or adb logcat)
 
 ### Troubleshooting contents
-- [**General**](#general) 
-	- [How do I Build without Eclipse?](#how-do-i-build-without-eclipse) 
+- [**General**](#general)
+	- [How do I Build without Eclipse?](#how-do-i-build-without-eclipse)
 	- [How do I Add a Like Button?](#how-do-i-add-a-like-button)
 	- [Where is the init API?](#where-is-the-init-api)
 	- [How to install with NPM PhoneGap?](#how-to-install-with-npm-phonegap)
@@ -37,7 +37,7 @@ When creating a Github issue **remember to**:
 - Problem
     - I am trying to implement like button functionality in my app. Whenever user likes my facebook page, user will get rewards. So i have tried to implement this like button functionality as described here:
 [https://developers.facebook.com/docs/plugins/like-button](https://developers.facebook.com/docs/plugins/like-button)
-    
+
 - Solution
     - It won't work for native apps because: [https://developers.facebook.com/docs/ios/like-button/](https://developers.facebook.com/docs/ios/like-button/) is not supported yet. **HOWEVER**; it can be done with the graph API [http://stackoverflow.com/questions/11915269/built-in-like-button-facebook-sdk-3-0](http://stackoverflow.com/questions/11915269/built-in-like-button-facebook-sdk-3-0)
     Things you have to take care of are :
@@ -64,7 +64,7 @@ The better way to understand this little "workflow" is to manipulate the Graph A
 
 - Problem
     - I'm trying to install via https the Facebook plugin in iOS, but when I try the following line:
-    
+
 `sudo phonegap local plugin add https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID="12345678910" --variable APP_NAME="MyAPP"`
 
 Im getting the message "[error] Variable(s) missing: APP_ID, APP_NAME"
@@ -80,7 +80,7 @@ Im getting the message "[error] Variable(s) missing: APP_ID, APP_NAME"
 
 ## Android
 ### No Reply From Login?
-   
+
 - Problem
     - **facebookConnectPlugin.login doesn't call neither success nor faillure methods.** - When I'm disconnected from Facebook and don't have the native app, the iframe fallback is blank. Checking on chrome inspector, the elements are set to display: none.
 
@@ -89,9 +89,9 @@ Im getting the message "[error] Variable(s) missing: APP_ID, APP_NAME"
 
 ```
 try {
-  PackageInfo info = 
+  PackageInfo info =
   cordova.getActivity().getPackageManager().getPackageInfo("com.goapes.golearn", PackageManager.GET_SIGNATURES);
-  
+
   for (Signature signature : info.signatures) {
       MessageDigest md = MessageDigest.getInstance("SHA");
       md.update(signature.toByteArray());
@@ -192,7 +192,7 @@ requestsDialog.build().show();
 	3. Ensure that the following file is added under "Compile Sources":
 		- `FacebookConnectPlugin.m`
 	4. Ensure that the following is added under "Link Binary With Libraris":
-		- `FacebookSDK.framework` 
+		- `FacebookSDK.framework`
 		- `libsqlite3.dylib`
 		- `Social.framework`
 		- `Accounts.framework`
@@ -205,4 +205,4 @@ Cordova and plugman seems to have some problems adding frameworks etc. when re-i
 - Problem:
 	- Calling the login function always opens the web dialog even though the native app is installed on the device.
 - Solution:
-	- Switch "deep linking" to ON in the Facebook developer website settings for your application 
+	- Switch "deep linking" to ON in the Facebook developer website settings for your application

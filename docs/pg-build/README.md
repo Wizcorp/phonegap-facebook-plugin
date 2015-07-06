@@ -13,7 +13,7 @@ To install the plugin add the following to your `config.xml`:
         <param name="APP_ID" value="<YOUR_APP_ID>" />
         <param name="APP_NAME" value="<YOUR_APP_NAME>" />
     </gap:plugin>
-    
+
 ```
 
 where
@@ -24,8 +24,8 @@ where
 
 Upgade your code on PhoneGap Build website:
 
-![image](guide/update_button.png)
+![image](update_button.png)
 
 You should now see the following:
 
-![image](guide/installed_plugins.png)
+![image](installed_plugins.png)
