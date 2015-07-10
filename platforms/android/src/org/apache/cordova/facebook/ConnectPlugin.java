@@ -69,9 +69,9 @@ public class ConnectPlugin extends CordovaPlugin {
     private CallbackContext showDialogContext = null;
     private CallbackContext graphContext = null;
     private CallbackManager callbackManager = null;
-    private Bundle paramBundle;
-    private String method;
     private String graphPath;
+    private Bundle dialogBundle;
+    private String dialogMethod;
     private String userID;
     private boolean trackingPendingCall = false;
     private static boolean initialized = false;
@@ -365,14 +365,14 @@ public class ConnectPlugin extends CordovaPlugin {
                     }
                 }
             }
-            this.paramBundle = new Bundle(collect);
+            this.dialogBundle = new Bundle(collect);
 
             // The Share dialog prompts a person to publish an individual story or an Open Graph story to their timeline.
             // This does not require Facebook Login or any extended permissions, so it is the easiest way to enable sharing on web.
-            boolean isShareDialog = this.method.equalsIgnoreCase("share") ||
-                this.method.equalsIgnoreCase("share_open_graph") ||
-                this.method.equalsIgnoreCase("feed") ||
-                this.method.equalsIgnoreCase("send");
+            boolean isShareDialog = this.dialogMethod.equalsIgnoreCase("share") ||
+                this.dialogMethod.equalsIgnoreCase("share_open_graph") ||
+                this.dialogMethod.equalsIgnoreCase("feed") ||
+                this.dialogMethod.equalsIgnoreCase("send");
 
             // Must be an active session when is not a Shared dialog or if the Share dialog cannot be presented.
             boolean requiresAnActiveToken = (!isShareDialog);
@@ -398,12 +398,12 @@ public class ConnectPlugin extends CordovaPlugin {
              */
             if (isShareDialog) {
                 // TODO: Better way to test multiple keys?
-                String title = (paramBundle.getString("title") != null) ? paramBundle.getString("title") : paramBundle.getString("name");
-                String url = (paramBundle.getString("link") != null) ? paramBundle.getString("link") : paramBundle.getString("href");
+                String title = (dialogBundle.getString("title") != null) ? dialogBundle.getString("title") : dialogBundle.getString("name");
+                String url = (dialogBundle.getString("link") != null) ? dialogBundle.getString("link") : dialogBundle.getString("href");
 
                 ShareLinkContent shareContent = new ShareLinkContent.Builder()
                         .setContentTitle(title)
-                        .setContentDescription(paramBundle.getString("description"))
+                        .setContentDescription(dialogBundle.getString("description"))
                         .setContentUrl(Uri.parse(url)) // TODO: Fails when url == null
                         .build();
 
@@ -444,10 +444,10 @@ public class ConnectPlugin extends CordovaPlugin {
             /*
              * App Invites
              */
-            else if (this.method.equalsIgnoreCase("appinvites")) {
+            else if (this.dialogMethod.equalsIgnoreCase("appinvites")) {
                 AppInviteContent content = new AppInviteContent.Builder()
-                        .setApplinkUrl(paramBundle.getString("link"))
-                        .setPreviewImageUrl(paramBundle.getString("preview"))
+                        .setApplinkUrl(dialogBundle.getString("link"))
+                        .setPreviewImageUrl(dialogBundle.getString("preview"))
                         .build();
 
                 AppInviteDialog appInviteDialog = new AppInviteDialog(cordova.getActivity());
@@ -486,15 +486,15 @@ public class ConnectPlugin extends CordovaPlugin {
             /*
              * Game Requests
              */
-            else if (this.method.equalsIgnoreCase("apprequests")) {
+            else if (this.dialogMethod.equalsIgnoreCase("apprequests")) {
                 GameRequestContent content = new GameRequestContent.Builder()
-                        .setTitle(paramBundle.getString("title"))
-                        .setMessage(paramBundle.getString("message"))
-                        .setTo(paramBundle.getString("to"))
-                        //.setSuggestions(paramBundle.getArray("suggestions"))
+                        .setTitle(dialogBundle.getString("title"))
+                        .setMessage(dialogBundle.getString("message"))
+                        .setTo(dialogBundle.getString("to"))
+                        //.setSuggestions(dialogBundle.getArray("suggestions"))
                         //.setActionType(<ActionType>) // e.g. SEND, ASKFOR
-                        .setObjectId(paramBundle.getString("objectId"))
-                        .setData(paramBundle.getString("data"))
+                        .setObjectId(dialogBundle.getString("objectId"))
+                        .setData(dialogBundle.getString("data"))
                         .build();
 
                 GameRequestDialog gameRequestDialog = new GameRequestDialog(cordova.getActivity());
@@ -535,10 +535,10 @@ public class ConnectPlugin extends CordovaPlugin {
             /*
              * Join App Group
              */
-            else if (this.method.equalsIgnoreCase("game_group_create")) {
+            else if (this.dialogMethod.equalsIgnoreCase("game_group_create")) {
                 AppGroupCreationContent content = new AppGroupCreationContent.Builder()
-                        .setName(paramBundle.getString("name"))
-                        .setDescription(paramBundle.getString("description"))
+                        .setName(dialogBundle.getString("name"))
+                        .setDescription(dialogBundle.getString("description"))
                         //.setAppGroupPrivacy(<AppGroupPrivacy>)
                         .build();
 
