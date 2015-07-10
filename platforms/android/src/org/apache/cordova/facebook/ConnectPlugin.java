@@ -69,7 +69,6 @@ public class ConnectPlugin extends CordovaPlugin {
     private CallbackContext showDialogContext = null;
     private CallbackContext graphContext = null;
     private CallbackManager callbackManager = null;
-    private String graphPath;
     private Bundle dialogBundle;
     private String dialogMethod;
     private String userID;
@@ -559,11 +558,15 @@ public class ConnectPlugin extends CordovaPlugin {
             pr.setKeepCallback(true);
             graphContext.sendPluginResult(pr);
 
-            graphPath = args.getString(0);
+            String graphPath = args.getString(0);
             List<String> permissionsList = new ArrayList<String>();
+            Bundle parameters = new Bundle();
+            HttpMethod method = HttpMethod.GET;
 
             try {
                 permissionsList = listFromJSONArray(args.getJSONArray(1));
+                parameters = bundleFromJSONObject(args.getJSONObject(2));
+                method = HttpMethod.valueOf(args.getString(3));
             } catch (JSONException e) {
                 // Do nothing
             }
@@ -586,7 +589,7 @@ public class ConnectPlugin extends CordovaPlugin {
                     graphContext.error("Cannot ask for both read and publish permissions.");
                 } else {
                     if (accessToken.getPermissions().containsAll(permissionsList)) {
-                        makeGraphCall();
+                        makeGraphCall(graphPath, parameters, method);
                     } else {
                         // Set up the activity result callback to this class
                         // TODO: Complete the graph call?
@@ -602,7 +605,7 @@ public class ConnectPlugin extends CordovaPlugin {
                     }
                 }
             } else {
-                makeGraphCall();
+                makeGraphCall(graphPath, parameters, method);
             }
             return true;
         }
@@ -661,7 +664,7 @@ public class ConnectPlugin extends CordovaPlugin {
         }).executeAsync();
     }
 
-    private void makeGraphCall() {
+    private void makeGraphCall(String graphPath, Bundle parameters, HttpMethod method) {
         GraphRequest.Callback graphCallback = new GraphRequest.Callback() {
 
             @Override
@@ -672,7 +675,6 @@ public class ConnectPlugin extends CordovaPlugin {
                     } else {
                         graphContext.success(response.getJSONObject());
                     }
-                    graphPath = null;
                     graphContext = null;
                 }
             }
@@ -719,6 +721,7 @@ public class ConnectPlugin extends CordovaPlugin {
             permission.startsWith(MANAGE_PERMISSION_PREFIX) ||
             OTHER_PUBLISH_PERMISSIONS.contains(permission));
     }
+
 
     /**
      * Create a Facebook Response object that matches the one for the Javascript SDK

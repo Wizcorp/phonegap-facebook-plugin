@@ -347,6 +347,8 @@
 
     NSString *graphPath = [command argumentAtIndex:0];
     NSArray *permissionsNeeded = [command argumentAtIndex:1];
+    NSDictionary *parameters = [command argumentAtIndex:2];
+    NSString *httpMethod = [command argumentAtIndex:3];
 
     // We will store here the missing permissions that we will have to request
     NSMutableArray *requestPermissions = [[NSMutableArray alloc] initWithArray:@[]];
@@ -368,7 +370,7 @@
                 // Permission granted
                 NSLog(@"new permissions %@", result.grantedPermissions);
                 // We can request the user information
-                [self makeGraphCall:graphPath];
+                [self makeGraphCall:graphPath parameters:parameters method:httpMethod];
             } else {
                 // An error occurred, we need to handle the error
                 // See: https://developers.facebook.com/docs/ios/errors
@@ -377,7 +379,7 @@
     } else {
         // Permissions are present
         // We can request the user information
-        [self makeGraphCall:graphPath];
+        [self makeGraphCall:graphPath parameters:parameters method:httpMethod];
     }
 }
 
@@ -559,9 +561,21 @@
 
 - (void)makeGraphCall:(NSString *)graphPath
 {
+    [self makeGraphCall:graphPath parameters:nil method:nil];
+}
+
+- (void)makeGraphCall:(NSString *)graphPath parameters:(NSDictionary *)parameters
+{
+    [self makeGraphCall:graphPath parameters:parameters method:nil];
+}
+
+- (void)makeGraphCall:(NSString *)graphPath parameters:(NSDictionary *)parameters method:(NSString *)method
+{
     NSLog(@"Graph Path = %@", graphPath);
 
-    FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc] initWithGraphPath:graphPath parameters:nil];
+    FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc] initWithGraphPath:graphPath
+                                                                   parameters:parameters
+                                                                   HTTPMethod:method];
     [request startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
 
         CDVPluginResult *pluginResult = nil;
@@ -570,7 +584,7 @@
         }
         else {
             if ([error.userInfo[FBSDKGraphRequestErrorGraphErrorCode] isEqual:@200]) {
-                NSLog(@"permission error");
+                NSLog(@"Graph call had permission error");
             }
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[error localizedDescription]];
         }
