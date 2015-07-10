@@ -560,11 +560,12 @@ public class ConnectPlugin extends CordovaPlugin {
             graphContext.sendPluginResult(pr);
 
             graphPath = args.getString(0);
-            JSONArray arr = args.getJSONArray(1);
+            List<String> permissionsList = new ArrayList<String>();
 
-            final List<String> permissionsList = new ArrayList<String>();
-            for (int i = 0; i < arr.length(); i++) {
-                permissionsList.add(arr.getString(i));
+            try {
+                permissionsList = listFromJSONArray(args.getJSONArray(1));
+            } catch (JSONException e) {
+                // Do nothing
             }
 
             boolean publishPermissions = false;
@@ -609,6 +610,18 @@ public class ConnectPlugin extends CordovaPlugin {
         return false;
     }
 
+
+    private List<String> listFromJSONArray(JSONArray arr) {
+        List<String> list = new ArrayList<String>();
+        for (int i = 0; i < arr.length(); i++) {
+            try {
+                list.add(arr.getString(i));
+            } catch (JSONException e) {
+                Log.w(TAG, "Type in JSONOArray was not String");
+            }
+        }
+        return list;
+    }
 
     // Copies String, int values one level deep
     private Bundle bundleFromJSONObject(JSONObject params) {
