@@ -283,28 +283,8 @@ public class ConnectPlugin extends CordovaPlugin {
             } else {
                 // Arguments is greater than 1
                 JSONObject params = args.getJSONObject(1);
-                Bundle parameters = new Bundle();
+                Bundle parameters = bundleFromJSONObject(params);
 
-                Iterator<?> iterator = params.keys();
-                while (iterator.hasNext()) {
-                    try {
-                        // Try get a String
-                        String key = (String) iterator.next();
-                        String value = params.getString(key);
-                        parameters.putString(key, value);
-                    } catch (Exception e) {
-                        // Maybe it was an int
-                        Log.w(TAG, "Type in AppEvent parameters was not String for key: " + (String) iterator.next());
-                        try {
-                            String key = (String) iterator.next();
-                            int value = params.getInt(key);
-                            parameters.putInt(key, value);
-                        } catch (Exception e2) {
-                            // Nope
-                            Log.e(TAG, "Unsupported type in AppEvent parameters for key: " + (String) iterator.next());
-                        }
-                    }
-                }
                 if (args.length() == 2) {
                     logger.logEvent(eventName, parameters);
                 }
@@ -338,7 +318,7 @@ public class ConnectPlugin extends CordovaPlugin {
          * showDialog
          */
         else if (action.equals("showDialog")) {
-            Bundle collect = new Bundle();
+            final ConnectPlugin me = this;
             JSONObject params = null;
             try {
                 params = args.getJSONObject(0);
@@ -346,26 +326,13 @@ public class ConnectPlugin extends CordovaPlugin {
                 params = new JSONObject();
             }
 
-            final ConnectPlugin me = this;
-            Iterator<?> iter = params.keys();
-            while (iter.hasNext()) {
-                String key = (String) iter.next();
-                if (key.equals("method")) {
-                    try {
-                        this.method = params.getString(key);
-                    } catch (JSONException e) {
-                        Log.w(TAG, "Nonstring method parameter provided to dialog");
-                    }
-                } else {
-                    try {
-                        collect.putString(key, params.getString(key));
-                    } catch (JSONException e) {
-                        // FINISH: Need to handle JSON parameters
-                        Log.w(TAG, "Non-string parameter provided to dialog discarded");
-                    }
-                }
+            try {
+                this.dialogMethod = params.getString("method");
+            } catch (JSONException e) {
+                Log.e(TAG, "Nonstring 'method' parameter provided to dialog");
             }
-            this.dialogBundle = new Bundle(collect);
+            params.put("method", null); // Remove from params
+            this.dialogBundle = bundleFromJSONObject(params);
 
             // The Share dialog prompts a person to publish an individual story or an Open Graph story to their timeline.
             // This does not require Facebook Login or any extended permissions, so it is the easiest way to enable sharing on web.
@@ -640,6 +607,35 @@ public class ConnectPlugin extends CordovaPlugin {
         }
 
         return false;
+    }
+
+
+    // Copies String, int values one level deep
+    private Bundle bundleFromJSONObject(JSONObject params) {
+        Bundle parameters = new Bundle();
+        Iterator<?> iterator = params.keys();
+        while (iterator.hasNext()) {
+            // Check for String
+            try {
+                String key = (String) iterator.next();
+                String value = params.getString(key);
+                parameters.putString(key, value);
+            }
+            // Check for int
+            catch (Exception e) {
+                Log.w(TAG, "Type in JSONObject was not String for key: " + (String) iterator.next());
+                try {
+                    String key = (String) iterator.next();
+                    int value = params.getInt(key);
+                    parameters.putInt(key, value);
+                }
+                catch (Exception e2) {
+                    Log.e(TAG, "Unsupported type in JSONObject for key: " + (String) iterator.next());
+                    // Log.w(TAG, "Non-string parameter provided to dialog discarded");
+                }
+            }
+        }
+        return parameters;
     }
 
     private void updateWithToken(AccessToken accessToken) {
