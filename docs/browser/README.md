@@ -4,11 +4,11 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 This guide is for browser only. View the other guides for native setup.
 
-`www/js/facebookConnectPlugin.js` contains the JavaScript SDK and API file. The API matches as close as possible to the native APIs.
+`www/facebookConnectPlugin.js` contains the JavaScript SDK and API file. The API matches as close as possible to the native APIs.
 
 ## Example App
 
-For localhost testing on OS X see the [Jekyll guide](guide/JEKYLL_GUIDE.md)
+For localhost testing on OS X see the [Localhost guide](guide/LOCALHOST_GUIDE.md)
 
 ## Install
 
@@ -28,21 +28,15 @@ $ cordova plugin add cordova-plugin-facebook4 --save --variable APP_ID="12345678
 
 ## Setup
 
-- You must add the following somewhere in your `index.js`:
-
-```html
-<div id="fb-root"></div>
-```
-
 - The difference between the JS API and Native is that the Facebook JS SDK must be initiated. Here is an example:
 
-```
+```js
 if (window.cordova.platformId == "browser") {
-   	facebookConnectPlugin.browserInit(appId, version);
-   	// version is optional. It refers to the version of API you may want to use.
+  facebookConnectPlugin.browserInit(appId, version);
+  // version is optional. It refers to the version of API you may want to use.
 }
 ```
 
-- In your facebook develop website settings page, add your server's domain to app doamin (or localhost for testing).
+- In your facebook develop website settings page, add your server's domain to app domain (or localhost for testing).
 
 ![image](app_domain_setup.png)
