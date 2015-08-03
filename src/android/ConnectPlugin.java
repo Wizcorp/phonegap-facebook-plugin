@@ -712,6 +712,9 @@ public class ConnectPlugin extends CordovaPlugin {
     }
 
     private void handleError(FacebookException exception, CallbackContext context) {
+        if (exception.getMessage() != null) {
+            Log.e(TAG, exception.toString());
+        }
         String errMsg = "Facebook error: " + exception.getMessage();
         int errorCode = INVALID_ERROR_CODE;
         // User clicked "x"
@@ -723,7 +726,6 @@ public class ConnectPlugin extends CordovaPlugin {
             errMsg = "Dialog error: " + exception.getMessage();
         }
 
-        Log.e(TAG, exception.toString());
         context.error(getErrorResponse(exception, errMsg, errorCode));
     }
 
