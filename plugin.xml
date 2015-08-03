@@ -27,7 +27,7 @@
     </engines>
 
     <!-- JavaScript interface -->
-    <js-module src="www/facebookConnectPlugin.js" name="FacebookConnectPlugin">
+    <js-module src="www/facebook-native.js" name="FacebookConnectPlugin">
         <clobbers target="facebookConnectPlugin" />
     </js-module>
 
@@ -113,13 +113,17 @@
 
     <!-- browser -->
     <platform name="browser">
+        <js-module src="www/facebook-browser.js" name="FacebookConnectPluginBrowser">
+            <clobbers target="facebookConnectPlugin" />
+        </js-module>
         <config-file target="config.xml" parent="/*">
             <feature name="FacebookConnectPlugin">
-                <param name="browser-package" value="FacebookConnectPlugin"/>
+                <param name="browser-package" value="FacebookConnectPluginBrowser"/>
                 <param name="onload" value="true" />
             </feature>
             <plugin name="FacebookConnectPlugin" value="FacebookConnectPlugin"/>
             <access origin="https://m.facebook.com" />
+            <access origin="https://connect.facebook.net" />
             <access origin="https://graph.facebook.com" />
             <access origin="https://api.facebook.com" />
             <access origin="https://*.fbcdn.net" />
