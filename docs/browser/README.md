@@ -32,8 +32,9 @@ $ cordova plugin add cordova-plugin-facebook4 --save --variable APP_ID="12345678
 
 ```js
 if (window.cordova.platformId == "browser") {
-  facebookConnectPlugin.browserInit(appId, version);
+  facebookConnectPlugin.browserInit(appId, version, success);
   // version is optional. It refers to the version of API you may want to use.
+  // success is optional. It calls the function when the SDK has been inited
 }
 ```
 

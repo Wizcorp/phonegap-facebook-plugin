@@ -1,18 +1,29 @@
-# Apache Cordova Facebook Plugin
+# cordova-plugin-facebook4
 
-This is a fork of the official plugin for Facebook in Apache Cordova that implements the latest Facebook SDK
+> Use Facebook SDK version 4 in Cordova projects
+
+## Installation
+
+Make sure you've registered your Facebook app with Facebook and have an `APP_ID` [https://developers.facebook.com/apps](https://developers.facebook.com/apps).
+
+```bash
+$ cordova plugin add cordova-plugin-facebook4 --save --variable APP_ID="123456789" --variable APP_NAME="myApplication"
+```
+
+## Usage
+
+This is a fork of the [official plugin for Facebook](https://github.com/Wizcorp/phonegap-facebook-plugin/) in Apache Cordova that implements the latest Facebook SDK. Unless noted, this is a drop-in replacement. You don't have to replace your client code.
 
 The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you to use the same JavaScript code in your Cordova application as you use in your web application. However, unlike in the browser, the Cordova application will use the native Facebook app to perform Single Sign On for the user.  If this is not possible then the sign on will degrade gracefully using the standard dialog based authentication.
 
-* Supported on Cordova v5.0.0 and above.
-* This plugin is built for
-	* iOS FacebookSDK 4.3.0
-	* Android FacebookSDK 4.3.0
-* GitHub URL : [https://github.com/jeduan/cordova-plugin-facebook4](https://github.com/jeduan/cordova-plugin-facebook4)
+## Compatibility
 
-## Facebook Requirements and Set-Up
+  * Cordova v5.0.0.
+  * cordova-android >= 4.0
+  * cordova-ios >= 3.8
+  * cordova-browser >= 3.6
 
-To use this plugin you will need to make sure you've registered your Facebook app with Facebook and have an `APP_ID` [https://developers.facebook.com/apps](https://developers.facebook.com/apps).
+Unfortunately, at this time PhoneGap Build is not supported on Android, since this plugin uses Gradle and PhoneGap Build [does not support that yet](http://community.phonegap.com/nitobi/topics/phonegap-build-does-not-support-gradle-builds)
 
 #### Install Guides
 
@@ -167,86 +178,90 @@ Events are listed on the [insights page](https://www.facebook.com/insights/)
 
 In your `onDeviceReady` event add the following
 
-	var fbLoginSuccess = function (userData) {
-		alert("UserInfo: " + JSON.stringify(userData));
-	}
+```js
+var fbLoginSuccess = function (userData) {
+  console.log("UserInfo: ", userData);
+}
 
-	facebookConnectPlugin.login(["public_profile"],
-        fbLoginSuccess,
-        function (error) { alert("" + error) }
-    );
+facebookConnectPlugin.login(["public_profile"], fbLoginSuccess,
+  function loginError (error) {
+    console.error(error)
+  }
+);
+```
 
 ### Get Access Token
 
 If you need the Facebook access token (for example, for validating the login on server side), do:
+```js
+var fbLoginSuccess = function (userData) {
+  console.log("UserInfo: ", userData);
+  facebookConnectPlugin.getAccessToken(function(token) {
+    console.log("Token: " + token);
+  });
+}
 
-	var fbLoginSuccess = function (userData) {
-		alert("UserInfo: " + JSON.stringify(userData));
-		facebookConnectPlugin.getAccessToken(function(token) {
-			alert("Token: " + token);
-		}, function(err) {
-			alert("Could not get access token: " + err);
-		});
-	}
-
-	facebookConnectPlugin.login(["public_profile"],
-        fbLoginSuccess,
-        function (error) { alert("" + error) }
-    );
+facebookConnectPlugin.login(["public_profile"], fbLoginSuccess,
+  function (error) {
+    console.error(error)
+  }
+);
+```
 
 ### Get Status and Post-to-wall
 
 For a more instructive example change the above `fbLoginSuccess` to;
 
-	var fbLoginSuccess = function (userData) {
-		alert("UserInfo: " + JSON.stringify(userData));
-    	facebookConnectPlugin.getLoginStatus(
-    		function (status) {
-    			alert("current status: " + JSON.stringify(status));
-
-    			var options = { method:"feed" };
-    			facebookConnectPlugin.showDialog(options,
-    				function (result) {
-        				alert("Posted. " + JSON.stringify(result));				},
-        		function (e) {
-    				alert("Failed: " + e);
-    			});
-    		}
-    	);
-    };
+```js
+var fbLoginSuccess = function (userData) {
+  console.log("UserInfo: ", userData);
+  facebookConnectPlugin.getLoginStatus(function onLoginStatus (status) {
+    console.log("current status: ", status);
+    facebookConnectPlugin.showDialog({
+      method: "share"
+    }, function onShareSuccess (result) {
+      console.log("Posted. ", result);
+    });
+  });
+};
+```
 
 ### Getting a User's Birthday
 
 Using the graph api this is a very simple task:
 
-	facebookConnectPlugin.api("<user-id>/?fields=id,email", ["user_birthday"],
-		function (result) {
-			alert("Result: " + JSON.stringify(result));
-			/* alerts:
-				{
-					"id": "000000123456789",
-					"email": "myemail@example.com"
-				}
-			*/
-		},
-		function (error) {
-			alert("Failed: " + error);
-		});
+```js
+facebookConnectPlugin.api("<user-id>/?fields=id,email", ["user_birthday"],
+  function onSuccess (result) {
+    console.log("Result: ", result);
+    /* logs:
+      {
+        "id": "000000123456789",
+        "email": "myemail@example.com"
+      }
+    */
+  }, function onError (error) {
+    console.error("Failed: ", error);
+  }
+);
+```
 
 ### Publish a Photo
 
 Send a photo to a user's feed
 
-```
-facebookConnectPlugin.showDialog(
-    {
-        method: "feed",
-        picture:'https://www.google.co.jp/logos/doodles/2014/doodle-4-google-2014-japan-winner-5109465267306496.2-hp.png',
-        name:'Test Post',
-        message:'First photo post',
-        caption: 'Testing using phonegap plugin',
-        description: 'Posting photo using phonegap facebook plugin'
-    },
-    function (response) { alert(JSON.stringify(response)) },
-    function (response) { alert(JSON.stringify(response)) });
+```js
+facebookConnectPlugin.showDialog({
+    method: "share",
+    picture:'https://www.google.co.jp/logos/doodles/2014/doodle-4-google-2014-japan-winner-5109465267306496.2-hp.png',
+    name:'Test Post',
+    message:'First photo post',
+    caption: 'Testing using phonegap plugin',
+    description: 'Posting photo using phonegap facebook plugin'
+  }, function (response) {
+    console.log(response)
+  }, function (response) {
+    console.log(response)
+  }
+);
 ```
