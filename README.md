@@ -172,6 +172,12 @@ Events are listed on the [insights page](https://www.facebook.com/insights/)
 
 **NOTE:** Both parameters are required. The currency specification is expected to be an [ISO 4217 currency code](http://en.wikipedia.org/wiki/ISO_4217)
 
+### App Invites
+
+`appInvite({String url, String pictureUrl}, Function success, Function failure)`
+
+Please check out the [App Invites Overview](https://developers.facebook.com/docs/app-invites/overview) before using this. The url is expected to be an [App Link](https://developers.facebook.com/docs/applinks).
+
 ## Sample Code
 
 ### Login
