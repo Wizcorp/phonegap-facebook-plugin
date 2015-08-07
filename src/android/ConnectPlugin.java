@@ -25,9 +25,11 @@ import com.facebook.share.model.GameRequestContent;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.model.ShareOpenGraphAction;
 import com.facebook.share.model.ShareOpenGraphContent;
+import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.GameRequestDialog;
 import com.facebook.share.widget.MessageDialog;
 import com.facebook.share.widget.ShareDialog;
+import com.facebook.share.widget.AppInviteDialog;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -70,6 +72,7 @@ public class ConnectPlugin extends CordovaPlugin {
     private String graphPath;
     private ShareDialog shareDialog;
     private GameRequestDialog gameRequestDialog;
+    private AppInviteDialog appInviteDialog;
     private MessageDialog messageDialog;
 
     @Override
@@ -203,6 +206,29 @@ public class ConnectPlugin extends CordovaPlugin {
                 handleError(e, showDialogContext);
             }
         });
+
+        appInviteDialog = new AppInviteDialog(cordova.getActivity());
+        appInviteDialog.registerCallback(callbackManager, new FacebookCallback<AppInviteDialog.Result>() {
+            @Override
+            public void onSuccess(AppInviteDialog.Result result) {
+                if (showDialogContext != null) {
+                    showDialogContext.success();
+                    showDialogContext = null;
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                FacebookOperationCanceledException e = new FacebookOperationCanceledException();
+                handleError(e, showDialogContext);
+            }
+
+            @Override
+            public void onError(FacebookException e) {
+                Log.e("Activity", String.format("Error: %s", e.toString()));
+                handleError(e, showDialogContext);
+            }
+        });
     }
 
     @Override
@@ -280,8 +306,61 @@ public class ConnectPlugin extends CordovaPlugin {
             executeGraph(args, callbackContext);
 
             return true;
+        } else if (action.equals("appInvite")) {
+            executeAppInvite(args, callbackContext);
+
+            return true;
         }
         return false;
+    }
+
+    private void executeAppInvite(JSONArray args, CallbackContext callbackContext) {
+        String appLinkUrl = null;
+        String previewImageUrl = null;
+        Map<String, String> params = new HashMap<String, String>();
+        String method = null;
+        JSONObject parameters;
+
+        try {
+            parameters = args.getJSONObject(0);
+        } catch (JSONException e) {
+            parameters = new JSONObject();
+        }
+
+        Iterator<String> iter = parameters.keys();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            if (key.equals("url")) {
+                try {
+                    appLinkUrl = parameters.getString(key);
+                } catch (JSONException e) {
+                    Log.w(TAG, "Nonstring method parameter provided to dialog");
+                    callbackContext.error("Incorrect parameter 'url'.");
+                    return;
+                }
+            } else if (key.equals("picture")) {
+                try {
+                    previewImageUrl = parameters.getString(key);
+                } catch (JSONException e) {
+                    Log.w(TAG, "Non-string parameter provided to dialog discarded");
+                    callbackContext.error("Incorrect parameter 'picture'.");
+                    return;
+                }
+            }
+        }
+
+        if (appLinkUrl == null || previewImageUrl == null) {
+            callbackContext.error("Both 'url' and 'picture' parameter needed");
+            return;
+        }
+
+        if (AppInviteDialog.canShow()) {
+            AppInviteContent content = new AppInviteContent.Builder()
+            .setApplinkUrl(appLinkUrl)
+            .setPreviewImageUrl(previewImageUrl)
+            .build();
+            appInviteDialog.show(content);
+        }
     }
 
     private void executeDialog(JSONArray args, CallbackContext callbackContext) {

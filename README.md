@@ -146,6 +146,17 @@ For more information see:
 - Graph Explorer - [https://developers.facebook.com/tools/explorer](https://developers.facebook.com/tools/explorer)
 - Graph API - [https://developers.facebook.com/docs/graph-api/](https://developers.facebook.com/docs/graph-api/)
 
+### App Invite
+
+`facebookConnectPlugin.appInvite(Object options, Function success, Function failure)`
+
+Example options:
+
+	{
+        url: "http://example.com",
+        picture: "http://example.com/image.png"
+	}
+
 # Events
 
 App events allow you to understand the makeup of users engaging with your app, measure the performance of your Facebook mobile app ads, and reach specific sets of your users with Facebook mobile app ads.
