@@ -146,16 +146,6 @@ For more information see:
 - Graph Explorer - [https://developers.facebook.com/tools/explorer](https://developers.facebook.com/tools/explorer)
 - Graph API - [https://developers.facebook.com/docs/graph-api/](https://developers.facebook.com/docs/graph-api/)
 
-### App Invite
-
-`facebookConnectPlugin.appInvite(Object options, Function success, Function failure)`
-
-Example options:
-
-	{
-        url: "http://example.com",
-        picture: "http://example.com/image.png"
-	}
 
 # Events
 
@@ -185,9 +175,16 @@ Events are listed on the [insights page](https://www.facebook.com/insights/)
 
 ### App Invites
 
-`appInvite({String url, String pictureUrl}, Function success, Function failure)`
+`facebookConnectPlugin.appInvite(Object options, Function success, Function failure)`
 
-Please check out the [App Invites Overview](https://developers.facebook.com/docs/app-invites/overview) before using this. The url is expected to be an [App Link](https://developers.facebook.com/docs/applinks).
+Please check out the [App Invites Overview](https://developers.facebook.com/docs/app-invites/overview) before using this. The URL is expected to be an [App Link](https://developers.facebook.com/docs/applinks).
+
+Example options:
+
+    {
+      url: "http://example.com",
+      picture: "http://example.com/image.png"
+    }
 
 ## Sample Code
 
