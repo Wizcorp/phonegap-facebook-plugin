@@ -71,6 +71,11 @@ exports.logPurchase = function (value, currency, s, f) {
   s()
 }
 
+exports.appInvite = function (options, s, f) {
+  // App Invites are not avaliable in JS.
+  s()
+}
+
 exports.logout = function (s, f) {
   if (!assertInited()) return printError(f, new Error('init not called with valid version'))
   FB.logout(function (response) {

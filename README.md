@@ -146,6 +146,7 @@ For more information see:
 - Graph Explorer - [https://developers.facebook.com/tools/explorer](https://developers.facebook.com/tools/explorer)
 - Graph API - [https://developers.facebook.com/docs/graph-api/](https://developers.facebook.com/docs/graph-api/)
 
+
 # Events
 
 App events allow you to understand the makeup of users engaging with your app, measure the performance of your Facebook mobile app ads, and reach specific sets of your users with Facebook mobile app ads.
@@ -171,6 +172,19 @@ Events are listed on the [insights page](https://www.facebook.com/insights/)
 `logPurchase(Number value, String currency, Function success, Function failure)`
 
 **NOTE:** Both parameters are required. The currency specification is expected to be an [ISO 4217 currency code](http://en.wikipedia.org/wiki/ISO_4217)
+
+### App Invites
+
+`facebookConnectPlugin.appInvite(Object options, Function success, Function failure)`
+
+Please check out the [App Invites Overview](https://developers.facebook.com/docs/app-invites/overview) before using this. The URL is expected to be an [App Link](https://developers.facebook.com/docs/applinks).
+
+Example options:
+
+    {
+      url: "http://example.com",
+      picture: "http://example.com/image.png"
+    }
 
 ## Sample Code
 
