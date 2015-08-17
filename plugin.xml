@@ -162,4 +162,24 @@
         <framework src="platforms/wp8/lib/System.Net.Http.Primitives.dll" custom="true" />
     </platform>
 
+    <!-- windows -->
+    <platform name="windows">
+
+        <dependency id="org.apache.cordova.inappbrowser"/>
+
+        <js-module src="platforms/windows/src/FacebookConnectProxy.js" name="FacebookConnectProxy">
+            <runs />
+        </js-module>
+
+        <js-module src="platforms/windows/src/FacebookSession.js" name="FacebookSession">
+            <runs />
+        </js-module>
+
+        <config-file target="config.xml" parent="/widget">
+            <preference name="FacebookAppID" value="$APP_ID" />
+            <preference name="FacebookAppName" value="$APP_NAME" />
+        </config-file>
+
+    </platform>
+
 </plugin>
