@@ -104,6 +104,9 @@
           </array>
         </config-file>
 
+        <!-- Bolts framework -->
+        <framework src="src/ios/Bolts.framework" custom="true" />
+
         <!-- Facebook framework -->
         <framework src="src/ios/FBSDKCoreKit.framework" custom="true" />
         <framework src="src/ios/FBSDKLoginKit.framework" custom="true" />
