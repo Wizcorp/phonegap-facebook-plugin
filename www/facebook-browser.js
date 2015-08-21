@@ -1,9 +1,6 @@
 /* global FB */
 var isInited = false
 
-// Bake in the JS SDK
-insertSdk()
-
 exports.getLoginStatus = function getLoginStatus (s, f) {
   if (!assertInited()) return printError(f, new Error('init not called with valid version'))
   FB.getLoginStatus(function (response) {
@@ -105,25 +102,21 @@ exports.browserInit = function (appId, version, s) {
   // Global :(
   // This function will be called by the FB SDK when the client is inited
   window.fbAsyncInit = function fbAsyncInit () {
-    isInited = true
-    if (typeof s === 'function') s()
-  }
-
-  function _actualInit () {
     version = version || 'v2.4'
+
     FB.init({
       appId: appId,
       xfbml: false,
       version: version
     })
+
+    isInited = true
+
+    if (typeof s === 'function') s()
   }
 
-  // deal with race condition of calling FB.init before loading the SDK
-  var interval = setInterval(function () {
-    if (!window.FB) return
-    clearInterval(interval)
-    _actualInit()
-  }, 200)
+  // Bake in the JS SDK
+  insertSdk()
 }
 
 function assertInited () {
