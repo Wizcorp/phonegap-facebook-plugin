@@ -92,7 +92,7 @@ Share Dialog:
 
 	{
 		method: "share",
-		link: "http://example.com",
+		href: "http://example.com",
 		caption: "Such caption, very feed.",
 		description: "Much description",
 		picture: 'http://example.com/image.png'
