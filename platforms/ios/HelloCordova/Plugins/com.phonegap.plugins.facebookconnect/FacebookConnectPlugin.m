@@ -520,7 +520,7 @@
                  // Permission granted
                  NSLog(@"new permissions %@", [FBSession.activeSession permissions]);
                  // We can request the user information
-                 [self makeGraphCall:graphPath, command.callbackId];
+                 [self makeGraphCall:graphPath callbackId:command.callbackId];
              } else {
                  // An error occurred, we need to handle the error
                  // See: https://developers.facebook.com/docs/ios/errors
