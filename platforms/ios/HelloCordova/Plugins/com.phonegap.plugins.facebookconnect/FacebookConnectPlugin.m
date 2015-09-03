@@ -15,7 +15,6 @@
 @property (strong, nonatomic) NSString *userid;
 @property (strong, nonatomic) NSString* loginCallbackId;
 @property (strong, nonatomic) NSString* dialogCallbackId;
-@property (strong, nonatomic) NSString* graphCallbackId;
 
 @end
 
@@ -496,8 +495,6 @@
 
 - (void) graphApi:(CDVInvokedUrlCommand *)command
 {
-    // Save the callback ID
-    self.graphCallbackId = command.callbackId;
     
     NSString *graphPath = [command argumentAtIndex:0];
     NSArray *permissionsNeeded = [command argumentAtIndex:1];
@@ -532,11 +529,11 @@
     } else {
         // Permissions are present
         // We can request the user information
-        [self makeGraphCall:graphPath];
+        [self makeGraphCall:graphPath callbackId:command.callbackId];
     }
 }
 
-- (void) makeGraphCall:(NSString *)graphPath
+- (void) makeGraphCall:(NSString *)graphPath callbackId: (NSString *) callbackId
 {
     
     NSLog(@"Graph Path = %@", graphPath);
@@ -552,7 +549,7 @@
              pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
                                               messageAsString:[error localizedDescription]];
          }
-         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.graphCallbackId];
+         [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
      }];
 }
 
