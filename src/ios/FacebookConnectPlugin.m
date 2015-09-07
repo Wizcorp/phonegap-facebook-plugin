@@ -31,6 +31,10 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidFinishLaunching:)
                                                  name:UIApplicationDidFinishLaunchingNotification object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void) applicationDidFinishLaunching:(NSNotification *) notification {
@@ -39,7 +43,12 @@
         //launchOptions is nil when not start because of notification or url open
         launchOptions = [NSDictionary dictionary];
     }
+    
     [[FBSDKApplicationDelegate sharedInstance] application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:launchOptions];
+}
+
+- (void) applicationDidBecomeActive:(NSNotification *) notification {
+    [FBSDKAppEvents activateApp];
 }
 
 #pragma mark - Cordova commands
@@ -436,7 +445,7 @@
         NSDictionary *userInfo = @{
             FBSDKErrorLocalizedDescriptionKey: @"Cannot ask for both read and publish permissions.",
         };
-        NSError *error = [NSError errorWithDomain:nil code:-1 userInfo:userInfo];
+        NSError *error = [NSError errorWithDomain:@"facebook" code:-1 userInfo:userInfo];
         handler(nil, error);
 
     } else if (publishPermissionFound) {
