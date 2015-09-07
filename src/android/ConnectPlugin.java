@@ -436,7 +436,7 @@ public class ConnectPlugin extends CordovaPlugin {
 
             gameRequestDialog.show(builder.build());
 
-        } else if (method.equalsIgnoreCase("share")) {
+        } else if (method.equalsIgnoreCase("share") || method.equalsIgnoreCase("feed")) {
             if (!ShareDialog.canShow(ShareLinkContent.class)) {
                 callbackContext.error("Cannot show dialog");
                 return;
@@ -448,11 +448,6 @@ public class ConnectPlugin extends CordovaPlugin {
 
             ShareLinkContent content = buildContent(params);
             shareDialog.show(content);
-
-        } else if (method.equalsIgnoreCase("feed")) {
-            ShareLinkContent content = buildContent(params);
-            ShareApi.share(content, null);
-            callbackContext.success();
 
         } else if (method.equalsIgnoreCase("share_open_graph")) {
             if (!ShareDialog.canShow(ShareOpenGraphContent.class)) {

@@ -241,7 +241,7 @@
         [FBSDKMessageDialog showWithContent:content delegate:self];
         return;
 
-    } else if ([method isEqualToString:@"share"] || [method isEqualToString:@"share_open_graph"]) {
+    } else if ([method isEqualToString:@"share"] || [method isEqualToString:@"share_open_graph"] || [method isEqualToString:@"feed"]) {
         // Create native params
         FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
         content.contentURL = [NSURL URLWithString:params[@"href"]];
@@ -306,6 +306,8 @@
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"method not supported"];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void) graphApi:(CDVInvokedUrlCommand *)command
