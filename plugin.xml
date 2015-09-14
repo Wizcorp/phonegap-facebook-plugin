@@ -46,8 +46,7 @@
             <access origin="https://*.akamaihd.net" />
         </config-file>
 
-        <source-file src="platforms/android/res/values/facebookconnect.xml" target-dir="res/values" />
-        <config-file target="res/values/facebookconnect.xml" parent="/*">
+        <config-file target="res/values/strings.xml" parent="/*">
             <string name="fb_app_id">$APP_ID</string>
             <string name="fb_app_name">$APP_NAME</string>
         </config-file>
