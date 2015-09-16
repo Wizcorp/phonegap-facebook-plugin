@@ -659,7 +659,9 @@ public class ConnectPlugin extends CordovaPlugin {
             @Override
             public void onCompleted(JSONObject user, GraphResponse graphResponse) {
                 // Record user id
-                userID = user.optString("id");
+                if (user != null) {
+                    userID = user.optString("id");
+                }
             }
         }).executeAsync();
     }
