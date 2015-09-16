@@ -59,11 +59,14 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                 if (!options.description) {
                     options.description = "";
                 }
-                if (!options.href) {
-                    options.href = "";
-                }
                 if (!options.picture) {
                     options.picture = "";
+                }
+                if (options.link && !options.href) {
+                    options.href = options.link;
+                }
+                if (!options.href) {
+                    options.href = "";
                 }
 
                 // Try will catch errors when SDK has not been init
@@ -87,9 +90,14 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
             // Attach this to a UI element, this requires user interaction.
             login: function (permissions, s, f) {
                 // JS SDK takes an object here but the native SDKs use array.
-                var permissionObj = {};
+                var options = {};
                 if (permissions && permissions.length > 0) {
-                    permissionObj.scope = permissions.toString();
+                    var index = permissions.indexOf('rerequest');
+                    if (index > -1) {
+                        permissions.splice(index, 1);
+                        options.auth_type = 'rerequest';
+                    }
+                    options.scope = permissions.toString();
                 }
 
                 FB.login(function (response) {
@@ -98,7 +106,7 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                     } else {
                         f(response.status);
                     }
-                }, permissionObj);
+                }, options);
             },
 
             getAccessToken: function (s, f) {
@@ -176,18 +184,24 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
 
         // Bake in the JS SDK
         (function () {
+            // Retrieve the root element to append the script tags to
+            var root = document.getElementById('fb-root') || document.getElementsByTagName('body')[0];
+
             if (!window.FB) {
                 console.log("launching FB SDK");
                 var e = document.createElement('script');
-                e.src = document.location.protocol + '//connect.facebook.net/en_US/sdk.js';
                 e.async = true;
-                document.getElementById('fb-root').appendChild(e);
-                if (!window.FB) {
-                    // Probably not on server, use the sample sdk
-                    e.src = 'phonegap/plugin/facebookConnectPlugin/fbsdk.js';
-                    document.getElementById('fb-root').appendChild(e);
-                    console.log("Attempt local load: ", e);
-                }
+                e.src = document.location.protocol + '//connect.facebook.net/en_US/sdk.js';
+                e.onerror = onSDKError;
+
+                root.appendChild(e);
+            }
+
+            /**
+             * If an error occurs, show it in the console.
+             */
+            function onSDKError(e) {
+                console.error('Could not load the Facebook SDK.', e);
             }
         }());
 
@@ -208,6 +222,9 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
             },
 
             showDialog: function (options, s, f) {
+                if (!options.link && options.href) {
+                    options.link = options.href;
+                }
                 exec(s, f, "FacebookConnectPlugin", "showDialog", [options]);
             },
 
@@ -248,4 +265,5 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
 
         module.exports = facebookConnectPlugin;
     }
+
 });

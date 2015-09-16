@@ -5,6 +5,7 @@
 //  Created by Jesse MacFadyen on 11-04-22.
 //  Updated by Mathijs de Bruin on 11-08-25.
 //  Updated by Christine Abernathy on 13-01-22.
+//  Updated by Michael Go on 14-12-29.
 //  Updated by Brant Watrous on 15-05-11.
 //  Copyright 2011 Nitobi, Mathijs de Bruin. All rights reserved.
 //
@@ -17,7 +18,6 @@
 
 @property (strong, nonatomic) NSString *loginCallbackId;
 @property (strong, nonatomic) NSString *dialogCallbackId;
-@property (strong, nonatomic) NSString *graphCallbackId;
 
 @end
 
@@ -342,9 +342,6 @@
 
 - (void)graphApi:(CDVInvokedUrlCommand *)command
 {
-    // Save the callback ID
-    self.graphCallbackId = command.callbackId;
-
     NSString *graphPath = [command argumentAtIndex:0];
     NSArray *permissionsNeeded = [command argumentAtIndex:1];
     NSDictionary *parameters = [command argumentAtIndex:2];
@@ -370,16 +367,19 @@
                 // Permission granted
                 NSLog(@"new permissions %@", result.grantedPermissions);
                 // We can request the user information
-                [self makeGraphCall:graphPath parameters:parameters method:httpMethod];
+                [self makeGraphCall:graphPath parameters:parameters method:httpMethod
+                                                                callbackId:command.callbackId];
             } else {
-                // An error occurred, we need to handle the error
+                // TODO: An error occurred, we need to handle the error
                 // See: https://developers.facebook.com/docs/ios/errors
+                NSLog(@"login error %@", [error localizedDescription]);
             }
         }];
     } else {
         // Permissions are present
         // We can request the user information
-        [self makeGraphCall:graphPath parameters:parameters method:httpMethod];
+        [self makeGraphCall:graphPath parameters:parameters method:httpMethod
+                                                        callbackId:command.callbackId];
     }
 }
 
@@ -559,17 +559,17 @@
 
 #pragma mark - Graph Helpers
 
-- (void)makeGraphCall:(NSString *)graphPath
+- (void)makeGraphCall:(NSString *)graphPath callbackId:(NSString *)callbackId
 {
-    [self makeGraphCall:graphPath parameters:nil method:nil];
+    [self makeGraphCall:graphPath parameters:nil method:nil callbackId:callbackId];
 }
 
-- (void)makeGraphCall:(NSString *)graphPath parameters:(NSDictionary *)parameters
+- (void)makeGraphCall:(NSString *)graphPath parameters:(NSDictionary *)parameters callbackId:(NSString *)callbackId
 {
-    [self makeGraphCall:graphPath parameters:parameters method:nil];
+    [self makeGraphCall:graphPath parameters:parameters method:nil  callbackId:callbackId];
 }
 
-- (void)makeGraphCall:(NSString *)graphPath parameters:(NSDictionary *)parameters method:(NSString *)method
+- (void)makeGraphCall:(NSString *)graphPath parameters:(NSDictionary *)parameters method:(NSString *)method callbackId:(NSString *)callbackId
 {
     NSLog(@"Graph Path = %@", graphPath);
 
@@ -588,7 +588,7 @@
             }
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[error localizedDescription]];
         }
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.graphCallbackId];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
 
     }];
 }

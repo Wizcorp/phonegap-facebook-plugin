@@ -31,9 +31,9 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 - [Browser Guide](platforms/browser/README.md)
 
-- [PhoneGap Build Guide](platforms/pg-build/README.md)
+- [PhoneGap Build Notice](platforms/pg-build/README.md)
 
-- [Troubleshooting Guide | F.A.Q.](TROUBLESHOOTING.md)
+- [Troubleshooting / F.A.Q.](TROUBLESHOOTING.md)
 
 
 #### Example Apps
@@ -46,7 +46,7 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 `facebookConnectPlugin.login(Array strings of permissions, Function success, Function failure)`
 
-**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY** (see [Web App Guide](platforms/web/README.md))
+**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY** (see [Web App Guide](platforms/browser/README.md))
 
 Success function returns an Object like:
 

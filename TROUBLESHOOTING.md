@@ -14,6 +14,7 @@ When creating a Github issue **remember to**:
 	- [How do I Add a Like Button?](#how-do-i-add-a-like-button)
 	- [Where is the init API?](#where-is-the-init-api)
 	- [How to install with NPM PhoneGap?](#how-to-install-with-npm-phonegap)
+	- [Can I still use v1 APIs?](#can-i-still-use-v1-apis) 
 
 - [**Android**](#android)
 	- [No Reply From Login?](#no-reply-from-login)
@@ -46,7 +47,7 @@ When creating a Github issue **remember to**:
 
     2. When you display your page / button you have to call the getLoginStatus method first to know if the current user is connected to its Facebook account. If he is connected then call `GET` [https://graph.facebook.com/me/og.likes?access_token=FB_ACCESS_TOKEN&object=URL_TO_LIKE](https://graph.facebook.com/me/og.likes?access_token=FB_ACCESS_TOKEN&object=URL_TO_LIKE) with the Facebook Access Token returned by the g3. etAccessToken method (if this returns data then style your like button with a red heart for example, a grey heart if the call returns an empty array).
 
-    3. To create a like (when your user clicks on your like button and your like button is a grey heart) do a POST on [https://graph.facebook.com/me/og.likes?access_token=FB_ACCESS_TOKEN&object=URL_TO_LIKE](https://graph.facebook.com/me/og.likes?access_token=FB_ACCESS_TOKEN&object=URL_TO_LIKE)
+    3. To create a like (when your user clicks on your like button and your like button is a grey heart) do a POST on [https://graph.facebook.com/me/og.likes?access_token=FB_ACCESS_TOKEN&object=URL_TO_LIKE](https://graph.facebook.com/me/og.likes?access_token=FB_ACCESS_TOKEN&object=URL_TO_LIKE) ***NOTE: You must have `publish_actions` permission to do this***
 
     4. To remove a like (when your user clicks on your like button and your like button is a red heart) do a `DELETE` on [https://graph.facebook.com/LIKE_IDENTIFIER?access_token=FB_ACCESS_TOKEN](https://graph.facebook.com/LIKE_IDENTIFIER?access_token=FB_ACCESS_TOKEN). The `LIKE_IDENTIFIER` is returned from steps 2 or 3.
 
@@ -77,6 +78,39 @@ Im getting the message "[error] Variable(s) missing: APP_ID, APP_NAME"
 `cd to/your/project`
 
 `phonegap local plugin add /path/to/here/phonegap-facebook-plugin --variable APP_ID="12345678910" --variable APP_NAME="AwesomeApp"`
+
+### Can I still use v1 APIs?
+
+- Problem
+    - Can I still use Facebook version 1 APIs?
+- Solution
+    - Yes, make the following changes to the plugin:
+
+***Android***
+
+`src/org/apache/cordova/facebook/ConnectPlugin.java`
+
+Add this import:
+```
+import com.facebook.Settings;
+```
+
+Add this line of code to `public void initialize`
+
+```
+Settings.setPlatformCompatibilityEnabled(true);
+```
+
+***iOS***
+
+`FacebookConnectPlugin.m`
+
+Add this line to `initWithWebView` before `[FBSession openActiveSessionWithReadPermissions...`
+
+```
+[FBSettings enablePlatformCompatibility: YES];
+```
+
 
 ## Android
 ### No Reply From Login?
