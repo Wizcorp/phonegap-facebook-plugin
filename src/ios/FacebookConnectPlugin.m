@@ -478,12 +478,12 @@
 
     response[@"status"] = @"connected";
     response[@"authResponse"] = @{
-                                  @"accessToken" : token.tokenString,
+                                  @"accessToken" : token.tokenString ? token.tokenString : @"",
                                   @"expiresIn" : expiresIn,
                                   @"secret" : @"...",
                                   @"session_key" : [NSNumber numberWithBool:YES],
                                   @"sig" : @"...",
-                                  @"userID" : token.userID
+                                  @"userID" : token.userID ? token.userID : @""
                                   };
 
 
