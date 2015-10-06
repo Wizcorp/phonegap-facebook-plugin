@@ -43,7 +43,7 @@
         //launchOptions is nil when not start because of notification or url open
         launchOptions = [NSDictionary dictionary];
     }
-    
+
     [[FBSDKApplicationDelegate sharedInstance] application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:launchOptions];
 }
 
@@ -265,7 +265,7 @@
         if (![dialog canShow]) {
             CDVPluginResult *pluginResult;
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
-                            messageAsString:@"Cannot show dialog"];
+                                             messageAsString:@"Cannot show dialog"];
             return;
         }
 
@@ -315,7 +315,7 @@
     CDVPluginResult *pluginResult;
     if (! [FBSDKAccessToken currentAccessToken]) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
-                                                          messageAsString:@"You are not logged in."];
+                                         messageAsString:@"You are not logged in."];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
 
@@ -403,6 +403,8 @@
     NSString *url = options[@"url"];
     NSString *picture = options[@"picture"];
     CDVPluginResult *result;
+    self.dialogCallbackId = command.callbackId;
+
     FBSDKAppInviteContent *content = [[FBSDKAppInviteContent alloc] init];
 
     if (url) {
@@ -411,15 +413,55 @@
     if (picture) {
         content.appInvitePreviewImageURL = [NSURL URLWithString:picture];
     }
+
     FBSDKAppInviteDialog *dialog = [[FBSDKAppInviteDialog alloc] init];
-    dialog.content = content;
     if ((url || picture) && [dialog canShow]) {
-        [dialog show];
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+
+        [FBSDKAppInviteDialog showWithContent:content
+                                     delegate:self];
+
     } else {
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        [self.commandDelegate sendPluginResult:result callbackId:self.dialogCallbackId];
     }
-    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+
+}
+
+// add these methods in if you extend your sharing view controller with <FBSDKAppInviteDialogDelegate>
+- (void)appInviteDialog:(FBSDKAppInviteDialog *)appInviteDialog
+ didCompleteWithResults:(NSDictionary *)results {
+
+    if (!self.dialogCallbackId) {
+        return;
+    }
+
+    NSLog(@"app invite dialog did complete");
+    NSLog(@"result::%@",results);
+
+    CDVPluginResult *pluginResult;
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                 messageAsDictionary:results];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
+    self.dialogCallbackId = nil;
+
+}
+
+- (void)appInviteDialog:(FBSDKAppInviteDialog *)appInviteDialog
+       didFailWithError:(NSError *)error {
+
+    if (!self.dialogCallbackId) {
+        return;
+    }
+
+    NSLog(@"app invite dialog did fail");
+    NSLog(@"error::%@",error);
+
+    CDVPluginResult *pluginResult;
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                     messageAsString:[NSString stringWithFormat:@"Error: %@", error.description]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
+    self.dialogCallbackId = nil;
+
 }
 
 #pragma mark - Utility methods
@@ -445,8 +487,8 @@
     if (publishPermissionFound && readPermissionFound) {
         // Mix of permissions, not allowed
         NSDictionary *userInfo = @{
-            FBSDKErrorLocalizedDescriptionKey: @"Cannot ask for both read and publish permissions.",
-        };
+                                   FBSDKErrorLocalizedDescriptionKey: @"Cannot ask for both read and publish permissions.",
+                                   };
         NSError *error = [NSError errorWithDomain:@"facebook" code:-1 userInfo:userInfo];
         handler(nil, error);
 
@@ -478,12 +520,12 @@
 
     response[@"status"] = @"connected";
     response[@"authResponse"] = @{
-                                  @"accessToken" : token.tokenString ? token.tokenString : @"",
+                                  @"accessToken" : token.tokenString,
                                   @"expiresIn" : expiresIn,
                                   @"secret" : @"...",
                                   @"session_key" : [NSNumber numberWithBool:YES],
                                   @"sig" : @"...",
-                                  @"userID" : token.userID ? token.userID : @""
+                                  @"userID" : token.userID
                                   };
 
 
@@ -524,7 +566,7 @@
              params[key] = val;
          }
          // params[kv[0]] = val;
-    }];
+     }];
     return params;
 }
 
@@ -630,7 +672,7 @@ void FBMethodSwizzle(Class c, SEL originalSelector) {
 
     // Call existing method
     [self swizzled_application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
-
+    
     // NOTE: Cordova will run a JavaScript method here named handleOpenURL. This functionality is deprecated
     // but will cause you to see JavaScript errors if you do not have window.handleOpenURL defined:
     // https://github.com/Wizcorp/phonegap-facebook-plugin/issues/703#issuecomment-63748816
