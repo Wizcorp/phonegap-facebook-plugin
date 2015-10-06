@@ -403,6 +403,8 @@
     NSString *url = options[@"url"];
     NSString *picture = options[@"picture"];
     CDVPluginResult *result;
+    self.dialogCallbackId = command.callbackId;
+
     FBSDKAppInviteContent *content = [[FBSDKAppInviteContent alloc] init];
 
     if (url) {
@@ -411,15 +413,55 @@
     if (picture) {
         content.appInvitePreviewImageURL = [NSURL URLWithString:picture];
     }
+
     FBSDKAppInviteDialog *dialog = [[FBSDKAppInviteDialog alloc] init];
-    dialog.content = content;
     if ((url || picture) && [dialog canShow]) {
-        [dialog show];
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+
+        [FBSDKAppInviteDialog showWithContent:content
+                                     delegate:self];
+
     } else {
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        [self.commandDelegate sendPluginResult:result callbackId:self.dialogCallbackId];
     }
-    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+
+}
+
+// add these methods in if you extend your sharing view controller with <FBSDKAppInviteDialogDelegate>
+- (void)appInviteDialog:(FBSDKAppInviteDialog *)appInviteDialog
+ didCompleteWithResults:(NSDictionary *)results {
+
+    if (!self.dialogCallbackId) {
+        return;
+    }
+
+    NSLog(@"app invite dialog did complete");
+    NSLog(@"result::%@",results);
+
+    CDVPluginResult *pluginResult;
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                 messageAsDictionary:results];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
+    self.dialogCallbackId = nil;
+
+}
+
+- (void)appInviteDialog:(FBSDKAppInviteDialog *)appInviteDialog
+       didFailWithError:(NSError *)error {
+
+    if (!self.dialogCallbackId) {
+        return;
+    }
+
+    NSLog(@"app invite dialog did fail");
+    NSLog(@"error::%@",error);
+
+    CDVPluginResult *pluginResult;
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                     messageAsString:[NSString stringWithFormat:@"Error: %@", error.description]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
+    self.dialogCallbackId = nil;
+    
 }
 
 #pragma mark - Utility methods
