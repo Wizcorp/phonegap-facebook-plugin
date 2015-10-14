@@ -5,6 +5,7 @@
 //  Created by Jesse MacFadyen on 11-04-22.
 //  Updated by Mathijs de Bruin on 11-08-25.
 //  Updated by Christine Abernathy on 13-01-22
+//  Updated by Isac Araujo on 10/14/15.
 //  Copyright 2011 Nitobi, Mathijs de Bruin. All rights reserved.
 //
 
@@ -54,6 +55,15 @@
     if (![url isKindOfClass:[NSURL class]]) {
         return;
     }
+
+    // iOS 9 changes
+    // https://github.com/Wizcorp/phonegap-facebook-plugin/issues/1116
+    NSDictionary* params = notification.userInfo;
+    if (params == nil) {
+        return;
+    }
+    NSString *sourceApplication = [params objectForKey:@"sourceApplication"];
+    [FBAppCall handleOpenURL:url sourceApplication:sourceApplication];
 
     [FBSession.activeSession handleOpenURL:url];
 }

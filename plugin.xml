@@ -79,7 +79,9 @@
             <access origin="https://*.akamaihd.net" />
         </config-file>
 
+        <header-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/AppDelegate+OverrideOpenURL.h" />
         <header-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/FacebookConnectPlugin.h" />
+        <source-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/AppDelegate+OverrideOpenURL.m" />
         <source-file src="platforms/ios/HelloCordova/Plugins/com.phonegap.plugins.facebookconnect/FacebookConnectPlugin.m" />
 
         <config-file target="*-Info.plist" parent="FacebookAppID">
@@ -98,6 +100,53 @@
                 <string>fb$APP_ID</string>
               </array>
             </dict>
+          </array>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="NSAppTransportSecurity">
+          <dict>
+            <key>NSExceptionDomains</key>
+            <dict>
+              <key>facebook.com</key>
+              <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>                
+                <key>NSExceptionRequiresForwardSecrecy</key>
+                <false/>
+              </dict>
+              <key>fbcdn.net</key>
+              <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSExceptionRequiresForwardSecrecy</key>
+                <false/>
+              </dict>
+              <key>akamaihd.net</key>
+              <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSExceptionRequiresForwardSecrecy</key>
+                <false/>
+              </dict>
+            </dict>
+          </dict>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="LSApplicationQueriesSchemes">
+          <array>
+            <string>fbapi</string>
+            <string>fbapi20130214</string>
+            <string>fbapi20130410</string>
+            <string>fbapi20130702</string>
+            <string>fbapi20131010</string>
+            <string>fbapi20131219</string>    
+            <string>fbapi20140410</string>
+            <string>fbapi20140116</string>
+            <string>fbapi20150313</string>
+            <string>fbapi20150629</string>
+            <string>fbauth</string>
+            <string>fbauth2</string>
+            <string>fb-messenger-api20140430</string>
           </array>
         </config-file>
 
