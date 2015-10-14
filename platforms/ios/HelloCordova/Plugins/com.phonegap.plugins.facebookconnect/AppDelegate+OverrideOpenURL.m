@@ -9,9 +9,6 @@
 
 #import "AppDelegate+OverrideOpenURL.h"
 
-@interface AppDelegate (OverrideOpenURL)
-@end
-
 @implementation AppDelegate (OverrideOpenURL)
 
 - (BOOL)application:(UIApplication*)application openURL:(NSURL*)url sourceApplication:(NSString*)sourceApplication annotation:(id)annotation
