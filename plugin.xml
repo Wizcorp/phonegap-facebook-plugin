@@ -21,8 +21,8 @@
 
     <engines>
         <!-- Requires > 3.3.* because of the custom Framework tag for iOS [CB-5238] -->
-        <!-- Requires > 3.5.0 because of the custom Framework tag for Android [CB-6698] -->
-        <engine name="cordova" version=">=3.5.0" />
+        <!-- Requires > 4.3.0 because of the Gradle libs support via Framework tag for Android [CB-8390] -->
+        <engine name="cordova-plugman" version=">=4.3.0" />
     </engines>
 
     <!-- JavaScript interface -->
@@ -57,7 +57,8 @@
             <activity android:label="@string/fb_app_name" android:name="com.facebook.LoginActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
         </config-file>
 
-        <framework src="platforms/android/FacebookLib" custom="true" />
+        <!-- Facebook Android SDK (Feb, 2015) -->
+        <framework src="com.facebook.android:facebook-android-sdk:3.23.0" />
 
         <!-- cordova plugin src files -->
         <source-file src="platforms/android/src/org/apache/cordova/facebook/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
