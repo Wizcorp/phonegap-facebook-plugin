@@ -38,6 +38,7 @@
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="FacebookConnectPlugin">
                 <param name="android-package" value="org.apache.cordova.facebook.ConnectPlugin" />
+                <param name="onload" value="true" />
             </feature>
             <access origin="https://m.facebook.com" />
             <access origin="https://graph.facebook.com" />
