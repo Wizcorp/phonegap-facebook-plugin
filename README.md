@@ -188,6 +188,30 @@ Example options:
 
 ## Sample Code
 
+```js
+facebookConnectPlugin.appInvite(    
+    {
+        url: "http://example.com",
+        picture: "http://example.com/image.png"
+    }, 
+    function(obj){
+        if(obj) {
+            if(obj.completionGesture == "cancel") {
+                // user canceled, bad guy
+            } else {
+                // user really invited someone :)
+            }
+        } else {
+            // user just pressed done, bad guy
+        }
+    }, 
+    function(obj){
+        // error
+        console.log(obj);
+    }
+);
+```
+
 ### Login
 
 In your `onDeviceReady` event add the following
