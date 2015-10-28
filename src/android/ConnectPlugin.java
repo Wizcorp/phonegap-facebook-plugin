@@ -721,7 +721,11 @@ public class ConnectPlugin extends CordovaPlugin {
             errMsg = "Dialog error: " + exception.getMessage();
         }
 
-        context.error(getErrorResponse(exception, errMsg, errorCode));
+        if (context != null) {
+            context.error(getErrorResponse(exception, errMsg, errorCode));
+        } else {
+            Log.e(TAG, "Error already sent so no context, msg: " + errMsg + ", code: " + errorCode);
+        }
     }
 
     private void makeGraphCall() {
