@@ -50,7 +50,7 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                 if (!options.picture) {
                     options.picture = "";
                 }
-                
+
                 // Try will catch errors when SDK has not been init
                 try {
                     FB.ui(options,
@@ -76,7 +76,7 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                 if (permissions && permissions.length > 0) {
                     permissionObj.scope = permissions.toString();
                 }
-                
+
                 FB.login(function (response) {
                     if (response.authResponse) {
                         s(response);
@@ -126,7 +126,7 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
 
             api: function (graphPath, permissions, s, f) {
                 // JS API does not take additional permissions
-                
+
                 // Try will catch errors when SDK has not been init
                 try {
                     FB.api(graphPath, function (response) {
@@ -136,6 +136,35 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                             s(response);
                         }
                     });
+                } catch (error) {
+                    if (!f) {
+                        console.error(error.message);
+                    } else {
+                        f(error.message);
+                    }
+                }
+            },
+
+            delete: function (graphPath, params, s, f) {
+                if(!params) {
+                  params = {};
+                }
+                // JS API does not take additional permissions
+
+                // Try will catch errors when SDK has not been init
+                try {
+                    FB.api(
+                      graphPath,
+                      'delete',
+                      params,
+                      function (response) {
+                        if (response.error) {
+                            f(response);
+                        } else {
+                            s(response);
+                        }
+                      }
+                    );
                 } catch (error) {
                     if (!f) {
                         console.error(error.message);
@@ -158,7 +187,7 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                 });
             }
         };
-        
+
         // Bake in the JS SDK
         (function () {
             if (!window.FB) {
