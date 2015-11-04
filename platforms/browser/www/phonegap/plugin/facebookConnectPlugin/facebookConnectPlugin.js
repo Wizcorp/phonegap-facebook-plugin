@@ -53,7 +53,6 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                 if (options.link && !options.href) {
                     options.href = options.link;
                 }
-                
                 // Try will catch errors when SDK has not been init
                 try {
                     FB.ui(options,
@@ -79,7 +78,7 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                 if (permissions && permissions.length > 0) {
                     permissionObj.scope = permissions.toString();
                 }
-                
+
                 FB.login(function (response) {
                     if (response.authResponse) {
                         s(response);
@@ -127,9 +126,38 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                 }
             },
 
+            delete: function (graphPath, params, s, f) {
+                if(!params) {
+                  params = {};
+                }
+                // JS API does not take additional permissions
+
+                // Try will catch errors when SDK has not been init
+                try {
+                    FB.api(
+                      graphPath,
+                      'delete',
+                      params,
+                      function (response) {
+                        if (response.error) {
+                            f(response);
+                        } else {
+                            s(response);
+                        }
+                      }
+                    );
+                } catch (error) {
+                    if (!f) {
+                        console.error(error.message);
+                    } else {
+                        f(error.message);
+                    }
+                }
+            },
+
             api: function (graphPath, permissions, s, f) {
                 // JS API does not take additional permissions
-                
+
                 // Try will catch errors when SDK has not been init
                 try {
                     FB.api(graphPath, function (response) {
@@ -161,7 +189,7 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
                 });
             }
         };
-        
+
         // Bake in the JS SDK
         (function () {
             // Retrieve the root element to append the script tags to
@@ -241,5 +269,8 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
 
         module.exports = facebookConnectPlugin;
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature/delete_method
 });
