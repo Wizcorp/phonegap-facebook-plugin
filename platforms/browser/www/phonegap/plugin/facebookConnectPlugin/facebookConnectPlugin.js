@@ -269,8 +269,4 @@ cordova.define("com.phonegap.plugins.facebookconnect.FacebookConnectPlugin", fun
 
         module.exports = facebookConnectPlugin;
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> feature/delete_method
 });
