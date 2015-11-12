@@ -636,7 +636,7 @@ public class ConnectPlugin extends CordovaPlugin {
 
             @Override
             public void onCompleted(Response response) {
-                if (graphContext != null) {
+                if (graphContext != null && response != null) {
                     if (response.getError() != null) {
                         graphContext.error(getFacebookRequestErrorResponse(response.getError()));
                     } else {
