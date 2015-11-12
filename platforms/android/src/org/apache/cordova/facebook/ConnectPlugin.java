@@ -626,6 +626,10 @@ public class ConnectPlugin extends CordovaPlugin {
     }
 
     private void makeGraphCall() {
+        if(graphPath == null) {
+            Log.e(TAG, "Graph path is null!");
+            return;
+        }
         Session session = Session.getActiveSession();
 
         Request.Callback graphCallback = new Request.Callback() {
