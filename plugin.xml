@@ -114,21 +114,21 @@
                 <dict>
                     <key>NSIncludesSubdomains</key>
                     <true/>
-                    <key>NSExceptionRequiresForwardSecrecy</key>
+                    <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
                     <false/>
                 </dict>
                 <key>fbcdn.net</key>
                 <dict>
                     <key>NSIncludesSubdomains</key>
                     <true/>
-                    <key>NSExceptionRequiresForwardSecrecy</key>
+                    <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
                     <false/>
                 </dict>
                 <key>akamaihd.net</key>
                 <dict>
                     <key>NSIncludesSubdomains</key>
                     <true/>
-                    <key>NSExceptionRequiresForwardSecrecy</key>
+                    <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
                     <false/>
                 </dict>
             </dict>
