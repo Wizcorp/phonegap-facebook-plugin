@@ -15,6 +15,8 @@
 @interface FacebookConnectPlugin ()
 
 @property (strong, nonatomic) NSString* dialogCallbackId;
+@property (strong, nonatomic) FBSDKLoginManager *loginManager;
+
 - (NSDictionary *)responseObject;
 - (NSDictionary*)parseURLParams:(NSString *)query;
 - (BOOL)isPublishPermission:(NSString*)permission;
@@ -171,8 +173,10 @@
             return;
         }
 
-        FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
-        [login logInWithReadPermissions:permissions handler:loginHandler];
+        if (self.loginManager == nil) {
+            self.loginManager = [[FBSDKLoginManager alloc] init];
+        }
+        [self.loginManager logInWithReadPermissions:permissions fromViewController:self.viewController handler:loginHandler];
         return;
     }
 
@@ -194,8 +198,11 @@
 {
     if ([FBSDKAccessToken currentAccessToken]) {
         // Close the session and clear the cache
-        FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
-        [login logOut];
+        if (self.loginManager == nil) {
+            self.loginManager = [[FBSDKLoginManager alloc] init];
+        }
+
+        [self.loginManager logOut];
     }
 
     // Else just return OK we are already logged out
@@ -427,7 +434,9 @@
 - (void) loginWithPermissions:(NSArray *)permissions withHandler:(FBSDKLoginManagerRequestTokenHandler) handler {
     BOOL publishPermissionFound = NO;
     BOOL readPermissionFound = NO;
-    FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
+    if (self.loginManager == nil) {
+        self.loginManager = [[FBSDKLoginManager alloc] init];
+    }
 
     for (NSString *p in permissions) {
         if ([self isPublishPermission:p]) {
@@ -452,10 +461,10 @@
 
     } else if (publishPermissionFound) {
         // Only publish permissions
-        [login logInWithPublishPermissions:permissions handler:handler];
+        [self.loginManager logInWithPublishPermissions:permissions fromViewController:self.viewController handler:handler];
     } else {
         // Only read permissions
-        [login logInWithReadPermissions:permissions handler:handler];
+        [self.loginManager logInWithReadPermissions:permissions fromViewController:self.viewController handler:handler];
     }
 }
 
