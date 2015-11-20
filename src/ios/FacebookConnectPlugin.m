@@ -23,7 +23,6 @@
 
 @implementation FacebookConnectPlugin
 
-
 - (void)pluginInitialize {
     NSLog(@"Starting Facebook Connect plugin");
 
@@ -139,7 +138,7 @@
         permissions = command.arguments;
     }
 
-    void (^loginHandler)(FBSDKLoginManagerLoginResult *result, NSError *error) = ^void(FBSDKLoginManagerLoginResult *result, NSError *error) {
+    FBSDKLoginManagerRequestTokenHandler loginHandler = ^void(FBSDKLoginManagerLoginResult *result, NSError *error) {
         if (error) {
             // If the SDK has a message for the user, surface it.
             NSString *errorMessage = error.userInfo[FBSDKErrorLocalizedDescriptionKey] ?: @"There was a problem logging you in.";
@@ -337,7 +336,7 @@
     permissions = [requestPermissions copy];
 
     // Defines block that handles the Graph API response
-    void (^graphHandler)(FBSDKGraphRequestConnection *connection, id result, NSError *error) = ^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
+    FBSDKGraphRequestHandler graphHandler = ^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
         CDVPluginResult* pluginResult;
         if (error) {
             NSString *message = error.userInfo[FBSDKErrorLocalizedDescriptionKey] ?: @"There was an error making the graph call.";
@@ -351,7 +350,6 @@
 
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     };
-
 
     NSLog(@"Graph Path = %@", graphPath);
     FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc] initWithGraphPath:graphPath parameters:nil];
@@ -416,10 +414,7 @@
 
     FBSDKAppInviteDialog *dialog = [[FBSDKAppInviteDialog alloc] init];
     if ((url || picture) && [dialog canShow]) {
-
-        [FBSDKAppInviteDialog showWithContent:content
-                                     delegate:self];
-
+        [FBSDKAppInviteDialog showFromViewController:self.viewController withContent:content delegate:self];
     } else {
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
         [self.commandDelegate sendPluginResult:result callbackId:self.dialogCallbackId];
@@ -429,7 +424,7 @@
 
 #pragma mark - Utility methods
 
-- (void) loginWithPermissions:(NSArray *)permissions withHandler:(void(^)(FBSDKLoginManagerLoginResult *result, NSError *error))handler {
+- (void) loginWithPermissions:(NSArray *)permissions withHandler:(FBSDKLoginManagerRequestTokenHandler) handler {
     BOOL publishPermissionFound = NO;
     BOOL readPermissionFound = NO;
     FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
