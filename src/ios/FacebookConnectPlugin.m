@@ -461,12 +461,11 @@
 
 - (NSDictionary *)responseObject {
 
-    NSDictionary *resp = @{@"status": @"unknown"};
     if (![FBSDKAccessToken currentAccessToken]) {
-        return resp;
+        return @{@"status": @"unknown"};
     }
 
-    NSMutableDictionary *response = [[NSMutableDictionary alloc] initWithDictionary:resp];
+    NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
     FBSDKAccessToken *token = [FBSDKAccessToken currentAccessToken];
 
     NSTimeInterval expiresTimeInterval = token.expirationDate.timeIntervalSinceNow;
