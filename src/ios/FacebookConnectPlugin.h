@@ -15,7 +15,7 @@
 #import <Cordova/CDV.h>
 #import "AppDelegate.h"
 
-@interface FacebookConnectPlugin : CDVPlugin <FBSDKSharingDelegate>
+@interface FacebookConnectPlugin : CDVPlugin <FBSDKSharingDelegate, FBSDKAppInviteDialogDelegate>
 - (void)getLoginStatus:(CDVInvokedUrlCommand *)command;
 - (void)getAccessToken:(CDVInvokedUrlCommand *)command;
 - (void)logEvent:(CDVInvokedUrlCommand *)command;
