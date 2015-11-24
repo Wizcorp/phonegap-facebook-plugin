@@ -112,9 +112,10 @@ public class ConnectPlugin extends CordovaPlugin {
     @Override
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
-        uiHelper.onResume();
-        // Developers can observe how frequently users activate their app by logging an app activation event.
         // if plugin was not initialized yet we can get NPE
+        if(uiHelper != null)
+            uiHelper.onResume();
+        // Developers can observe how frequently users activate their app by logging an app activation event.
         if(cordova != null)
             AppEventsLogger.activateApp(cordova.getActivity());
     }
