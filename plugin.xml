@@ -115,6 +115,15 @@
                         <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
                         <false/>
                     </dict>
+                    <dict>
+                        <key>s3.amazonaws.com</key>
+                        <dict>
+                            <key>NSExceptionRequiresForwardSecrecy</key>
+                            <false/>
+                            <key>NSIncludesSubdomains</key>
+                            <true/>
+                        </dict>
+                    </dict>
                 </dict>
             </dict>
         </config-file>
