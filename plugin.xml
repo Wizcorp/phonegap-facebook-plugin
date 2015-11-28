@@ -2,13 +2,13 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="com.phonegap.plugins.facebookconnect"
-        version="0.11.2">
+        version="1.0.0">
 
     <name>Facebook</name>
 
     <description>
       This is the official plugin for Facebook in Apache Cordova/PhoneGap!
-      
+
       The Facebook plugin for Apache Cordova allows you to use the same JavaScript code in your
       Cordova application as you use in your web application.
       Docs: https://github.com/Wizcorp/phonegap-facebook-plugin.
@@ -21,8 +21,9 @@
 
     <engines>
         <!-- Requires > 3.3.* because of the custom Framework tag for iOS [CB-5238] -->
-        <!-- Requires > 3.5.0 because of the custom Framework tag for Android [CB-6698] -->
         <engine name="cordova" version=">=3.5.0" />
+        <!-- Requires > 3.6.0 on AppBuilder because of Gradle build for Android -->
+        <engine name="cordova-android" version=">=3.6.0" />
     </engines>
 
     <!-- JavaScript interface -->
@@ -56,7 +57,7 @@
             <activity android:label="@string/fb_app_name" android:name="com.facebook.LoginActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
         </config-file>
 
-        <framework src="platforms/android/FacebookLib" custom="true" />
+        <framework src="platforms/android/android-fb-sdk.gradle" custom="true" type="gradleReference"/>
 
         <!-- cordova plugin src files -->
         <source-file src="platforms/android/src/org/apache/cordova/facebook/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />

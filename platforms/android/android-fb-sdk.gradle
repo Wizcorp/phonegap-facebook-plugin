@@ -1,0 +1,5 @@
+dependencies {
+    compile('com.facebook.android:facebook-android-sdk:3.23.1') {
+        transitive = true
+    }
+}
