@@ -36,9 +36,9 @@ $ cordova -d plugin add https://github.com/Wizcorp/phonegap-facebook-plugin/ --v
 
 - The difference between the JS API and Native is that the Facebook JS SDK must be initiated. Here is an example:
 
-```
-if (window.cordova.platformId == "browser") {
-   	facebookConnectPlugin.browserInit(appId, version);
+```js
+if (window.cordova.platformId === "browser") {
+   	facebookConnectPlugin.browserInit(appId, callback, version);
    	// version is optional. It refers to the version of API you may want to use.
 }
 ```

@@ -6,8 +6,8 @@ The Facebook plugin for [Apache Cordova](http://incubator.apache.org/cordova/) a
 
 * Supported on PhoneGap (Cordova) v3.5.0 and above.
 * This plugin is built for
-	* iOS FacebookSDK 3.21.1
-	* Android FacebookSDK 3.21.1
+  * iOS FacebookSDK 3.21.1
+  * Android FacebookSDK 3.21.1
 * GitHub URL : [https://github.com/Wizcorp/phonegap-facebook-plugin/](https://github.com/Wizcorp/phonegap-facebook-plugin/)
 
 ## << --- Cordova Registry Warning [iOS]
@@ -45,21 +45,23 @@ To use this plugin you will need to make sure you've registered your Facebook ap
 
 `facebookConnectPlugin.login(Array strings of permissions, Function success, Function failure)`
 
-**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY** (see [Web App Guide](platforms/browser/README.md))
+**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>, <callback>)` before login - **Browser ONLY** (see [Browser Guide](platforms/browser/README.md))
 
 Success function returns an Object like:
 
-	{
-		status: "connected",
-		authResponse: {
-			session_key: true,
-			accessToken: "<long string>",
-			expiresIn: 5183979,
-			sig: "...",
-			secret: "...",
-			userID: "634565435"
-		}
-	}
+```js
+{
+  authResponse: {
+    session_key: true,
+    accessToken: "<long string>",
+    expiresIn: 5183979,
+    sig: "...",
+    secret: "...",
+    userID: "634565435"
+  },
+  status: "connected"
+}
+```
 
 Failure function returns an error String.
 
@@ -73,18 +75,19 @@ Failure function returns an error String.
 
 Success function returns an Object like:
 
-```
+```js
 {
-	authResponse: {
-		userID: "12345678912345",
-		accessToken: "kgkh3g42kh4g23kh4g2kh34g2kg4k2h4gkh3g4k2h4gk23h4gk2h34gk234gk2h34AndSoOn",
-		session_Key: true,
-		expiresIn: "5183738",
-		sig: "..."
-	},
-	status: "connected"
+  authResponse: {
+    userID: "12345678912345",
+    accessToken: "kgkh3g42kh4g23kh4g2kh34g2kg4k2h4gkh3g4k2h4gk23h4gk2h34gk234gk2h34AndSoOn",
+    session_Key: true,
+    expiresIn: "5183738",
+    sig: "..."
+  },
+  status: "connected"
 }
 ```
+
 For more information see: [Facebook Documentation](https://developers.facebook.com/docs/reference/javascript/FB.getLoginStatus)
 
 ### Show a Dialog
@@ -94,18 +97,22 @@ For more information see: [Facebook Documentation](https://developers.facebook.c
 Example options -
 Feed Dialog:
 
-	{
-		method: "feed",
-		link: "http://example.com",
-		caption: "Such caption, very feed."
-	}
+```js
+{
+  method: "feed",
+  link: "http://example.com",
+  caption: "Such caption, very feed."
+}
+```
 
 App request:
 
-	{
-		method: "apprequests",
-		message: "Come on man, check out my application."
-	}
+```js
+{
+  method: "apprequests",
+  message: "Come on man, check out my application."
+}
+```
 
 For options information see: [Facebook feed dialog documentation](https://developers.facebook.com/docs/sharing/reference/feed-dialog/v2.0), [Facebook share dialog documentation](https://developers.facebook.com/docs/sharing/reference/share-dialog)
 
@@ -120,7 +127,9 @@ Allows access to the Facebook Graph API. This API allows for additional permissi
 
 Example permissions:
 
-	["public_profile", "user_birthday"]
+```js
+["public_profile", "user_birthday"]
+```
 
 Success function returns an Object.
 
@@ -166,86 +175,96 @@ Events are listed on the [insights page](https://www.facebook.com/insights/)
 
 In your `onDeviceReady` event add the following
 
-	var fbLoginSuccess = function (userData) {
-		alert("UserInfo: " + JSON.stringify(userData));
-	}
+```js
+var fbLoginSuccess = function (userData) {
+  alert("UserInfo: " + JSON.stringify(userData));
+}
 
-	facebookConnectPlugin.login(["public_profile"],
-        fbLoginSuccess,
-        function (error) { alert("" + error) }
-    );
+facebookConnectPlugin.login(["public_profile"],
+  fbLoginSuccess,
+  function (error) { alert("" + error) }
+);
+```
 
 ### Get Access Token
 
 If you need the Facebook access token (for example, for validating the login on server side), do:
 
-	var fbLoginSuccess = function (userData) {
-		alert("UserInfo: " + JSON.stringify(userData));
-		facebookConnectPlugin.getAccessToken(function(token) {
-			alert("Token: " + token);
-		}, function(err) {
-			alert("Could not get access token: " + err);
-		});
-	}
+```js
+var fbLoginSuccess = function (userData) {
+  alert("UserInfo: " + JSON.stringify(userData));
+  facebookConnectPlugin.getAccessToken(function(token) {
+      alert("Token: " + token);
+    }, function(err) {
+      alert("Could not get access token: " + err);
+    });
+}
 
-	facebookConnectPlugin.login(["public_profile"],
-        fbLoginSuccess,
-        function (error) { alert("" + error) }
-    );
+facebookConnectPlugin.login(["public_profile"],
+  fbLoginSuccess,
+  function (error) { alert("" + error) }
+);
+```
 
 ### Get Status and Post-to-wall
 
 For a more instructive example change the above `fbLoginSuccess` to;
 
-	var fbLoginSuccess = function (userData) {
-		alert("UserInfo: " + JSON.stringify(userData));
-    	facebookConnectPlugin.getLoginStatus(
-    		function (status) {
-    			alert("current status: " + JSON.stringify(status));
+```js
+var fbLoginSuccess = function (userData) {
+  alert("UserInfo: " + JSON.stringify(userData));
 
-    			var options = { method:"feed" };
-    			facebookConnectPlugin.showDialog(options,
-    				function (result) {
-        				alert("Posted. " + JSON.stringify(result));				},
-        		function (e) {
-    				alert("Failed: " + e);
-    			});
-    		}
-    	);
-    };
+  facebookConnectPlugin.getLoginStatus(
+    function (status) {
+      alert("current status: " + JSON.stringify(status));
+
+      var options = { method:"feed" };
+      facebookConnectPlugin.showDialog(options,
+        function (result) {
+          alert("Posted. " + JSON.stringify(result));
+        },
+        function (e) {
+        alert("Failed: " + e);
+      });
+    }
+  );
+};
+```
 
 ### Getting a User's Birthday
 
 Using the graph api this is a very simple task:
 
-	facebookConnectPlugin.api("<user-id>/?fields=id,email", ["user_birthday"],
-		function (result) {
-			alert("Result: " + JSON.stringify(result));
-			/* alerts:
-				{
-					"id": "000000123456789",
-					"email": "myemail@example.com"
-				}
-			*/
-		},
-		function (error) {
-			alert("Failed: " + error);
-		});
+```js
+facebookConnectPlugin.api("<user-id>/?fields=id,email", ["user_birthday"],
+  function (result) {
+    alert("Result: " + JSON.stringify(result));
+    /* alerts:
+      {
+        "id": "000000123456789",
+        "email": "myemail@example.com"
+      }
+    */
+  },
+  function (error) {
+    alert("Failed: " + error);
+  });
+```
 
 ### Publish a Photo
 
 Send a photo to a user's feed
 
-```
-facebookConnectPlugin.showDialog( 
-    {
-        method: "feed",
-        picture:'https://www.google.co.jp/logos/doodles/2014/doodle-4-google-2014-japan-winner-5109465267306496.2-hp.png',
-        name:'Test Post',
-        message:'First photo post',    
-        caption: 'Testing using phonegap plugin',
-        description: 'Posting photo using phonegap facebook plugin'
-    }, 
-    function (response) { alert(JSON.stringify(response)) },
-    function (response) { alert(JSON.stringify(response)) });
+```js
+facebookConnectPlugin.showDialog(
+  method: "feed",
+  {
+    picture:'https://www.google.co.jp/logos/doodles/2014/doodle-4-google-2014-japan-winner-5109465267306496.2-hp.png',
+    name:'Test Post',
+    message:'First photo post',
+    caption: 'Testing using phonegap plugin',
+    description: 'Posting photo using phonegap facebook plugin'
+  },
+  function (response) { alert(JSON.stringify(response)) },
+  function (response) { alert(JSON.stringify(response)) });
 ```

@@ -9,9 +9,11 @@
  *
  */
 
-if (cordova.platformId == "browser") {
+var facebookConnectPlugin;
 
-    var facebookConnectPlugin = {
+if (cordova.platformId === "browser") {
+
+    facebookConnectPlugin = {
 
         getLoginStatus: function (s, f) {
             // Try will catch errors when SDK has not been init
@@ -48,7 +50,7 @@ if (cordova.platformId == "browser") {
             if (!options.picture) {
                 options.picture = "";
             }
-            
+
             // Try will catch errors when SDK has not been init
             try {
                 FB.ui(options,
@@ -74,7 +76,7 @@ if (cordova.platformId == "browser") {
             if (permissions && permissions.length > 0) {
                 permissionObj.scope = permissions.toString();
             }
-            
+
             FB.login(function (response) {
                 if (response.authResponse) {
                     s(response);
@@ -98,12 +100,12 @@ if (cordova.platformId == "browser") {
         },
 
         logEvent: function (eventName, params, valueToSum, s, f) {
-            // AppEvents are not avaliable in JS.
+            // AppEvents are not available in JS.
             s();
         },
 
         logPurchase: function (value, currency, s, f) {
-            // AppEvents are not avaliable in JS.
+            // AppEvents are not available in JS.
             s();
         },
 
@@ -124,7 +126,7 @@ if (cordova.platformId == "browser") {
 
         api: function (graphPath, permissions, s, f) {
             // JS API does not take additional permissions
-            
+
             // Try will catch errors when SDK has not been init
             try {
                 FB.api(graphPath, function (response) {
@@ -144,43 +146,41 @@ if (cordova.platformId == "browser") {
         },
 
         // Browser wrapper API ONLY
-        browserInit: function (appId, version) {
-            if (!version) {
-                version = "v2.0";
+        browserInit: function (appId, s, version) {
+
+            window.fbAsyncInit = function() {
+                if (!version) {
+                    version = "v2.0";
+                }
+                FB.init({
+                    appId      : appId,
+                    cookie     : true,
+                    xfbml      : true,
+                    version    : version
+                });
+
+                s();
+            };
+
+            // Bake in the JS SDK
+            if (!window.FB) {
+                var e = document.createElement('script');
+                e.src = document.location.protocol + '//connect.facebook.net/en_US/sdk.js';
+                e.async = true;
+                document.getElementById('fb-root').appendChild(e);
+                if (!window.FB) {
+                    // Probably not on server, use the sample sdk
+                    e.src = 'phonegap/plugin/facebookConnectPlugin/fbsdk.js';
+                    document.getElementById('fb-root').appendChild(e);
+                }
             }
-            FB.init({
-                appId      : appId,
-                cookie     : true,
-                xfbml      : true,
-                version    : version
-            });
         }
     };
-    
-    // Bake in the JS SDK
-    (function () {
-        if (!window.FB) {
-            console.log("launching FB SDK");
-            var e = document.createElement('script');
-            e.src = document.location.protocol + '//connect.facebook.net/en_US/sdk.js';
-            e.async = true;
-            document.getElementById('fb-root').appendChild(e);
-            if (!window.FB) {
-                // Probably not on server, use the sample sdk
-                e.src = 'phonegap/plugin/facebookConnectPlugin/fbsdk.js';
-                document.getElementById('fb-root').appendChild(e);
-                console.log("Attempt local load: ", e);
-            }
-        }
-    }());
-
-    module.exports = facebookConnectPlugin;
-
 } else {
 
     var exec = require("cordova/exec");
 
-    var facebookConnectPlugin = {
+    facebookConnectPlugin = {
 
         getLoginStatus: function (s, f) {
             exec(s, f, "FacebookConnectPlugin", "getLoginStatus", []);
@@ -225,5 +225,6 @@ if (cordova.platformId == "browser") {
         }
     };
 
-    module.exports = facebookConnectPlugin;
 }
+
+module.exports = facebookConnectPlugin;
