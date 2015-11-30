@@ -315,10 +315,8 @@ public class ConnectPlugin extends CordovaPlugin {
     }
 
     private void executeAppInvite(JSONArray args, CallbackContext callbackContext) {
-        String appLinkUrl = null;
-        String previewImageUrl = null;
-        Map<String, String> params = new HashMap<String, String>();
-        String method = null;
+        String url = null;
+        String picture = null;
         JSONObject parameters;
 
         try {
@@ -327,39 +325,45 @@ public class ConnectPlugin extends CordovaPlugin {
             parameters = new JSONObject();
         }
 
-        Iterator<String> iter = parameters.keys();
-        while (iter.hasNext()) {
-            String key = iter.next();
-            if (key.equals("url")) {
-                try {
-                    appLinkUrl = parameters.getString(key);
-                } catch (JSONException e) {
-                    Log.w(TAG, "Nonstring method parameter provided to dialog");
-                    callbackContext.error("Incorrect parameter 'url'.");
-                    return;
-                }
-            } else if (key.equals("picture")) {
-                try {
-                    previewImageUrl = parameters.getString(key);
-                } catch (JSONException e) {
-                    Log.w(TAG, "Non-string parameter provided to dialog discarded");
-                    callbackContext.error("Incorrect parameter 'picture'.");
-                    return;
-                }
+        if (parameters.has("url")) {
+            try {
+                url = parameters.getString("url");
+            } catch (JSONException e) {
+                Log.e(TAG, "Non-string 'url' parameter provided to dialog");
+                callbackContext.error("Incorrect 'url' parameter");
+                return;
             }
-        }
-
-        if (appLinkUrl == null || previewImageUrl == null) {
-            callbackContext.error("Both 'url' and 'picture' parameter needed");
+        } else {
+            callbackContext.error("Missing required 'url' parameter");
             return;
         }
 
+        if (parameters.has("picture")) {
+            try {
+                picture = parameters.getString("picture");
+            } catch (JSONException e) {
+                Log.e(TAG, "Non-string 'picture' parameter provided to dialog");
+                callbackContext.error("Incorrect 'picture' parameter");
+                return;
+            }
+        }
+
         if (AppInviteDialog.canShow()) {
-            AppInviteContent content = new AppInviteContent.Builder()
-            .setApplinkUrl(appLinkUrl)
-            .setPreviewImageUrl(previewImageUrl)
-            .build();
-            appInviteDialog.show(content);
+            AppInviteContent.Builder builder = new AppInviteContent.Builder();
+            builder.setApplinkUrl(url);
+            if (picture != null) {
+                builder.setPreviewImageUrl(picture);
+            }
+
+            showDialogContext = callbackContext;
+            PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
+            pr.setKeepCallback(true);
+            showDialogContext.sendPluginResult(pr);
+
+            cordova.setActivityResultCallback(this);
+            appInviteDialog.show(builder.build());
+        } else {
+            callbackContext.error("Unable to show dialog");
         }
     }
 
