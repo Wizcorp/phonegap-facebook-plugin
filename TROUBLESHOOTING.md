@@ -132,9 +132,17 @@ You should **not** use the openssl-0.9.8k_X64.zip.
 BUILD FAILED
 /usr/local/opt/android-sdk/tools/ant/build.xml:577: Jar mismatch! Fix your dependencies
 ```
+ or this error
+
+```
+UNEXPECTED TOP-LEVEL EXCEPTION:
+com.android.dex.DexException: Multiple dex files define Landroid/support/v4/accessibilityservice/AccessibilityServiceInfoCompat$AccessibilityServiceInfoVersionImpl;
+    at com.android.dx.merge.DexMerger.readSortableTypes(DexMerger.java:596)
+```    
 
 - Solution
-    - You may have duplicate android-support-v4.jar files. Remove android-support-v4.jar from the `/libs` folder of your project.
+    - You may have duplicate android-support-v4.jar files. Remove android-support-v4.jar from the `/libs` folder of your project. If there is an android-support file with another version numer in the libs folder, it will also conflict and has to be removed. 
+    - for automated Installations you might have need a hook script that does this for you.
 
 ### Open Fullscreen Dialog in Landscape Orientation
 - Problem:
