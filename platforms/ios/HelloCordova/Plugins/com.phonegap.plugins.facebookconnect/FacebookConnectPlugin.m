@@ -45,7 +45,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(openURL:)
                                                  name:CDVPluginHandleOpenURLNotification object:nil];
-    return self;
 }
 
 - (void)openURL:(NSNotification *)notification {
