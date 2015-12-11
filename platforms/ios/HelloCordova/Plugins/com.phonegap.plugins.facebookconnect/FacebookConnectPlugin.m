@@ -22,10 +22,10 @@
 
 @implementation FacebookConnectPlugin
 
-
-- (CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
+// BugFix: compatibility with cordova-ios 4.0.0
+- (void)pluginInitialize {
+    [super pluginInitialize];
     NSLog(@"Init FacebookConnect Session");
-    self = (FacebookConnectPlugin *)[super initWithWebView:theWebView];
     self.userid = @"";
     
     [FBSession openActiveSessionWithReadPermissions:nil
