@@ -14,11 +14,6 @@
     "type": "git",
     "url": "https://github.com/jeduan/cordova-plugin-facebook4"
   },
-  "dependencies": {
-    "chalk": "^1.1.1",
-    "xcode": "^0.8.2",
-    "xml-parser": "^1.2.1"
-  },
   "keywords": [
     "cordova",
     "facebook",

@@ -83,8 +83,6 @@
             <access origin="https://*.akamaihd.net" />
         </config-file>
 
-        <hook type="after_plugin_install" src="src/ios/deployment-target-hook.js" />
-
         <header-file src="src/ios/FacebookConnectPlugin.h" />
         <source-file src="src/ios/FacebookConnectPlugin.m" />
 
