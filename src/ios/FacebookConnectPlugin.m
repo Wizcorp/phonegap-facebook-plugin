@@ -180,7 +180,7 @@
         if (self.loginManager == nil) {
             self.loginManager = [[FBSDKLoginManager alloc] init];
         }
-        [self.loginManager logInWithReadPermissions:permissions fromViewController:self.viewController handler:loginHandler];
+        [self.loginManager logInWithReadPermissions:permissions fromViewController:[self topMostController] handler:loginHandler];
         return;
     }
 
@@ -261,7 +261,7 @@
 
         self.dialogCallbackId = command.callbackId;
         FBSDKShareDialog *dialog = [[FBSDKShareDialog alloc] init];
-        dialog.fromViewController = self.viewController;
+        dialog.fromViewController = [self topMostController];
         dialog.shareContent = content;
         dialog.delegate = self;
         // Adopt native share sheets with the following line
@@ -425,7 +425,7 @@
 
     FBSDKAppInviteDialog *dialog = [[FBSDKAppInviteDialog alloc] init];
     if ((url || picture) && [dialog canShow]) {
-        [FBSDKAppInviteDialog showFromViewController:self.viewController withContent:content delegate:self];
+        [FBSDKAppInviteDialog showFromViewController:[self topMostController] withContent:content delegate:self];
     } else {
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
         [self.commandDelegate sendPluginResult:result callbackId:self.dialogCallbackId];
@@ -465,11 +465,21 @@
 
     } else if (publishPermissionFound) {
         // Only publish permissions
-        [self.loginManager logInWithPublishPermissions:permissions fromViewController:self.viewController handler:handler];
+        [self.loginManager logInWithPublishPermissions:permissions fromViewController:[self topMostController] handler:handler];
     } else {
         // Only read permissions
-        [self.loginManager logInWithReadPermissions:permissions fromViewController:self.viewController handler:handler];
+        [self.loginManager logInWithReadPermissions:permissions fromViewController:[self topMostController] handler:handler];
     }
+}
+
+- (UIViewController*) topMostController {
+    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    
+    while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+    }
+    
+    return topController;
 }
 
 - (NSDictionary *)responseObject {
