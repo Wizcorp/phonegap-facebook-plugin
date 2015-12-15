@@ -139,6 +139,10 @@
     if ([command.arguments count] > 0) {
         permissions = command.arguments;
     }
+    
+    // this will prevent from being unable to login after updating plugin or changing permissions
+    // without refreshing there will be a cache problem. This simple call should fix the problems
+    [FBSDKAccessToken refreshCurrentAccessToken:nil];
 
     FBSDKLoginManagerRequestTokenHandler loginHandler = ^void(FBSDKLoginManagerLoginResult *result, NSError *error) {
         if (error) {
