@@ -57,8 +57,7 @@
             <activity android:label="@string/fb_app_name" android:name="com.facebook.LoginActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
         </config-file>
 
-        <framework src="platforms/android/FacebookLib" custom="true" />
-
+        <framework src="com.facebook.android:facebook-android-sdk:3.23.0" />
         <!-- cordova plugin src files -->
         <source-file src="platforms/android/src/org/apache/cordova/facebook/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
 
@@ -99,6 +98,53 @@
               </array>
             </dict>
           </array>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="LSApplicationQueriesSchemes">
+          <array>
+            <string>fbapi</string>
+            <string>fbapi20130214</string>
+            <string>fbapi20130410</string>
+            <string>fbapi20130702</string>
+            <string>fbapi20131010</string>
+            <string>fbapi20131219</string>    
+            <string>fbapi20140410</string>
+            <string>fbapi20140116</string>
+            <string>fbapi20150313</string>
+            <string>fbapi20150629</string>
+            <string>fbauth</string>
+            <string>fbauth2</string>
+            <string>fb-messenger-api20140430</string>
+          </array>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="NSAppTransportSecurity">
+          <dict>
+            <key>NSExceptionDomains</key>
+            <dict>
+                <key>facebook.com</key>
+                <dict>
+                    <key>NSIncludesSubdomains</key>
+                    <true/>
+                    <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+                    <false/>
+                </dict>
+                <key>fbcdn.net</key>
+                <dict>
+                    <key>NSIncludesSubdomains</key>
+                    <true/>
+                    <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+                    <false/>
+                </dict>
+                <key>akamaihd.net</key>
+                <dict>
+                    <key>NSIncludesSubdomains</key>
+                    <true/>
+                    <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+                    <false/>
+                </dict>
+            </dict>
+          </dict>
         </config-file>
 
         <!-- Facebook framework -->
