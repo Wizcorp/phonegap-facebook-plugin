@@ -22,8 +22,7 @@ The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you 
   * cordova-android >= 4.0
   * cordova-ios >= 3.8
   * cordova-browser >= 3.6
-
-Unfortunately, at this time PhoneGap Build is not supported on Android, since this plugin uses Gradle and PhoneGap Build [does not support that yet](http://community.phonegap.com/nitobi/topics/phonegap-build-does-not-support-gradle-builds)
+  * Phonegap build (use phonegap-version >= cli-5.2.0, android-minSdkVersion>=15, and android-build-tool=gradle), see [example here](https://github.com/yoav-zibin/phonegap-tictactoe/blob/gh-pages/www/config.xml)
 
 #### Install Guides
 
