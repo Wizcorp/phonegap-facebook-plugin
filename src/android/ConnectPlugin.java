@@ -41,6 +41,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
+import java.util.Collection;
 import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
@@ -212,8 +213,19 @@ public class ConnectPlugin extends CordovaPlugin {
             @Override
             public void onSuccess(AppInviteDialog.Result result) {
                 if (showDialogContext != null) {
-                    showDialogContext.success();
-                    showDialogContext = null;
+                    try {
+                        JSONObject json = new JSONObject();
+                        Bundle bundle = result.getData();
+                        for (String key : bundle.keySet()) {
+                            json.put(key, wrapObject(bundle.get(key)));
+                        }
+
+                        showDialogContext.success(json);
+                        showDialogContext = null;
+                    } catch (JSONException e) {
+                        showDialogContext.success();
+                        showDialogContext = null;
+                    }
                 }
             }
 
@@ -872,5 +884,55 @@ public class ConnectPlugin extends CordovaPlugin {
             e.printStackTrace();
         }
         return new JSONObject();
+    }
+
+    /**
+     * Wraps the given object if necessary.
+     *
+     * If the object is null or , returns {@link #JSONObject.NULL}.
+     * If the object is a {@code JSONArray} or {@code JSONObject}, no wrapping is necessary.
+     * If the object is {@code JSONObject.NULL}, no wrapping is necessary.
+     * If the object is an array or {@code Collection}, returns an equivalent {@code JSONArray}.
+     * If the object is a {@code Map}, returns an equivalent {@code JSONObject}.
+     * If the object is a primitive wrapper type or {@code String}, returns the object.
+     * Otherwise if the object is from a {@code java} package, returns the result of {@code toString}.
+     * If wrapping fails, returns null.
+     */
+    private static Object wrapObject(Object o) {
+        if (o == null) {
+            return JSONObject.NULL;
+        }
+        if (o instanceof JSONArray || o instanceof JSONObject) {
+            return o;
+        }
+        if (o.equals(JSONObject.NULL)) {
+            return o;
+        }
+        try {
+            if (o instanceof Collection) {
+                return new JSONArray((Collection) o);
+            } else if (o.getClass().isArray()) {
+                return new JSONArray(o);
+            }
+            if (o instanceof Map) {
+                return new JSONObject((Map) o);
+            }
+            if (o instanceof Boolean ||
+                o instanceof Byte ||
+                o instanceof Character ||
+                o instanceof Double ||
+                o instanceof Float ||
+                o instanceof Integer ||
+                o instanceof Long ||
+                o instanceof Short ||
+                o instanceof String) {
+                return o;
+            }
+            if (o.getClass().getPackage().getName().startsWith("java.")) {
+                return o.toString();
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 }
