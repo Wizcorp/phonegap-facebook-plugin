@@ -41,6 +41,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
+import java.util.Collection;
 import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
@@ -212,8 +213,19 @@ public class ConnectPlugin extends CordovaPlugin {
             @Override
             public void onSuccess(AppInviteDialog.Result result) {
                 if (showDialogContext != null) {
-                    showDialogContext.success();
-                    showDialogContext = null;
+                    try {
+                        JSONObject json = new JSONObject();
+                        Bundle bundle = result.getData();
+                        for (String key : bundle.keySet()) {
+                            json.put(key, wrapObject(bundle.get(key)));
+                        }
+
+                        showDialogContext.success(json);
+                        showDialogContext = null;
+                    } catch (JSONException e) {
+                        showDialogContext.success();
+                        showDialogContext = null;
+                    }
                 }
             }
 
@@ -315,10 +327,8 @@ public class ConnectPlugin extends CordovaPlugin {
     }
 
     private void executeAppInvite(JSONArray args, CallbackContext callbackContext) {
-        String appLinkUrl = null;
-        String previewImageUrl = null;
-        Map<String, String> params = new HashMap<String, String>();
-        String method = null;
+        String url = null;
+        String picture = null;
         JSONObject parameters;
 
         try {
@@ -327,39 +337,45 @@ public class ConnectPlugin extends CordovaPlugin {
             parameters = new JSONObject();
         }
 
-        Iterator<String> iter = parameters.keys();
-        while (iter.hasNext()) {
-            String key = iter.next();
-            if (key.equals("url")) {
-                try {
-                    appLinkUrl = parameters.getString(key);
-                } catch (JSONException e) {
-                    Log.w(TAG, "Nonstring method parameter provided to dialog");
-                    callbackContext.error("Incorrect parameter 'url'.");
-                    return;
-                }
-            } else if (key.equals("picture")) {
-                try {
-                    previewImageUrl = parameters.getString(key);
-                } catch (JSONException e) {
-                    Log.w(TAG, "Non-string parameter provided to dialog discarded");
-                    callbackContext.error("Incorrect parameter 'picture'.");
-                    return;
-                }
+        if (parameters.has("url")) {
+            try {
+                url = parameters.getString("url");
+            } catch (JSONException e) {
+                Log.e(TAG, "Non-string 'url' parameter provided to dialog");
+                callbackContext.error("Incorrect 'url' parameter");
+                return;
             }
-        }
-
-        if (appLinkUrl == null || previewImageUrl == null) {
-            callbackContext.error("Both 'url' and 'picture' parameter needed");
+        } else {
+            callbackContext.error("Missing required 'url' parameter");
             return;
         }
 
+        if (parameters.has("picture")) {
+            try {
+                picture = parameters.getString("picture");
+            } catch (JSONException e) {
+                Log.e(TAG, "Non-string 'picture' parameter provided to dialog");
+                callbackContext.error("Incorrect 'picture' parameter");
+                return;
+            }
+        }
+
         if (AppInviteDialog.canShow()) {
-            AppInviteContent content = new AppInviteContent.Builder()
-            .setApplinkUrl(appLinkUrl)
-            .setPreviewImageUrl(previewImageUrl)
-            .build();
-            appInviteDialog.show(content);
+            AppInviteContent.Builder builder = new AppInviteContent.Builder();
+            builder.setApplinkUrl(url);
+            if (picture != null) {
+                builder.setPreviewImageUrl(picture);
+            }
+
+            showDialogContext = callbackContext;
+            PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
+            pr.setKeepCallback(true);
+            showDialogContext.sendPluginResult(pr);
+
+            cordova.setActivityResultCallback(this);
+            appInviteDialog.show(builder.build());
+        } else {
+            callbackContext.error("Unable to show dialog");
         }
     }
 
@@ -868,5 +884,55 @@ public class ConnectPlugin extends CordovaPlugin {
             e.printStackTrace();
         }
         return new JSONObject();
+    }
+
+    /**
+     * Wraps the given object if necessary.
+     *
+     * If the object is null or , returns {@link #JSONObject.NULL}.
+     * If the object is a {@code JSONArray} or {@code JSONObject}, no wrapping is necessary.
+     * If the object is {@code JSONObject.NULL}, no wrapping is necessary.
+     * If the object is an array or {@code Collection}, returns an equivalent {@code JSONArray}.
+     * If the object is a {@code Map}, returns an equivalent {@code JSONObject}.
+     * If the object is a primitive wrapper type or {@code String}, returns the object.
+     * Otherwise if the object is from a {@code java} package, returns the result of {@code toString}.
+     * If wrapping fails, returns null.
+     */
+    private static Object wrapObject(Object o) {
+        if (o == null) {
+            return JSONObject.NULL;
+        }
+        if (o instanceof JSONArray || o instanceof JSONObject) {
+            return o;
+        }
+        if (o.equals(JSONObject.NULL)) {
+            return o;
+        }
+        try {
+            if (o instanceof Collection) {
+                return new JSONArray((Collection) o);
+            } else if (o.getClass().isArray()) {
+                return new JSONArray(o);
+            }
+            if (o instanceof Map) {
+                return new JSONObject((Map) o);
+            }
+            if (o instanceof Boolean ||
+                o instanceof Byte ||
+                o instanceof Character ||
+                o instanceof Double ||
+                o instanceof Float ||
+                o instanceof Integer ||
+                o instanceof Long ||
+                o instanceof Short ||
+                o instanceof String) {
+                return o;
+            }
+            if (o.getClass().getPackage().getName().startsWith("java.")) {
+                return o.toString();
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 }
