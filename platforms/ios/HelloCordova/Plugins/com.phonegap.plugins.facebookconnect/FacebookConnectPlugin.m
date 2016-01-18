@@ -21,15 +21,8 @@
 
 @implementation FacebookConnectPlugin
 
-
-#if CORDOVA_VERSION_MIN_REQUIRED >= __CORDOVA_4_0_0
 - (void) pluginInitialize {
-#else
-- (CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
     NSLog(@"Init FacebookConnect Session");
-    self = (FacebookConnectPlugin *)[super initWithWebView:theWebView];
-    self.userid = @"";
-#endif
 
     [FBSession openActiveSessionWithReadPermissions:nil
                                        allowLoginUI:NO
@@ -48,9 +41,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(openURL:)
                                                  name:CDVPluginHandleOpenURLNotification object:nil];
-#if CORDOVA_VERSION_MIN_REQUIRED < __CORDOVA_4_0_0
-    return self;
-#endif
 }
 
 - (void)openURL:(NSNotification *)notification {
