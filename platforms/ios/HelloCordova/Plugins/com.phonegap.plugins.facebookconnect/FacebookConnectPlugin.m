@@ -235,7 +235,7 @@
      there is a helper method that explicitly takes a currency indicator.
      */
     CDVPluginResult *res;
-    if (!command.arguments == 2) {
+    if ([command.arguments count] == 2) {
         res = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Invalid arguments"];
         [self.commandDelegate sendPluginResult:res callbackId:command.callbackId];
         return;
