@@ -322,6 +322,15 @@ public class ConnectPlugin extends CordovaPlugin {
             executeAppInvite(args, callbackContext);
 
             return true;
+        } else if (action.equals("activateApp")) {
+            cordova.getThreadPool().execute(new Runnable() {
+                @Override
+                public void run() {
+                    AppEventsLogger.activateApp(cordova.getActivity());
+                }
+            });
+            
+            return true;
         }
         return false;
     }
