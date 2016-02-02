@@ -23,6 +23,7 @@ import com.facebook.share.ShareApi;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.GameRequestContent;
 import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.ShareOpenGraphObject;
 import com.facebook.share.model.ShareOpenGraphAction;
 import com.facebook.share.model.ShareOpenGraphContent;
 import com.facebook.share.model.AppInviteContent;
@@ -379,7 +380,7 @@ public class ConnectPlugin extends CordovaPlugin {
         }
     }
 
-    private void executeDialog(JSONArray args, CallbackContext callbackContext) {
+    private void executeDialog(JSONArray args, CallbackContext callbackContext) throws JSONException {
         Map<String, String> params = new HashMap<String, String>();
         String method = null;
         JSONObject parameters;
@@ -476,17 +477,54 @@ public class ConnectPlugin extends CordovaPlugin {
             showDialogContext.sendPluginResult(pr);
 
             if (!params.containsKey("action")) {
-                callbackContext.error("Missing required parameter \"action\"");
+                callbackContext.error("Missing required parameter 'action'");
             }
-            ShareOpenGraphAction openGraphAction = new ShareOpenGraphAction.Builder()
-                    .setActionType(params.get("action"))
-                    .build();
+
+            if (!params.containsKey("object")) {
+                callbackContext.error("Missing required parameter 'object'.");
+            }
+
+            ShareOpenGraphObject.Builder objectBuilder = new ShareOpenGraphObject.Builder();
+            JSONObject jObject = new JSONObject(params.get("object"));
+
+            Iterator<?> objectKeys = jObject.keys();
+
+            String objectType = "";
+
+            while ( objectKeys.hasNext() ) {
+                String key = (String)objectKeys.next();
+                String value = jObject.getString(key);
+
+                objectBuilder.putString(key, value);
+
+                if (key.equals("og:type"))
+                    objectType = value;
+            }
+
+            if (objectType.equals("")) {
+                callbackContext.error("Missing required object parameter 'og:type'");
+            }
+
+            ShareOpenGraphAction.Builder actionBuilder = new ShareOpenGraphAction.Builder();
+            actionBuilder.setActionType(params.get("action"));
+
+            if (params.containsKey("action_properties")) {
+                JSONObject jActionProperties = new JSONObject(params.get("action_properties"));
+
+                Iterator<?> actionKeys = jActionProperties.keys();
+
+                while ( actionKeys.hasNext() ) {
+                    String actionKey = (String)actionKeys.next();
+
+                    actionBuilder.putString(actionKey, jActionProperties.getString(actionKey));
+                }
+            }
+
+            actionBuilder.putObject(objectType, objectBuilder.build());
 
             ShareOpenGraphContent.Builder content = new ShareOpenGraphContent.Builder()
-                    .setAction(openGraphAction);
-
-            if (params.containsKey("previewPropertyName"))
-                content.setPreviewPropertyName(params.get("previewPropertyName"));
+                    .setPreviewPropertyName(objectType)
+                    .setAction(actionBuilder.build());
 
             shareDialog.show(content.build());
 
