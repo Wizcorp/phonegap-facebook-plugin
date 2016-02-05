@@ -433,6 +433,11 @@
 
 }
 
+- (void) activateApp:(CDVInvokedUrlCommand *)command
+{
+    [FBSDKAppEvents activateApp];
+}
+
 #pragma mark - Utility methods
 
 - (void) loginWithPermissions:(NSArray *)permissions withHandler:(FBSDKLoginManagerRequestTokenHandler) handler {
