@@ -172,6 +172,10 @@ Events are listed on the [insights page](https://www.facebook.com/insights/)
 
 **NOTE:** Both parameters are required. The currency specification is expected to be an [ISO 4217 currency code](http://en.wikipedia.org/wiki/ISO_4217)
 
+### Manually log activation events
+
+`activateApp(Function success, Function failure)`
+
 ### App Invites
 
 `facebookConnectPlugin.appInvite(Object options, Function success, Function failure)`
@@ -188,11 +192,11 @@ Example options:
 ## Sample Code
 
 ```js
-facebookConnectPlugin.appInvite(    
+facebookConnectPlugin.appInvite(
     {
         url: "http://example.com",
         picture: "http://example.com/image.png"
-    }, 
+    },
     function(obj){
         if(obj) {
             if(obj.completionGesture == "cancel") {
@@ -203,7 +207,7 @@ facebookConnectPlugin.appInvite(
         } else {
             // user just pressed done, bad guy
         }
-    }, 
+    },
     function(obj){
         // error
         console.log(obj);
