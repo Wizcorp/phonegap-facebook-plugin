@@ -187,7 +187,7 @@ public class ConnectPlugin extends CordovaPlugin {
                         JSONObject json = new JSONObject();
                         json.put("requestId", result.getRequestId());
                         json.put("recipientsIds", new JSONArray(result.getRequestRecipients()));
-                        showDialogContext.success();
+                        showDialogContext.success(json);
                         showDialogContext = null;
                     } catch (JSONException ex) {
                         showDialogContext.success();
