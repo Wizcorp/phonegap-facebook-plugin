@@ -460,6 +460,9 @@ public class ConnectPlugin extends CordovaPlugin {
                 }
             }
 
+    		// Set up the activity result callback to this class
+			cordova.setActivityResultCallback(this);
+
             gameRequestDialog.show(builder.build());
 
         } else if (method.equalsIgnoreCase("share") || method.equalsIgnoreCase("feed")) {
