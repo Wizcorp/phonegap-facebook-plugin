@@ -22,8 +22,7 @@ The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you 
   * cordova-android >= 4.0
   * cordova-ios >= 3.8
   * cordova-browser >= 3.6
-
-Unfortunately, at this time PhoneGap Build is not supported on Android, since this plugin uses Gradle and PhoneGap Build [does not support that yet](http://community.phonegap.com/nitobi/topics/phonegap-build-does-not-support-gradle-builds)
+  * Phonegap build (use phonegap-version >= cli-5.2.0, android-minSdkVersion>=15, and android-build-tool=gradle), see [example here](https://github.com/yoav-zibin/phonegap-tictactoe/blob/gh-pages/www/config.xml)
 
 #### Install Guides
 
@@ -118,6 +117,31 @@ Send Dialog:
 		description: "The site I told you about",
 		picture: "http://example.com/image.png"
 	}
+	
+Share dialog - Open Graph Story:
+
+	{
+		var obj = {};
+	
+    	obj['og:type'] = 'objectname';
+    	obj['og:title'] = 'Some title';
+    	obj['og:url'] = 'https://en.wikipedia.org/wiki/Main_Page';
+    	obj['og:description'] = 'Some description.';
+
+    	var ap = {};
+    	
+    	ap['expires_in'] = 3600;
+    	
+    	var options = {
+    		method: 'share_open_graph', // Required
+        	action: 'actionname', // Required
+        	action_properties: JSON.stringify(ap), // Optional
+        	object: JSON.stringify(obj) // Required
+    	};
+	}
+	
+In case you want to use custom actions/objects, just prepend the app namespace to the name (E.g: ` obj['og:type'] = 'appnamespace:objectname' `, `action: 'appnamespace:actionname'`. The namespace of a Facebook app is found on the Settings page. 
+
 
 For options information see: [Facebook share dialog documentation](https://developers.facebook.com/docs/sharing/reference/share-dialog) [Facebook send dialog documentation](https://developers.facebook.com/docs/sharing/reference/send-dialog)
 
@@ -173,6 +197,10 @@ Events are listed on the [insights page](https://www.facebook.com/insights/)
 
 **NOTE:** Both parameters are required. The currency specification is expected to be an [ISO 4217 currency code](http://en.wikipedia.org/wiki/ISO_4217)
 
+### Manually log activation events
+
+`activateApp(Function success, Function failure)`
+
 ### App Invites
 
 `facebookConnectPlugin.appInvite(Object options, Function success, Function failure)`
@@ -189,11 +217,11 @@ Example options:
 ## Sample Code
 
 ```js
-facebookConnectPlugin.appInvite(    
+facebookConnectPlugin.appInvite(
     {
         url: "http://example.com",
         picture: "http://example.com/image.png"
-    }, 
+    },
     function(obj){
         if(obj) {
             if(obj.completionGesture == "cancel") {
@@ -204,7 +232,7 @@ facebookConnectPlugin.appInvite(
         } else {
             // user just pressed done, bad guy
         }
-    }, 
+    },
     function(obj){
         // error
         console.log(obj);
