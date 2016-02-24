@@ -460,8 +460,8 @@ public class ConnectPlugin extends CordovaPlugin {
                 }
             }
 
-    		// Set up the activity result callback to this class
-			cordova.setActivityResultCallback(this);
+            // Set up the activity result callback to this class
+            cordova.setActivityResultCallback(this);
 
             gameRequestDialog.show(builder.build());
 
@@ -476,6 +476,8 @@ public class ConnectPlugin extends CordovaPlugin {
             showDialogContext.sendPluginResult(pr);
 
             ShareLinkContent content = buildContent(params);
+            // Set up the activity result callback to this class
+            cordova.setActivityResultCallback(this);
             shareDialog.show(content);
 
         } else if (method.equalsIgnoreCase("share_open_graph")) {
