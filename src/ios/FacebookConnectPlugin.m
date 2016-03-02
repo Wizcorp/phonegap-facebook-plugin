@@ -16,6 +16,7 @@
 
 @property (strong, nonatomic) NSString* dialogCallbackId;
 @property (strong, nonatomic) FBSDKLoginManager *loginManager;
+@property (strong, nonatomic) NSString* gameRequestDialogCallbackId;
 
 - (NSDictionary *)responseObject;
 - (NSDictionary*)parseURLParams:(NSString *)query;
@@ -272,6 +273,7 @@
         return;
     } else if ([method isEqualToString:@"apprequests"]) {
         FBSDKGameRequestDialog *dialog = [[FBSDKGameRequestDialog alloc] init];
+        dialog.delegate = self;
         if (![dialog canShow]) {
             CDVPluginResult *pluginResult;
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
@@ -310,10 +312,9 @@
         content.recipients = params[@"to"];
         content.title = params[@"title"];
 
+        self.gameRequestDialogCallbackId = command.callbackId;
         dialog.content = content;
         [dialog show];
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"method not supported"];
@@ -644,6 +645,55 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
     self.dialogCallbackId = nil;
     
+}
+
+
+#pragma mark - FBSDKGameRequestDialogDelegate
+
+- (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog
+   didCompleteWithResults:(NSDictionary *)results
+{
+    if (!self.gameRequestDialogCallbackId) {
+        return;
+    }
+
+    NSLog(@"game request dialog did complete");
+    NSLog(@"result::%@", results);
+
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:results];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.gameRequestDialogCallbackId];
+    self.gameRequestDialogCallbackId = nil;
+}
+
+- (void)gameRequestDialogDidCancel:(FBSDKGameRequestDialog *)gameRequestDialog
+{
+    if (!self.gameRequestDialogCallbackId) {
+        return;
+    }
+
+    NSLog(@"game request dialog did cancel");
+
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"User cancelled dialog"];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.gameRequestDialogCallbackId];
+    self.gameRequestDialogCallbackId = nil;
+}
+
+- (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog
+         didFailWithError:(NSError *)error
+{
+    if (!self.gameRequestDialogCallbackId) {
+        return;
+    }
+
+    NSLog(@"game request dialog did fail");
+    NSLog(@"error::%@", error);
+
+    CDVPluginResult* pluginResult;
+    NSString *message = error.userInfo[FBSDKErrorLocalizedDescriptionKey] ?: @"There was an error making the graph call.";
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                     messageAsString:message];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.gameRequestDialogCallbackId];
+    self.gameRequestDialogCallbackId = nil;
 }
 
 @end
