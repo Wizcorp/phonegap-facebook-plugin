@@ -433,6 +433,18 @@
 
 }
 
+- (void) getDeferredApplink:(CDVInvokedUrlCommand *) command
+{
+    [FBSDKAppLinkUtility fetchDeferredAppLink:^(NSURL *url, NSError *error) {
+        if (error) {
+            NSLog(@"Received error while fetching deferred app link %@", error);
+        }
+        if (url) {
+            [[UIApplication sharedApplication] openURL:url];
+        }
+    }];
+}
+
 - (void) activateApp:(CDVInvokedUrlCommand *)command
 {
     [FBSDKAppEvents activateApp];
