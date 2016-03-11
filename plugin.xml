@@ -44,6 +44,7 @@
             <access origin="https://api.facebook.com" />
             <access origin="https://*.fbcdn.net" />
             <access origin="https://*.akamaihd.net" />
+            <preference name="android-minSdkVersion" value="15" />
         </config-file>
 
         <source-file src="src/android/facebookconnect.xml" target-dir="res/values" />
