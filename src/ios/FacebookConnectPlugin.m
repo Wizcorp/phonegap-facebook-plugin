@@ -388,7 +388,7 @@
 
         NSString *deniedPermission = nil;
         for (NSString *permission in permissions) {
-            if (![result.grantedPermissions containsObject:permissions]) {
+            if (![result.grantedPermissions containsObject:permission]) {
                 deniedPermission = permission;
                 break;
             }
