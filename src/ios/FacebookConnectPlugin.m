@@ -301,7 +301,7 @@
         if (!filters) {
             content.filters = FBSDKGameRequestFilterNone;
         } else if ([filters isEqualToString:@"app_users"]) {
-            content.filters = FBSDKGameRequestFilterAppNonUsers;
+            content.filters = FBSDKGameRequestFilterAppUsers;
         } else if ([filters isEqualToString:@"app_non_users"]) {
             content.filters = FBSDKGameRequestFilterAppNonUsers;
         }
