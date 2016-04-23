@@ -268,7 +268,10 @@
         // Adopt native share sheets with the following line
         if (params[@"share_sheet"]) {
             dialog.mode = FBSDKShareDialogModeShareSheet;
+        } else if (params[@"share_feedBrowser"]) {
+            dialog.mode = FBSDKShareDialogModeFeedBrowser;
         }
+
         [dialog show];
         return;
     } else if ([method isEqualToString:@"apprequests"]) {
