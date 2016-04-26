@@ -22,9 +22,9 @@
 @implementation FacebookConnectPlugin
 
 
-- (CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
+- (void)pluginInitialize
+{
     NSLog(@"Init FacebookConnect Session");
-    self = (FacebookConnectPlugin *)[super initWithWebView:theWebView];
     self.userid = @"";
     
     [FBSession openActiveSessionWithReadPermissions:nil
@@ -44,7 +44,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(openURL:)
                                                  name:CDVPluginHandleOpenURLNotification object:nil];
-    return self;
 }
 
 - (void)openURL:(NSNotification *)notification {
