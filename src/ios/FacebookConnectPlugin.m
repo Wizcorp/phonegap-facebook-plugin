@@ -266,14 +266,14 @@
         dialog.shareContent = content;
         dialog.delegate = self;
         // Adopt native share sheets with the following line
-				if (params[@"share_sheet"]) {
-				    dialog.mode = FBSDKShareDialogModeShareSheet;
-				} else if (params[@"share_feedBrowser"]) {
-				    dialog.mode = FBSDKShareDialogModeFeedBrowser;
-				} else if (params[@"share_native"]) {
-				    dialog.mode = FBSDKShareDialogModeNative;
-				} else if (params[@"share_feedWeb"]) {
-				    dialog.mode = FBSDKShareDialogModeFeedWeb;
+        if (params[@"share_sheet"]) {
+        	dialog.mode = FBSDKShareDialogModeShareSheet;
+        } else if (params[@"share_feedBrowser"]) {
+        	dialog.mode = FBSDKShareDialogModeFeedBrowser;
+        } else if (params[@"share_native"]) {
+        	dialog.mode = FBSDKShareDialogModeNative;
+        } else if (params[@"share_feedWeb"]) {
+        	dialog.mode = FBSDKShareDialogModeFeedWeb;
 				}
 
         [dialog show];
