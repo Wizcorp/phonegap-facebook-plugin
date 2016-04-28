@@ -45,7 +45,7 @@
         //launchOptions is nil when not start because of notification or url open
         launchOptions = [NSDictionary dictionary];
     }
-    
+
     [[FBSDKApplicationDelegate sharedInstance] application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:launchOptions];
 }
 
@@ -140,7 +140,7 @@
     if ([command.arguments count] > 0) {
         permissions = command.arguments;
     }
-    
+
     // this will prevent from being unable to login after updating plugin or changing permissions
     // without refreshing there will be a cache problem. This simple call should fix the problems
     [FBSDKAccessToken refreshCurrentAccessToken:nil];
@@ -266,11 +266,15 @@
         dialog.shareContent = content;
         dialog.delegate = self;
         // Adopt native share sheets with the following line
-        if (params[@"share_sheet"]) {
-            dialog.mode = FBSDKShareDialogModeShareSheet;
-        } else if (params[@"share_feedBrowser"]) {
-            dialog.mode = FBSDKShareDialogModeFeedBrowser;
-        }
+				if (params[@"share_sheet"]) {
+				    dialog.mode = FBSDKShareDialogModeShareSheet;
+				} else if (params[@"share_feedBrowser"]) {
+				    dialog.mode = FBSDKShareDialogModeFeedBrowser;
+				} else if (params[@"share_native"]) {
+				    dialog.mode = FBSDKShareDialogModeNative;
+				} else if (params[@"share_feedWeb"]) {
+				    dialog.mode = FBSDKShareDialogModeFeedWeb;
+				}
 
         [dialog show];
         return;
@@ -483,11 +487,11 @@
 
 - (UIViewController*) topMostController {
     UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-    
+
     while (topController.presentedViewController) {
         topController = topController.presentedViewController;
     }
-    
+
     return topController;
 }
 
@@ -657,7 +661,7 @@
                                      messageAsString:[NSString stringWithFormat:@"Error: %@", error.description]];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
     self.dialogCallbackId = nil;
-    
+
 }
 
 
