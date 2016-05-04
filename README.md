@@ -95,7 +95,10 @@ Share Dialog:
 		caption: "Such caption, very feed.",
 		description: "Much description",
 		picture: 'http://example.com/image.png'
+		share_feedWeb: true, // iOS only
 	}
+
+For iOS, the default dialog mode is [`FBSDKShareDialogModeAutomatic`](https://developers.facebook.com/docs/reference/ios/current/constants/FBSDKShareDialogMode/). You can share that by adding a specific dialog mode parameter. The available share dialog modes are: `share_sheet`, `share_feedBrowser`, `share_native` and `share_feedWeb`. [Read more about share dialog modes](https://developers.facebook.com/docs/reference/ios/current/constants/FBSDKShareDialogMode/)
 
 Game request:
 
