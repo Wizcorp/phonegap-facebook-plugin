@@ -121,7 +121,7 @@ Send Dialog:
 		picture: "http://example.com/image.png"
 	}
 	
-Share dialog - Open Graph Story: (currently only available on Android, PRs welcome for iOS)
+Share dialog - Open Graph Story: (currently only fully available on Android, iOS currently does not support action_properties)
 
 	{
 		var obj = {};
