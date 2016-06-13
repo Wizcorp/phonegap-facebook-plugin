@@ -18,7 +18,7 @@ The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you 
 
 ## Compatibility
 
-  * Cordova v5.0.0.
+  * Cordova >= 5.0.0
   * cordova-android >= 4.0
   * cordova-ios >= 3.8
   * cordova-browser >= 3.6
