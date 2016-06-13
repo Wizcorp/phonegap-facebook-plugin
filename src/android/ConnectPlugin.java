@@ -758,12 +758,14 @@ public class ConnectPlugin extends CordovaPlugin {
 
     private ShareLinkContent buildContent(Map<String, String> paramBundle) {
         ShareLinkContent.Builder builder = new ShareLinkContent.Builder();
+        if (paramBundle.containsKey("href"))
+            builder.setContentUrl(Uri.parse(paramBundle.get("href")));
         if (paramBundle.containsKey("caption"))
             builder.setContentTitle(paramBundle.get("caption"));
         if (paramBundle.containsKey("description"))
             builder.setContentDescription(paramBundle.get("description"));
-        if (paramBundle.containsKey("href"))
-            builder.setContentUrl(Uri.parse(paramBundle.get("href")));
+        if (paramBundle.containsKey("link"))
+            builder.setContentUrl(Uri.parse(paramBundle.get("link")));
         if (paramBundle.containsKey("picture"))
             builder.setImageUrl(Uri.parse(paramBundle.get("picture")));
         return builder.build();
