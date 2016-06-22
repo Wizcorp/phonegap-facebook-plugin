@@ -19,9 +19,12 @@ Currently these are set as defaults, so please change:
 
 This plugin requires [Cordova CLI](http://cordova.apache.org/docs/en/3.5.0/guide_cli_index.md.html).
 
-Installing this plugin directly from Cordova Registry currently breaks the symlinks in `FacebookSDK.framework` [CB-6092](https://issues.apache.org/jira/browse/CB-6092). Easiest solution for now is to just `git clone` this project and install it with *Cordova CLI* using the local clone.
-```sh
-$ git clone https://github.com/Wizcorp/phonegap-facebook-plugin.git
+Installing this plugin directly from the NPM Cordova Registry currently breaks the symlinks in `FacebookSDK.framework` [CB-6092](https://issues.apache.org/jira/browse/CB-6092). Easiest solution for is to add this plugin from its github url :
+```
+<plugin name="phonegap-facebook-plugin" spec="https://github.com/Wizcorp/phonegap-facebook-plugin.git">
+    <variable name="APP_ID" value="<YOUR APPID>" />
+    <variable name="APP_NAME" value="<YOUR APPNAME>" />
+</plugin>
 ```
 
 To install the plugin in your app, execute the following (replace variables where necessary):
@@ -31,7 +34,8 @@ $ cordova create myApp
 $ cd myApp/
 $ cordova platform add ios
 
-# The path you cloned the plugin to earlier
 # Remember to replace APP_ID and APP_NAME variables
-$ cordova -d plugin add /path/to/cloned/phonegap-facebook-plugin --variable APP_ID="123456789" --variable APP_NAME="myApplication"
+# In order to target a specific version, the release tag can be concatenated to the github url
+# For instance : https://github.com/Wizcorp/phonegap-facebook-plugin.git#v0.12.0
+$ cordova -d plugin add https://github.com/Wizcorp/phonegap-facebook-plugin.git --variable APP_ID="123456789" --variable APP_NAME="myApplication"
 ```
