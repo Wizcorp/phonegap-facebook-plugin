@@ -28,5 +28,4 @@ build/
 local.properties
 proguard/
 
-# IntelliJ project
 .idea

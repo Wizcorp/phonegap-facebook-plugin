@@ -1,9 +1,9 @@
 {
-  "name": "phonegap-facebook-plugin",
-  "version": "0.12.0",
-  "description": "The official Facebook plugin for Apache Cordova/PhoneGap",
+  "name": "cordova-plugin-facebook4",
+  "version": "1.7.1",
+  "description": "Cordova Facebook SDK 4 Plugin",
   "cordova": {
-    "id": "phonegap-facebook-plugin",
+    "id": "cordova-plugin-facebook4",
     "platforms": [
       "android",
       "ios",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Wizcorp/phonegap-facebook-plugin"
+    "url": "https://github.com/jeduan/cordova-plugin-facebook4"
   },
   "keywords": [
     "cordova",
@@ -20,13 +20,10 @@
     "ecosystem:cordova",
     "cordova-android",
     "cordova-ios",
-    "cordova-browser"
+    "cordova-browser",
+    "facebook-sdk",
+    "social",
+    "sharing"
   ],
-  "engines": [
-    {
-      "name": "cordova",
-      "version": ">=3.5.0"
-    }
-  ],
-  "license": "Apache 2.0"
+  "license": "Apache-2.0"
 }
