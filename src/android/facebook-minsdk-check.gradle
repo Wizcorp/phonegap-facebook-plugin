@@ -1,0 +1,35 @@
+def getConfigPreference(name) {
+    name = name.toLowerCase()
+    def xml = file("res/xml/config.xml").getText()
+    // Disable namespace awareness since Cordova doesn't use them properly
+    def root = new XmlParser(false, false).parseText(xml)
+
+    def ret, defaultValue
+    root.preference.each { it ->
+        def attrName = it.attribute("name")
+        if (attrName && attrName.toLowerCase() == name) {
+            if (it.attribute('default') != null) {
+                defaultValue = it.attribute('default');
+            } else {
+                ret = it.attribute("value")
+            }
+        }
+    }
+    return ret ? ret : defaultValue
+}
+
+if (cdvMinSdkVersion == null) {
+    // first check config.xml
+    def minSdk = getConfigPreference("android-minSdkVersion");
+
+    // if there's no minSdk defined check AndroidManifest.xml
+    if (!minSdk) {
+        def manifest = new XmlSlurper().parse(file("AndroidManifest.xml"))
+        manifest.children().find { it.name() == "uses-sdk" }.each {
+            minSdk = it.attributes().get("android:minSdkVersion")
+        }
+    }
+
+    // update the minSdk from config.xml or AndroidManifest, with a fallback to 15
+    ext.cdvMinSdkVersion =  minSdk && minSdk.toInteger() > 15 ? minSdk : 15;
+}
