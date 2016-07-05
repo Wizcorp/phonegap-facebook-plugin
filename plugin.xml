@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="com.phonegap.plugins.facebookconnect"
-        version="1.7.1.2">
+        version="1.7.1.3">
 
     <name>Facebook</name>
 
@@ -46,8 +46,7 @@
             <preference name="android-minSdkVersion" value="15" />
         </config-file>
 
-        <source-file src="src/android/facebookconnect.xml" target-dir="res/values" />
-        <config-file target="res/values/facebookconnect.xml" parent="/*">
+        <config-file target="res/values/strings.xml" parent="/*">
             <string name="fb_app_id">$APP_ID</string>
             <string name="fb_app_name">$APP_NAME</string>
         </config-file>
