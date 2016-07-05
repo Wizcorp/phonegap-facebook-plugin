@@ -27,3 +27,5 @@ build/
 
 local.properties
 proguard/
+
+.idea
