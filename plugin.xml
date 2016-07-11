@@ -26,13 +26,12 @@
         <engine name="cordova-ios" version=">=3.5.0" />
     </engines>
 
-    <!-- JavaScript interface -->
-    <js-module src="www/facebook-native.js" name="FacebookConnectPlugin">
-        <clobbers target="facebookConnectPlugin" />
-    </js-module>
-
     <!-- android -->
     <platform name="android">
+
+        <js-module src="www/facebook-native.js" name="FacebookConnectPlugin">
+            <clobbers target="facebookConnectPlugin" />
+        </js-module>
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="FacebookConnectPlugin">
@@ -71,6 +70,10 @@
 
     <!-- ios -->
     <platform name="ios">
+        <js-module src="www/facebook-native.js" name="FacebookConnectPlugin">
+            <clobbers target="facebookConnectPlugin" />
+        </js-module>
+        
         <config-file target="config.xml" parent="/*">
             <feature name="FacebookConnectPlugin">
                 <param name="ios-package" value="FacebookConnectPlugin"/>
