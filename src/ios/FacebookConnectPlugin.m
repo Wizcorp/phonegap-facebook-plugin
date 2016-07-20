@@ -6,6 +6,7 @@
 //  Updated by Mathijs de Bruin on 11-08-25.
 //  Updated by Christine Abernathy on 13-01-22
 //  Updated by Jeduan Cornejo on 15-07-04
+//  Updated by Eds Keizer on 16-06-13
 //  Copyright 2011 Nitobi, Mathijs de Bruin. All rights reserved.
 //
 
@@ -16,6 +17,7 @@
 
 @property (strong, nonatomic) NSString* dialogCallbackId;
 @property (strong, nonatomic) FBSDKLoginManager *loginManager;
+@property (strong, nonatomic) NSString* gameRequestDialogCallbackId;
 
 - (NSDictionary *)responseObject;
 - (NSDictionary*)parseURLParams:(NSString *)query;
@@ -44,7 +46,7 @@
         //launchOptions is nil when not start because of notification or url open
         launchOptions = [NSDictionary dictionary];
     }
-    
+
     [[FBSDKApplicationDelegate sharedInstance] application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:launchOptions];
 }
 
@@ -139,7 +141,7 @@
     if ([command.arguments count] > 0) {
         permissions = command.arguments;
     }
-    
+
     // this will prevent from being unable to login after updating plugin or changing permissions
     // without refreshing there will be a cache problem. This simple call should fix the problems
     [FBSDKAccessToken refreshCurrentAccessToken:nil];
@@ -180,7 +182,7 @@
         if (self.loginManager == nil) {
             self.loginManager = [[FBSDKLoginManager alloc] init];
         }
-        [self.loginManager logInWithReadPermissions:permissions fromViewController:self.viewController handler:loginHandler];
+        [self.loginManager logInWithReadPermissions:permissions fromViewController:[self topMostController] handler:loginHandler];
         return;
     }
 
@@ -251,7 +253,7 @@
         [FBSDKMessageDialog showWithContent:content delegate:self];
         return;
 
-    } else if ([method isEqualToString:@"share"] || [method isEqualToString:@"share_open_graph"] || [method isEqualToString:@"feed"]) {
+    } else if ([method isEqualToString:@"share"] || [method isEqualToString:@"feed"]) {
         // Create native params
         FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
         content.contentURL = [NSURL URLWithString:params[@"href"]];
@@ -261,17 +263,63 @@
 
         self.dialogCallbackId = command.callbackId;
         FBSDKShareDialog *dialog = [[FBSDKShareDialog alloc] init];
-        dialog.fromViewController = self.viewController;
+        dialog.fromViewController = [self topMostController];
         dialog.shareContent = content;
         dialog.delegate = self;
         // Adopt native share sheets with the following line
         if (params[@"share_sheet"]) {
-            dialog.mode = FBSDKShareDialogModeShareSheet;
+        	dialog.mode = FBSDKShareDialogModeShareSheet;
+        } else if (params[@"share_feedBrowser"]) {
+        	dialog.mode = FBSDKShareDialogModeFeedBrowser;
+        } else if (params[@"share_native"]) {
+        	dialog.mode = FBSDKShareDialogModeNative;
+        } else if (params[@"share_feedWeb"]) {
+        	dialog.mode = FBSDKShareDialogModeFeedWeb;
         }
+
         [dialog show];
         return;
-    } else if ([method isEqualToString:@"apprequests"]) {
+    }
+    else if ( [method isEqualToString:@"share_open_graph"] ) {
+        if(!params[@"action"] || !params[@"object"]) {
+            NSLog(@"No action or object defined");
+            return;
+        }
+
+        //Get object JSON
+        NSError *jsonError;
+        NSData *objectData = [params[@"object"] dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:objectData
+                                                             options:NSJSONReadingMutableContainers
+                                                               error:&jsonError];
+        
+        if(jsonError) {
+            NSLog(@"There was an error parsing your 'object' JSON string");
+        } else {
+            FBSDKShareOpenGraphObject *object = [FBSDKShareOpenGraphObject objectWithProperties:json];
+            FBSDKShareOpenGraphAction *action = [[FBSDKShareOpenGraphAction alloc] init];
+            action.actionType = params[@"action"];
+            if(!json[@"og:type"]) {
+                NSLog(@"No 'og:type' encountered in the object JSON. Please provide an Open Graph object type.");
+                return;
+            }
+            NSString *objectType = json[@"og:type"];
+            objectType = [objectType stringByReplacingOccurrencesOfString:@"."
+                                                               withString:@":"];
+            
+            [action setObject:object forKey:objectType];
+            FBSDKShareOpenGraphContent *content = [[FBSDKShareOpenGraphContent alloc] init];
+            content.action = action;
+            content.previewPropertyName = objectType;
+            [FBSDKShareDialog showFromViewController:self.topMostController
+                                         withContent:content
+                                            delegate:nil];
+        }
+        return;
+    }
+    else if ([method isEqualToString:@"apprequests"]) {
         FBSDKGameRequestDialog *dialog = [[FBSDKGameRequestDialog alloc] init];
+        dialog.delegate = self;
         if (![dialog canShow]) {
             CDVPluginResult *pluginResult;
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
@@ -299,7 +347,7 @@
         if (!filters) {
             content.filters = FBSDKGameRequestFilterNone;
         } else if ([filters isEqualToString:@"app_users"]) {
-            content.filters = FBSDKGameRequestFilterAppNonUsers;
+            content.filters = FBSDKGameRequestFilterAppUsers;
         } else if ([filters isEqualToString:@"app_non_users"]) {
             content.filters = FBSDKGameRequestFilterAppNonUsers;
         }
@@ -310,10 +358,9 @@
         content.recipients = params[@"to"];
         content.title = params[@"title"];
 
+        self.gameRequestDialogCallbackId = command.callbackId;
         dialog.content = content;
         [dialog show];
-        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"method not supported"];
@@ -388,7 +435,7 @@
 
         NSString *deniedPermission = nil;
         for (NSString *permission in permissions) {
-            if (![result.grantedPermissions containsObject:permissions]) {
+            if (![result.grantedPermissions containsObject:permission]) {
                 deniedPermission = permission;
                 break;
             }
@@ -425,7 +472,7 @@
 
     FBSDKAppInviteDialog *dialog = [[FBSDKAppInviteDialog alloc] init];
     if ((url || picture) && [dialog canShow]) {
-        [FBSDKAppInviteDialog showFromViewController:self.viewController withContent:content delegate:self];
+        [FBSDKAppInviteDialog showFromViewController:[self topMostController] withContent:content delegate:self];
     } else {
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
         [self.commandDelegate sendPluginResult:result callbackId:self.dialogCallbackId];
@@ -482,11 +529,21 @@
 
     } else if (publishPermissionFound) {
         // Only publish permissions
-        [self.loginManager logInWithPublishPermissions:permissions fromViewController:self.viewController handler:handler];
+        [self.loginManager logInWithPublishPermissions:permissions fromViewController:[self topMostController] handler:handler];
     } else {
         // Only read permissions
-        [self.loginManager logInWithReadPermissions:permissions fromViewController:self.viewController handler:handler];
+        [self.loginManager logInWithReadPermissions:permissions fromViewController:[self topMostController] handler:handler];
     }
+}
+
+- (UIViewController*) topMostController {
+    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+
+    while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+    }
+
+    return topController;
 }
 
 - (NSDictionary *)responseObject {
@@ -655,7 +712,56 @@
                                      messageAsString:[NSString stringWithFormat:@"Error: %@", error.description]];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.dialogCallbackId];
     self.dialogCallbackId = nil;
-    
+
+}
+
+
+#pragma mark - FBSDKGameRequestDialogDelegate
+
+- (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog
+   didCompleteWithResults:(NSDictionary *)results
+{
+    if (!self.gameRequestDialogCallbackId) {
+        return;
+    }
+
+    NSLog(@"game request dialog did complete");
+    NSLog(@"result::%@", results);
+
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:results];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.gameRequestDialogCallbackId];
+    self.gameRequestDialogCallbackId = nil;
+}
+
+- (void)gameRequestDialogDidCancel:(FBSDKGameRequestDialog *)gameRequestDialog
+{
+    if (!self.gameRequestDialogCallbackId) {
+        return;
+    }
+
+    NSLog(@"game request dialog did cancel");
+
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"User cancelled dialog"];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.gameRequestDialogCallbackId];
+    self.gameRequestDialogCallbackId = nil;
+}
+
+- (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog
+         didFailWithError:(NSError *)error
+{
+    if (!self.gameRequestDialogCallbackId) {
+        return;
+    }
+
+    NSLog(@"game request dialog did fail");
+    NSLog(@"error::%@", error);
+
+    CDVPluginResult* pluginResult;
+    NSString *message = error.userInfo[FBSDKErrorLocalizedDescriptionKey] ?: @"There was an error making the graph call.";
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                     messageAsString:message];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.gameRequestDialogCallbackId];
+    self.gameRequestDialogCallbackId = nil;
 }
 
 @end

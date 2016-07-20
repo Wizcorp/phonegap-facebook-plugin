@@ -102,7 +102,7 @@ exports.browserInit = function (appId, version, s) {
   // Global :(
   // This function will be called by the FB SDK when the client is inited
   window.fbAsyncInit = function fbAsyncInit () {
-    version = version || 'v2.4'
+    version = version || 'v2.6'
 
     FB.init({
       appId: appId,
@@ -144,4 +144,3 @@ function insertSdk () {
   js.src = 'https://connect.facebook.net/en_US/sdk.js'
   fjs.parentNode.insertBefore(js, fjs)
 }
-

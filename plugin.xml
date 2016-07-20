@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-facebook4"
-        version="1.6.2">
+        version="1.7.1">
 
     <name>Facebook Connect</name>
 
@@ -26,13 +26,12 @@
         <engine name="cordova-ios" version=">=3.5.0" />
     </engines>
 
-    <!-- JavaScript interface -->
-    <js-module src="www/facebook-native.js" name="FacebookConnectPlugin">
-        <clobbers target="facebookConnectPlugin" />
-    </js-module>
-
     <!-- android -->
     <platform name="android">
+
+        <js-module src="www/facebook-native.js" name="FacebookConnectPlugin">
+            <clobbers target="facebookConnectPlugin" />
+        </js-module>
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="FacebookConnectPlugin">
@@ -44,6 +43,7 @@
             <access origin="https://api.facebook.com" />
             <access origin="https://*.fbcdn.net" />
             <access origin="https://*.akamaihd.net" />
+            <preference name="android-minSdkVersion" value="15" />
         </config-file>
 
         <source-file src="src/android/facebookconnect.xml" target-dir="res/values" />
@@ -61,7 +61,7 @@
               android:label="@string/fb_app_name" />
         </config-file>
 
-        <framework src="com.facebook.android:facebook-android-sdk:4.+"/>
+        <framework src="com.facebook.android:facebook-android-sdk:4.13.+"/>
 
         <!-- cordova plugin src files -->
         <source-file src="src/android/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
@@ -70,6 +70,10 @@
 
     <!-- ios -->
     <platform name="ios">
+        <js-module src="www/facebook-native.js" name="FacebookConnectPlugin">
+            <clobbers target="facebookConnectPlugin" />
+        </js-module>
+        
         <config-file target="config.xml" parent="/*">
             <feature name="FacebookConnectPlugin">
                 <param name="ios-package" value="FacebookConnectPlugin"/>

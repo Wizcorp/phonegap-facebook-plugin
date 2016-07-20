@@ -18,7 +18,7 @@ The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you 
 
 ## Compatibility
 
-  * Cordova v5.0.0.
+  * Cordova >= 5.0.0
   * cordova-android >= 4.0
   * cordova-ios >= 3.8
   * cordova-browser >= 3.6
@@ -95,7 +95,10 @@ Share Dialog:
 		caption: "Such caption, very feed.",
 		description: "Much description",
 		picture: 'http://example.com/image.png'
+		share_feedWeb: true, // iOS only
 	}
+
+For iOS, the default dialog mode is [`FBSDKShareDialogModeAutomatic`](https://developers.facebook.com/docs/reference/ios/current/constants/FBSDKShareDialogMode/). You can share that by adding a specific dialog mode parameter. The available share dialog modes are: `share_sheet`, `share_feedBrowser`, `share_native` and `share_feedWeb`. [Read more about share dialog modes](https://developers.facebook.com/docs/reference/ios/current/constants/FBSDKShareDialogMode/)
 
 Game request:
 
@@ -118,7 +121,7 @@ Send Dialog:
 		picture: "http://example.com/image.png"
 	}
 	
-Share dialog - Open Graph Story:
+Share dialog - Open Graph Story: (currently only fully available on Android, iOS currently does not support action_properties)
 
 	{
 		var obj = {};
