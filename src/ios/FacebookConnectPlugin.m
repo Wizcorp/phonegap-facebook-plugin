@@ -588,8 +588,14 @@
     [pairs enumerateObjectsUsingBlock:
      ^(NSString *pair, NSUInteger idx, BOOL *stop) {
          NSArray *kv = [pair componentsSeparatedByString:@"="];
+         
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_9_0
          NSString *key = [kv[0] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
          NSString *val = [kv[1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+#else
+         NSString *key = [kv[0] stringByRemovingPercentEncoding];
+         NSString *val = [kv[1] stringByRemovingPercentEncoding];
+#endif
 
          NSArray *matches = [regex matchesInString:key options:0 range:NSMakeRange(0, [key length])];
          if ([matches count] > 0) {
