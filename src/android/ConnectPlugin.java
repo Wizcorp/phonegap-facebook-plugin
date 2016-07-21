@@ -17,6 +17,7 @@ import com.facebook.FacebookServiceException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.applinks.AppLinkData;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.share.ShareApi;
@@ -323,6 +324,9 @@ public class ConnectPlugin extends CordovaPlugin {
             executeAppInvite(args, callbackContext);
 
             return true;
+        } else if (action.equals("getDeferredApplink")) {
+            executeGetDeferredApplink(args, callbackContext);
+            return true;
         } else if (action.equals("activateApp")) {
             cordova.getThreadPool().execute(new Runnable() {
                 @Override
@@ -330,10 +334,30 @@ public class ConnectPlugin extends CordovaPlugin {
                     AppEventsLogger.activateApp(cordova.getActivity());
                 }
             });
-            
+
             return true;
         }
         return false;
+    }
+
+    private void executeGetDeferredApplink(JSONArray args,
+                                           final CallbackContext callbackContext) {
+        AppLinkData.fetchDeferredAppLinkData(cordova.getActivity().getApplicationContext(),
+                new AppLinkData.CompletionHandler() {
+                    @Override
+                    public void onDeferredAppLinkDataFetched(
+                            AppLinkData appLinkData) {
+                        PluginResult pr;
+                        if (appLinkData == null) {
+                            pr = new PluginResult(PluginResult.Status.OK, "");
+                        } else {
+                            pr = new PluginResult(PluginResult.Status.OK, appLinkData.getTargetUri().toString());
+                        }
+
+                        callbackContext.sendPluginResult(pr);
+                        return;
+                    }
+                });
     }
 
     private void executeAppInvite(JSONArray args, CallbackContext callbackContext) {
