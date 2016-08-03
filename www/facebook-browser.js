@@ -17,6 +17,7 @@ exports.showDialog = function showDialog (options, s, f) {
   options.description = options.description || ''
   options.href = options.href || ''
   options.picture = options.picture || ''
+  options.quote = options.quote || ''
 
   FB.ui(options, function (response) {
     if (response && (response.request || !response.error_code)) {

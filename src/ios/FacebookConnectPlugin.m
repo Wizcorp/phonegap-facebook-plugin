@@ -260,6 +260,7 @@
         content.contentTitle = params[@"caption"];
         content.imageURL = [NSURL URLWithString:params[@"picture"]];
         content.contentDescription = params[@"description"];
+        content.quote = params[@"quote"];
 
         self.dialogCallbackId = command.callbackId;
         FBSDKShareDialog *dialog = [[FBSDKShareDialog alloc] init];
@@ -292,7 +293,7 @@
         NSDictionary *json = [NSJSONSerialization JSONObjectWithData:objectData
                                                              options:NSJSONReadingMutableContainers
                                                                error:&jsonError];
-        
+
         if(jsonError) {
             NSLog(@"There was an error parsing your 'object' JSON string");
         } else {
@@ -306,7 +307,7 @@
             NSString *objectType = json[@"og:type"];
             objectType = [objectType stringByReplacingOccurrencesOfString:@"."
                                                                withString:@":"];
-            
+
             [action setObject:object forKey:objectType];
             FBSDKShareOpenGraphContent *content = [[FBSDKShareOpenGraphContent alloc] init];
             content.action = action;
@@ -588,7 +589,7 @@
     [pairs enumerateObjectsUsingBlock:
      ^(NSString *pair, NSUInteger idx, BOOL *stop) {
          NSArray *kv = [pair componentsSeparatedByString:@"="];
-         
+
 #if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_9_0
          NSString *key = [kv[0] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
          NSString *val = [kv[1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
