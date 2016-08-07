@@ -40,7 +40,7 @@ The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you 
 
 `facebookConnectPlugin.login(Array strings of permissions, Function success, Function failure)`
 
-**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY** (see [Web App Guide](platforms/web/README.md))
+**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY** (see [Web App Guide](docs/browser/README.md))
 
 Success function returns an Object like:
 
