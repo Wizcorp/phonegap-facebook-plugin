@@ -8,7 +8,7 @@ This guide is for browser only. View the other guides for native setup.
 
 ## Example App
 
-For localhost testing on OS X see the [Localhost guide](guide/LOCALHOST_GUIDE.md)
+For localhost testing on OS X see the [Localhost guide](LOCALHOST_GUIDE.md)
 
 ## Install
 
