@@ -10,6 +10,8 @@ Make sure you've registered your Facebook app with Facebook and have an `APP_ID`
 $ cordova plugin add cordova-plugin-facebook4 --save --variable APP_ID="123456789" --variable APP_NAME="myApplication"
 ```
 
+If you need to change your `APP_ID` after installation, it's recommended that you remove and then re-add the plugin as above. Note that changes to the `APP_ID` value in your `config.xml` file will *not* be propagated to the individual platform builds.
+
 ## Usage
 
 This is a fork of the [official plugin for Facebook](https://github.com/Wizcorp/phonegap-facebook-plugin/) in Apache Cordova that implements the latest Facebook SDK. Unless noted, this is a drop-in replacement. You don't have to replace your client code.
@@ -18,7 +20,7 @@ The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you 
 
 ## Compatibility
 
-  * Cordova v5.0.0.
+  * Cordova >= 5.0.0
   * cordova-android >= 4.0
   * cordova-ios >= 3.8
   * cordova-browser >= 3.6
@@ -40,7 +42,7 @@ The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you 
 
 `facebookConnectPlugin.login(Array strings of permissions, Function success, Function failure)`
 
-**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY** (see [Web App Guide](platforms/web/README.md))
+**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY** (see [Web App Guide](docs/browser/README.md))
 
 Success function returns an Object like:
 
@@ -121,7 +123,7 @@ Send Dialog:
 		picture: "http://example.com/image.png"
 	}
 	
-Share dialog - Open Graph Story: (currently only available on Android, PRs welcome for iOS)
+Share dialog - Open Graph Story: (currently only fully available on Android, iOS currently does not support action_properties)
 
 	{
 		var obj = {};

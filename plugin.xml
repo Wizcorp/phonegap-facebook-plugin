@@ -26,13 +26,12 @@
         <engine name="cordova-ios" version=">=3.5.0" />
     </engines>
 
-    <!-- JavaScript interface -->
-    <js-module src="www/facebook-native.js" name="FacebookConnectPlugin">
-        <clobbers target="facebookConnectPlugin" />
-    </js-module>
-
     <!-- android -->
     <platform name="android">
+
+        <js-module src="www/facebook-native.js" name="FacebookConnectPlugin">
+            <clobbers target="facebookConnectPlugin" />
+        </js-module>
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="FacebookConnectPlugin">
@@ -62,7 +61,7 @@
               android:label="@string/fb_app_name" />
         </config-file>
 
-        <framework src="com.facebook.android:facebook-android-sdk:4.8.+"/>
+        <framework src="com.facebook.android:facebook-android-sdk:4.13.+"/>
 
         <!-- cordova plugin src files -->
         <source-file src="src/android/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
@@ -71,6 +70,10 @@
 
     <!-- ios -->
     <platform name="ios">
+        <js-module src="www/facebook-native.js" name="FacebookConnectPlugin">
+            <clobbers target="facebookConnectPlugin" />
+        </js-module>
+        
         <config-file target="config.xml" parent="/*">
             <feature name="FacebookConnectPlugin">
                 <param name="ios-package" value="FacebookConnectPlugin"/>
