@@ -30,3 +30,5 @@ proguard/
 
 .idea
 *.iml
+/nbproject/private/
+nbproject
