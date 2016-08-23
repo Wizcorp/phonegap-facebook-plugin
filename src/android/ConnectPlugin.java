@@ -16,6 +16,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.FacebookServiceException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.FacebookAuthorizationException;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
@@ -131,6 +132,12 @@ public class ConnectPlugin extends CordovaPlugin {
             public void onError(FacebookException e) {
                 Log.e("Activity", String.format("Error: %s", e.toString()));
                 handleError(e, loginContext);
+                // Sign-out current instance in case token is still valid for previous user
+                if (e instanceof FacebookAuthorizationException) {
+                    if (AccessToken.getCurrentAccessToken() != null) {
+                        LoginManager.getInstance().logOut();
+                    }
+                }
             }
         });
 
