@@ -112,9 +112,11 @@ public class ConnectPlugin extends CordovaPlugin {
                             return;
                         }
 
-                        Log.d(TAG, "returning login object " + jsonObject.toString());
-                        loginContext.success(getResponse());
-                        loginContext = null;
+                        if (loginContext != null) {
+                            Log.d(TAG, "returning login object " + jsonObject.toString());
+                            loginContext.success(getResponse());
+                            loginContext = null;
+                        }
                     }
                 }).executeAsync();
             }
