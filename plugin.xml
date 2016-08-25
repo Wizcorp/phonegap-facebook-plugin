@@ -28,7 +28,6 @@
 
     <!-- android -->
     <platform name="android">
-
         <js-module src="www/facebook-native.js" name="FacebookConnectPlugin">
             <clobbers target="facebookConnectPlugin" />
         </js-module>
@@ -176,4 +175,7 @@
             <access origin="https://*.akamaihd.net" />
         </config-file>
     </platform>
+
+    <!-- after_prepare hook to populate APP_ID -->
+    <hook type="after_prepare" src="scripts/after_prepare.js" />
 </plugin>

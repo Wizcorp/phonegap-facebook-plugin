@@ -93,31 +93,8 @@ exports.api = function (graphPath, permissions, s, f) {
   })
 }
 
-// Browser wrapper API ONLY
 exports.browserInit = function (appId, version, s) {
-  if (s == null && typeof version === 'function') {
-    s = version
-    version = null
-  }
-
-  // Global :(
-  // This function will be called by the FB SDK when the client is inited
-  window.fbAsyncInit = function fbAsyncInit () {
-    version = version || 'v2.6'
-
-    FB.init({
-      appId: appId,
-      xfbml: false,
-      version: version
-    })
-
-    isInited = true
-
-    if (typeof s === 'function') s()
-  }
-
-  // Bake in the JS SDK
-  insertSdk()
+  console.warn("browserInit is deprecated and may be removed in the future");
 }
 
 function assertInited () {
@@ -135,13 +112,27 @@ function printError (f, err) {
   console.error(err.stack)
 }
 
-function insertSdk () {
-  var js
-  var fjs = document.getElementsByTagName('script')[0]
-  if (document.getElementById('facebook-jssdk')) return
+(function(w) {
+  if (w.location.protocol != "file:") {
+    console.warn("Facebook JS SDK is not supported when using file:// protocol");
+    return;
+  }
 
-  js = document.createElement('script')
-  js.id = 'facebook-jssdk'
-  js.src = 'https://connect.facebook.net/en_US/sdk.js'
-  fjs.parentNode.insertBefore(js, fjs)
-}
+  w.fbAsyncInit = function() {
+    FB.init({
+      appId      : APP_ID,  // APP_ID is populated by the cordova after_prepare hook
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+
+    isInited = true
+  };
+
+  (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+}(window));
