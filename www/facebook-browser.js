@@ -113,7 +113,7 @@ function printError (f, err) {
 }
 
 (function(w) {
-  if (w.location.protocol != "file:") {
+  if (w.location.protocol === "file:") {
     console.warn("Facebook JS SDK is not supported when using file:// protocol");
     return;
   }
