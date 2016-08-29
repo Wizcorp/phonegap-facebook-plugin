@@ -101,6 +101,13 @@
           </array>
         </config-file>
 
+        <config-file target="*-Info.plist" parent="LSApplicationQueriesSchemes">
+          <array>
+            <string>fb$APP_ID</string>
+            <string>fbauth</string>
+          </array>
+        </config-file>
+
         <!-- Facebook framework -->
         <framework src="platforms/ios/FacebookSDK.framework" custom="true" />
 
