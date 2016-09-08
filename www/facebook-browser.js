@@ -130,7 +130,7 @@ if (window.location.protocol === "file:") {
     FB.init({
       appId      : APP_ID,  // APP_ID is populated by the cordova after_prepare hook
       xfbml      : true,
-      version    : 'v2.6'
+      version    : 'v2.7'
     });
 
     __fbSdkReady = true;
