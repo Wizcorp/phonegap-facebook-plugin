@@ -27,3 +27,8 @@ build/
 
 local.properties
 proguard/
+
+.idea
+*.iml
+/nbproject/private/
+nbproject
