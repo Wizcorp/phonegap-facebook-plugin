@@ -330,12 +330,14 @@
 
         FBSDKGameRequestContent *content = [[FBSDKGameRequestContent alloc] init];
         NSString *actionType = params[@"actionType"];
+        /*
         if (!actionType) {
             CDVPluginResult *pluginResult;
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
                                              messageAsString:@"Cannot show dialog"];
             return;
         }
+        */
         if ([[actionType lowercaseString] isEqualToString:@"askfor"]) {
             content.actionType = FBSDKGameRequestActionTypeAskFor;
         } else if ([[actionType lowercaseString] isEqualToString:@"send"]) {
