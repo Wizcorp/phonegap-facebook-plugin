@@ -260,6 +260,7 @@
         content.contentTitle = params[@"caption"];
         content.imageURL = [NSURL URLWithString:params[@"picture"]];
         content.contentDescription = params[@"description"];
+        content.quote = params[@"quote"];
 
         self.dialogCallbackId = command.callbackId;
         FBSDKShareDialog *dialog = [[FBSDKShareDialog alloc] init];
@@ -292,7 +293,7 @@
         NSDictionary *json = [NSJSONSerialization JSONObjectWithData:objectData
                                                              options:NSJSONReadingMutableContainers
                                                                error:&jsonError];
-        
+
         if(jsonError) {
             NSLog(@"There was an error parsing your 'object' JSON string");
         } else {
@@ -306,7 +307,7 @@
             NSString *objectType = json[@"og:type"];
             objectType = [objectType stringByReplacingOccurrencesOfString:@"."
                                                                withString:@":"];
-            
+
             [action setObject:object forKey:objectType];
             FBSDKShareOpenGraphContent *content = [[FBSDKShareOpenGraphContent alloc] init];
             content.action = action;
@@ -597,8 +598,14 @@
     [pairs enumerateObjectsUsingBlock:
      ^(NSString *pair, NSUInteger idx, BOOL *stop) {
          NSArray *kv = [pair componentsSeparatedByString:@"="];
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_9_0
          NSString *key = [kv[0] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
          NSString *val = [kv[1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+#else
+         NSString *key = [kv[0] stringByRemovingPercentEncoding];
+         NSString *val = [kv[1] stringByRemovingPercentEncoding];
+#endif
 
          NSArray *matches = [regex matchesInString:key options:0 range:NSMakeRange(0, [key length])];
          if ([matches count] > 0) {
@@ -798,6 +805,23 @@ void FBMethodSwizzle(Class c, SEL originalSelector) {
 + (void)load
 {
     FBMethodSwizzle([self class], @selector(application:openURL:sourceApplication:annotation:));
+}
+
+// This method is a duplicate of the other openURL method below, except using the newer iOS (9) API.
+- (void)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
+    if (!url) {
+        return;
+    }
+    // Required by FBSDKCoreKit for deep linking/to complete login
+    [[FBSDKApplicationDelegate sharedInstance] application:application openURL:url sourceApplication:[options valueForKey:@"UIApplicationOpenURLOptionsSourceApplicationKey"] annotation:0x0];
+    
+    // Call existing method
+    [self swizzled_application:application openURL:url sourceApplication:[options valueForKey:@"UIApplicationOpenURLOptionsSourceApplicationKey"] annotation:0x0];
+    
+    // NOTE: Cordova will run a JavaScript method here named handleOpenURL. This functionality is deprecated
+    // but will cause you to see JavaScript errors if you do not have window.handleOpenURL defined:
+    // https://github.com/Wizcorp/phonegap-facebook-plugin/issues/703#issuecomment-63748816
+    NSLog(@"FB handle url: %@", url);
 }
 
 - (void)noop_application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation

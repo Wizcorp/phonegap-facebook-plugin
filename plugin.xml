@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-facebook4"
-        version="1.7.1">
+        version="1.7.4">
 
     <name>Facebook Connect</name>
 
@@ -28,7 +28,6 @@
 
     <!-- android -->
     <platform name="android">
-
         <js-module src="www/facebook-native.js" name="FacebookConnectPlugin">
             <clobbers target="facebookConnectPlugin" />
         </js-module>
@@ -61,7 +60,7 @@
               android:label="@string/fb_app_name" />
         </config-file>
 
-        <framework src="com.facebook.android:facebook-android-sdk:4.13.+"/>
+        <framework src="com.facebook.android:facebook-android-sdk:4.14.+"/>
 
         <!-- cordova plugin src files -->
         <source-file src="src/android/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
@@ -73,7 +72,7 @@
         <js-module src="www/facebook-native.js" name="FacebookConnectPlugin">
             <clobbers target="facebookConnectPlugin" />
         </js-module>
-        
+
         <config-file target="config.xml" parent="/*">
             <feature name="FacebookConnectPlugin">
                 <param name="ios-package" value="FacebookConnectPlugin"/>
@@ -176,4 +175,7 @@
             <access origin="https://*.akamaihd.net" />
         </config-file>
     </platform>
+
+    <!-- after_prepare hook to populate APP_ID -->
+    <hook type="after_prepare" src="scripts/after_prepare.js" />
 </plugin>

@@ -16,6 +16,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.FacebookServiceException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.FacebookAuthorizationException;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.applinks.AppLinkData;
 import com.facebook.login.LoginManager;
@@ -113,9 +114,11 @@ public class ConnectPlugin extends CordovaPlugin {
                             return;
                         }
 
-                        Log.d(TAG, "returning login object " + jsonObject.toString());
-                        loginContext.success(getResponse());
-                        loginContext = null;
+                        if (loginContext != null) {
+                            Log.d(TAG, "returning login object " + jsonObject.toString());
+                            loginContext.success(getResponse());
+                            loginContext = null;
+                        }
                     }
                 }).executeAsync();
             }
@@ -130,6 +133,12 @@ public class ConnectPlugin extends CordovaPlugin {
             public void onError(FacebookException e) {
                 Log.e("Activity", String.format("Error: %s", e.toString()));
                 handleError(e, loginContext);
+                // Sign-out current instance in case token is still valid for previous user
+                if (e instanceof FacebookAuthorizationException) {
+                    if (AccessToken.getCurrentAccessToken() != null) {
+                        LoginManager.getInstance().logOut();
+                    }
+                }
             }
         });
 
@@ -792,6 +801,8 @@ public class ConnectPlugin extends CordovaPlugin {
             builder.setContentUrl(Uri.parse(paramBundle.get("link")));
         if (paramBundle.containsKey("picture"))
             builder.setImageUrl(Uri.parse(paramBundle.get("picture")));
+        if (paramBundle.containsKey("quote"))
+            builder.setQuote(paramBundle.get("quote"));
         return builder.build();
     }
 

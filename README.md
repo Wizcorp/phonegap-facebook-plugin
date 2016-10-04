@@ -4,11 +4,15 @@
 
 ## Installation
 
+See npm package for versions - https://www.npmjs.com/package/cordova-plugin-facebook4
+
 Make sure you've registered your Facebook app with Facebook and have an `APP_ID` [https://developers.facebook.com/apps](https://developers.facebook.com/apps).
 
 ```bash
 $ cordova plugin add cordova-plugin-facebook4 --save --variable APP_ID="123456789" --variable APP_NAME="myApplication"
 ```
+
+If you need to change your `APP_ID` after installation, it's recommended that you remove and then re-add the plugin as above. Note that changes to the `APP_ID` value in your `config.xml` file will *not* be propagated to the individual platform builds.
 
 ## Usage
 
@@ -39,8 +43,6 @@ The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you 
 ### Login
 
 `facebookConnectPlugin.login(Array strings of permissions, Function success, Function failure)`
-
-**NOTE** : Developers should call `facebookConnectPlugin.browserInit(<appId>)` before login - **Web App ONLY** (see [Web App Guide](platforms/web/README.md))
 
 Success function returns an Object like:
 
