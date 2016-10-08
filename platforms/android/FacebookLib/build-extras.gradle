@@ -1,0 +1,14 @@
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'android-library'
+
+// remove default compile dependencies which could include duplicate jars from 'FacebookLib/libs' folder
+configurations.compile.dependencies.clear()
+
+// add required dependencies
+dependencies {
+    compile 'com.android.support:support-v4:[20,21)'
+    compile 'com.parse.bolts:bolts-android:1.1.2'
+}
