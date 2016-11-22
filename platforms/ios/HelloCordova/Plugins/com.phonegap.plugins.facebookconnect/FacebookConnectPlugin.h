@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 #import <FacebookSDK/FacebookSDK.h>
 #import <Cordova/CDV.h>
+#import "FacebookWrapperSingleton.h"
 
 @interface FacebookConnectPlugin : CDVPlugin
 @end
