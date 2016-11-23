@@ -654,6 +654,7 @@ public class ConnectPlugin extends CordovaPlugin {
 
         if (declinedPermission != null) {
             graphContext.error("This request needs declined permission: " + declinedPermission);
+			return;
         }
 
         if (publishPermissions && readPermissions) {
