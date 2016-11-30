@@ -81,7 +81,7 @@ exports.logEvent = function logEvent (eventName, params, valueToSum, s, f) {
     });
   }
 
-  FB.appEvents.logEvent(eventName, valueToSum, params);
+  FB.AppEvents.logEvent(eventName, valueToSum, params);
 
   if(s) s();
 }
@@ -93,7 +93,7 @@ exports.logPurchase = function logPurchase (value, currency, s, f) {
     });
   }
   
-  FB.appEvents.logPurchase(value, currency);
+  FB.AppEvents.logPurchase(value, currency);
 
   if(s) s();
 }
