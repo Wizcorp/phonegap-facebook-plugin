@@ -77,7 +77,7 @@ exports.getAccessToken = function getAccessToken (s, f) {
 exports.logEvent = function logEvent (eventName, params, valueToSum, s, f) {
   if (!__fbSdkReady) {
     return __fbCallbacks.push(function() {
-      api(graphPath, permissions, s, f);
+      logEvent(eventName, params, valueToSum, s, f);
     });
   }
 
@@ -89,7 +89,7 @@ exports.logEvent = function logEvent (eventName, params, valueToSum, s, f) {
 exports.logPurchase = function logPurchase (value, currency, s, f) {
   if (!__fbSdkReady) {
     return __fbCallbacks.push(function() {
-      api(graphPath, permissions, s, f);
+      logPurchase(value, currency, s, f);
     });
   }
   
