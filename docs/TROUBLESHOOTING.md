@@ -25,7 +25,8 @@ When creating a Github issue **remember to**:
 - [**iOS**](#ios)
 	- [Missing FacebookConnectPlugin](#missing-facebookconnectplugin)
 	- [Login Always Opens Web Dialog Even Though Native App is Installed](#login-always-opens-web-dialog-even-though-native-app-is-installed)
-    - [Login fails with devices running iOS 10+](#login-fails-with-ios10)
+    - [Login fails with devices running iOS 10+](#login-fails-with-devices-running-ios-10)
+
 ## General
 ### How do I Build without Eclipse?
 
@@ -207,9 +208,9 @@ Cordova and plugman seems to have some problems adding frameworks etc. when re-i
 - Solution:
 	- Switch "deep linking" to ON in the Facebook developer website settings for your application
 
-### Login fails with devices running iOS 10+
+### Login fails with devices running iOS 10
 - problem:
     - even if login works properly with older iOS versions, on iOS 10+, error callback is always called
 - Solution:
     - Give the iOS application access to the Keychain Sharing capability before building it as instructed in
-    [http://stackoverflow.com/questions/38689631/how-to-use-facebook-ios-sdk-on-ios-10].  
+    [http://stackoverflow.com/questions/38689631/how-to-use-facebook-ios-sdk-on-ios-10](http://stackoverflow.com/questions/38689631/how-to-use-facebook-ios-sdk-on-ios-10).  
