@@ -11,8 +11,9 @@
 
       The Facebook plugin for Apache Cordova allows you to use the same JavaScript code in your
       Cordova application as you use in your web application.
-      Docs: https://github.com/Wizcorp/phonegap-facebook-plugin.
     </description>
+        
+    <repo>https://github.com/jeduan/cordova-plugin-facebook4</repo>
 
     <license>Apache 2.0</license>
 
