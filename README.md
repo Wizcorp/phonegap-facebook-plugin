@@ -104,7 +104,8 @@ Share Dialog:
 		href: "http://example.com",
 		caption: "Such caption, very feed.",
 		description: "Much description",
-		picture: 'http://example.com/image.png'
+		picture: 'http://example.com/image.png',
+		hashtag: '#myHashtag',
 		share_feedWeb: true, // iOS only
 	}
 
