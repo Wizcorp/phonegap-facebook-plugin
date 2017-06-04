@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-facebook4",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "Cordova Facebook SDK 4 Plugin",
   "cordova": {
     "id": "cordova-plugin-facebook4",
