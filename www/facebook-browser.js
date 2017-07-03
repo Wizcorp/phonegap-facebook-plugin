@@ -75,18 +75,32 @@ exports.getAccessToken = function getAccessToken (s, f) {
 }
 
 exports.logEvent = function logEvent (eventName, params, valueToSum, s, f) {
-  // AppEvents are not avaliable in JS.
-  s()
+  if (!__fbSdkReady) {
+    return __fbCallbacks.push(function() {
+      logEvent(eventName, params, valueToSum, s, f);
+    });
+  }
+
+  FB.AppEvents.logEvent(eventName, valueToSum, params);
+
+  if(s) s();
 }
 
 exports.logPurchase = function logPurchase (value, currency, s, f) {
-  // AppEvents are not avaliable in JS.
-  s()
+  if (!__fbSdkReady) {
+    return __fbCallbacks.push(function() {
+      logPurchase(value, currency, s, f);
+    });
+  }
+  
+  FB.AppEvents.logPurchase(value, currency);
+
+  if(s) s();
 }
 
 exports.appInvite = function appInvite (options, s, f) {
   // App Invites are not avaliable in JS.
-  s()
+  if(s) s()
 }
 
 exports.logout = function logout (s, f) {
