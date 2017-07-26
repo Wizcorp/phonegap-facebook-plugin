@@ -43,6 +43,6 @@ if (window.cordova.platformId == "browser") {
 }
 ```
 
-- In your facebook develop website settings page, add your server's domain to app doamin (or localhost for testing).
+- In your facebook develop website settings page, add your server's domain to app domain (or localhost for testing).
 
 ![image](app_domain_setup.png)
