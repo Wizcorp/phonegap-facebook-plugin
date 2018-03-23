@@ -272,9 +272,6 @@
         // Create native params
         FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
         content.contentURL = [NSURL URLWithString:[params objectForKey:@"link"]];
-        content.contentTitle = [params objectForKey:@"caption"];
-        content.imageURL = [NSURL URLWithString:[params objectForKey:@"picture"]];
-        content.contentDescription = [params objectForKey:@"description"];
 
         self.dialogCallbackId = command.callbackId;
         [FBSDKMessageDialog showWithContent:content delegate:self];
@@ -284,9 +281,6 @@
         // Create native params
         FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
         content.contentURL = [NSURL URLWithString:params[@"href"]];
-        content.contentTitle = params[@"caption"];
-        content.imageURL = [NSURL URLWithString:params[@"picture"]];
-        content.contentDescription = params[@"description"];
         content.hashtag = [FBSDKHashtag hashtagWithString:[params objectForKey:@"hashtag"]];
         content.quote = params[@"quote"];
 
