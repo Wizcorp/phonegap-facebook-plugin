@@ -19,7 +19,7 @@ To know more about the subject, you could for example have a look to this [stack
 
 #### Installing previous version of the plugin
 
-If you mind having an additional popup in your login flow and as long as `Apple` which `Facebook` don't make this upgrade mandatory, you could stick, if you want, your choice, to the previous version of the plugin by specifying it's previous version number when you install it:
+If you mind having an additional popup in your login flow and as long as `Apple` and `Facebook` don't make this upgrade mandatory, you could stick, if you want, your choice, to the previous version of the plugin by specifying it's previous version number when you install it:
 
      cordova plugin add cordova-plugin-facebook4@1.9.1 --save --variable APP_ID="123456789" --variable APP_NAME="myApplication"
   
