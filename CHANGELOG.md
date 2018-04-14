@@ -1,13 +1,13 @@
-<a name="2.0.0"></a>
-# [2.0.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v2.0.0) (Not released yet)
+<a name="1.10.0"></a>
+# [1.10.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v1.10.0) (Not released yet)
 
-v2.0.0 introduces the last Facebook SDK for iOS and improves the support for cordova-android >= 7.0.0
+v1.10.0 introduces the last Facebook SDK for iOS
 
 ## Features
 
 * **iOS:** Update of the Facebook SDK v4.31.1 for iOS 11 ([#631](https://github.com/jeduan/cordova-plugin-facebook4/issues/631)) ([#634](https://github.com/jeduan/cordova-plugin-facebook4/pull/634))
 
-* **Android:** *TODO - Not yet merged and documented* 
+* **Android:** Add a note in the README and Android Guide about the compatibility with cordova-android >= v7.0.0
 
 ### Disclaimer 
 
