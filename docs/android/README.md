@@ -23,7 +23,7 @@ You can now use the plugin right away
 
 ## cordova-android >= 7
 
-In order to install correctly this plugin for `cordova-android` v7.x.y and above you will have to specify the APP_ID and APP_NAME in the android `platform` tag for your `config.xml`
+In order to install correctly this plugin for `cordova-android` v7.x.y and above, you have to specify the APP_ID and APP_NAME in the android `platform` tag of your `config.xml`
 
     <config-file parent="/resources" target="./res/values/strings.xml">
         <string name="fb_app_id">123456789</string>
