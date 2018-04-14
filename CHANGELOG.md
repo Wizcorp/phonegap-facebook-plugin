@@ -11,15 +11,20 @@ v1.10.0 introduces the last Facebook SDK for iOS
 
 ### Disclaimer 
 
-The introduction of the new Facebook SDK for iOS 11 add a new additional confirm modal to the login flow. 
+The introduction of the new Facebook SDK for iOS 11 add a new confirm modal to the login flow.
 
 This is the expected design flow defined by `Apple` which `Facebook` implemented. The `cordova-plugin-facebook4` can't modify this behavior (as far as I know, @peterpeterparker).
 
-To know more about the subject, you could for example have a look to this [stackoverflow's post](https://stackoverflow.com/questions/45858774/ios-11-facebook-signin-is-showing-an-initial-system-alert/).
+#### iOS 11.3
 
-#### Installing previous version of the plugin
+On iOS 11.3, the user won't have the choice anymore between using the Facebook App or using Email/Phone number for Facebook login process but will go straight to the "Facebook - Accept permissions" screen.
 
-If you mind having an additional popup in your login flow and as long as `Apple` and `Facebook` don't make this upgrade mandatory, you could stick, if you want, your choice, to the previous version of the plugin by specifying it's previous version number when you install it:
+Therefore, with this version, the user will still face only one modal during the login flow.
 
-     cordova plugin add cordova-plugin-facebook4@1.9.1 --save --variable APP_ID="123456789" --variable APP_NAME="myApplication"
-  
+#### iOS >= 11 < 11.3
+
+Because of the introduction of the new modal, the user might face two modals during the login flow. One asking him/her if he/she want to open Facebook and one again asking him/her as before if he/she want to open the Facebook App.
+
+This is improved with iOS 11.3.
+
+About the subject, you could for example have a look to this [stackoverflow's post](https://stackoverflow.com/questions/45858774/ios-11-facebook-signin-is-showing-an-initial-system-alert/).
