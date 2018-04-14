@@ -25,6 +25,6 @@ Therefore, with this version, the user will still face only one modal during the
 
 Because of the introduction of the new modal, the user might face two modals during the login flow. One asking him/her if he/she want to open Facebook and one again asking him/her as before if he/she want to open the Facebook App.
 
-This is improved with iOS 11.3.
-
 About the subject, you could for example have a look to this [stackoverflow's post](https://stackoverflow.com/questions/45858774/ios-11-facebook-signin-is-showing-an-initial-system-alert/).
+
+This is improved with iOS 11.3.
