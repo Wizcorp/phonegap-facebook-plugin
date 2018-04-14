@@ -1,5 +1,5 @@
 <a name="1.10.0"></a>
-# [1.10.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v1.10.0) (Not released yet)
+# [1.10.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v1.10.0)
 
 v1.10.0 introduces the last Facebook SDK for iOS
 
