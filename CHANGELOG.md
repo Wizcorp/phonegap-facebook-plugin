@@ -1,3 +1,8 @@
+<a name="1.10.1"></a>
+# [1.10.1](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v1.10.1)
+
+v1.10.1 Fix an issue regarding the versioning (v1.10 was missing in plugin.xml)
+
 <a name="1.10.0"></a>
 # [1.10.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v1.10.0)
 
