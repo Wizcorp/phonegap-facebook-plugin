@@ -46,11 +46,6 @@ exports.api = function api (graphPath, permissions, s, f) {
   exec(s, f, 'FacebookConnectPlugin', 'graphApi', [graphPath, permissions])
 }
 
-exports.appInvite = function appLinks (options, s, f) {
-  options = options || {}
-  exec(s, f, 'FacebookConnectPlugin', 'appInvite', [options])
-}
-
 exports.getDeferredApplink = function (s, f) {
   exec(s, f, 'FacebookConnectPlugin', 'getDeferredApplink', [])
 }

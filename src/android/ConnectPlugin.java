@@ -29,11 +29,9 @@ import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.model.ShareOpenGraphObject;
 import com.facebook.share.model.ShareOpenGraphAction;
 import com.facebook.share.model.ShareOpenGraphContent;
-import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.GameRequestDialog;
 import com.facebook.share.widget.MessageDialog;
 import com.facebook.share.widget.ShareDialog;
-import com.facebook.share.widget.AppInviteDialog;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -77,7 +75,6 @@ public class ConnectPlugin extends CordovaPlugin {
     private String graphPath;
     private ShareDialog shareDialog;
     private GameRequestDialog gameRequestDialog;
-    private AppInviteDialog appInviteDialog;
     private MessageDialog messageDialog;
 
     @Override
@@ -219,40 +216,6 @@ public class ConnectPlugin extends CordovaPlugin {
                 handleError(e, showDialogContext);
             }
         });
-
-        appInviteDialog = new AppInviteDialog(cordova.getActivity());
-        appInviteDialog.registerCallback(callbackManager, new FacebookCallback<AppInviteDialog.Result>() {
-            @Override
-            public void onSuccess(AppInviteDialog.Result result) {
-                if (showDialogContext != null) {
-                    try {
-                        JSONObject json = new JSONObject();
-                        Bundle bundle = result.getData();
-                        for (String key : bundle.keySet()) {
-                            json.put(key, wrapObject(bundle.get(key)));
-                        }
-
-                        showDialogContext.success(json);
-                        showDialogContext = null;
-                    } catch (JSONException e) {
-                        showDialogContext.success();
-                        showDialogContext = null;
-                    }
-                }
-            }
-
-            @Override
-            public void onCancel() {
-                FacebookOperationCanceledException e = new FacebookOperationCanceledException();
-                handleError(e, showDialogContext);
-            }
-
-            @Override
-            public void onError(FacebookException e) {
-                Log.e("Activity", String.format("Error: %s", e.toString()));
-                handleError(e, showDialogContext);
-            }
-        });
     }
 
     @Override
@@ -330,10 +293,6 @@ public class ConnectPlugin extends CordovaPlugin {
             executeGraph(args, callbackContext);
 
             return true;
-        } else if (action.equals("appInvite")) {
-            executeAppInvite(args, callbackContext);
-
-            return true;
         } else if (action.equals("getDeferredApplink")) {
             executeGetDeferredApplink(args, callbackContext);
             return true;
@@ -368,59 +327,6 @@ public class ConnectPlugin extends CordovaPlugin {
                         return;
                     }
                 });
-    }
-
-    private void executeAppInvite(JSONArray args, CallbackContext callbackContext) {
-        String url = null;
-        String picture = null;
-        JSONObject parameters;
-
-        try {
-            parameters = args.getJSONObject(0);
-        } catch (JSONException e) {
-            parameters = new JSONObject();
-        }
-
-        if (parameters.has("url")) {
-            try {
-                url = parameters.getString("url");
-            } catch (JSONException e) {
-                Log.e(TAG, "Non-string 'url' parameter provided to dialog");
-                callbackContext.error("Incorrect 'url' parameter");
-                return;
-            }
-        } else {
-            callbackContext.error("Missing required 'url' parameter");
-            return;
-        }
-
-        if (parameters.has("picture")) {
-            try {
-                picture = parameters.getString("picture");
-            } catch (JSONException e) {
-                Log.e(TAG, "Non-string 'picture' parameter provided to dialog");
-                callbackContext.error("Incorrect 'picture' parameter");
-                return;
-            }
-        }
-
-        if (AppInviteDialog.canShow()) {
-            AppInviteContent.Builder builder = new AppInviteContent.Builder();
-            builder.setApplinkUrl(url);
-            if (picture != null) {
-                builder.setPreviewImageUrl(picture);
-            }
-
-            showDialogContext = callbackContext;
-            PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
-            pr.setKeepCallback(true);
-            showDialogContext.sendPluginResult(pr);
-
-            cordova.setActivityResultCallback(this);
-            appInviteDialog.show(builder.build());
-        } else {
-            callbackContext.error("Unable to show dialog");
-        }
     }
 
     private void executeDialog(JSONArray args, CallbackContext callbackContext) throws JSONException {

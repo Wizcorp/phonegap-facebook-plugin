@@ -219,45 +219,6 @@ Events are listed on the [insights page](https://www.facebook.com/insights/)
 
 `activateApp(Function success, Function failure)`
 
-### App Invites
-
-`facebookConnectPlugin.appInvite(Object options, Function success, Function failure)`
-
-Please check out the [App Invites Overview](https://developers.facebook.com/docs/app-invites/overview) before using this. The URL is expected to be an [App Link](https://developers.facebook.com/docs/applinks).
-
-Example options:
-
-    {
-      url: "http://example.com",
-      picture: "http://example.com/image.png"
-    }
-
-## Sample Code
-
-```js
-facebookConnectPlugin.appInvite(
-    {
-        url: "http://example.com",
-        picture: "http://example.com/image.png"
-    },
-    function(obj){
-        if(obj) {
-            if(obj.completionGesture == "cancel") {
-                // user canceled, bad guy
-            } else {
-                // user really invited someone :)
-            }
-        } else {
-            // user just pressed done, bad guy
-        }
-    },
-    function(obj){
-        // error
-        console.log(obj);
-    }
-);
-```
-
 ### Login
 
 In your `onDeviceReady` event add the following

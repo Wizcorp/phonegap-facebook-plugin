@@ -1,7 +1,11 @@
 <a name="1.11.0"></a>
 # [1.11.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v1.11.0) (NOT RELEASED YET)
 
+As of February 5, 2018, Facebook doesn't support anymore App Invites and new option for the Android installation.
+
 ## Features
+
+* **iOS:** App Invites support removed ([#645](https://github.com/jeduan/cordova-plugin-facebook4/issues/645))
 
 * **Android:** Add optional installation variable `ANDROID_SDK_VERSION` ([#550](https://github.com/jeduan/cordova-plugin-facebook4/issues/550))([#646](https://github.com/jeduan/cordova-plugin-facebook4/pull/646))
 

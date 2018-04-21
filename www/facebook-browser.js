@@ -115,11 +115,6 @@ exports.logPurchase = function logPurchase (value, currency, s, f) {
   if(s) s();
 }
 
-exports.appInvite = function appInvite (options, s, f) {
-  // App Invites are not avaliable in JS.
-  if(s) s()
-}
-
 exports.logout = function logout (s, f) {
   if (!__fbSdkReady) {
     return __fbCallbacks.push(function() {
