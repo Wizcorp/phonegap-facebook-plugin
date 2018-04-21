@@ -3,7 +3,7 @@
 
 ## Features
 
-* **Android:** Add optional installation variable `ANDROID_SDK_VERSION` ([#550](https://github.com/jeduan/cordova-plugin-facebook4/issues/550)([#646](https://github.com/jeduan/cordova-plugin-facebook4/pull/646))
+* **Android:** Add optional installation variable `ANDROID_SDK_VERSION` ([#550](https://github.com/jeduan/cordova-plugin-facebook4/issues/550))([#646](https://github.com/jeduan/cordova-plugin-facebook4/pull/646))
 
 <a name="1.10.1"></a>
 # [1.10.1](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v1.10.1)
