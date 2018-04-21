@@ -1,13 +1,23 @@
-<a name="1.11.0"></a>
-# [1.11.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v1.11.0) (NOT RELEASED YET)
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v2.0.0)
 
-As of February 5, 2018, Facebook doesn't support anymore App Invites and new option for the Android installation.
+**Breaking change:** As of February 5, 2018, Facebook doesn't support anymore App Invites, therefore these methods have been removed.
+ 
+This version introduce also a new optional variable for the Android installation.
 
 ## Features
 
 * **iOS:** App Invites support removed ([#645](https://github.com/jeduan/cordova-plugin-facebook4/issues/645))
 
 * **Android:** Add optional installation variable `ANDROID_SDK_VERSION` ([#550](https://github.com/jeduan/cordova-plugin-facebook4/issues/550))([#646](https://github.com/jeduan/cordova-plugin-facebook4/pull/646))
+
+### Side note
+
+I did consider removing the methods for App Invites as a breaking change, even if these weren't already supported from Facebook since months.
+
+I followed the semantic versioning idea the Ionic team recently published in their [blog](https://blog.ionicframework.com/ionic-semantic-versioning-release-schedule-and-lts/)
+
+@peterpeterparker
 
 <a name="1.10.1"></a>
 # [1.10.1](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v1.10.1)
