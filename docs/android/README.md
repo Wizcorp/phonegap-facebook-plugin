@@ -21,7 +21,7 @@ $ cordova plugin add https://github.com/jeduan/cordova-plugin-facebook4 --save -
 
 You can now use the plugin right away
 
-## cordova-android >= 7
+### cordova-android >= 7
 
 In order to install correctly this plugin for `cordova-android` v7.x.y and above, you have to specify the APP_ID and APP_NAME in the android `platform` tag of your `config.xml`
 
@@ -29,3 +29,13 @@ In order to install correctly this plugin for `cordova-android` v7.x.y and above
         <string name="fb_app_id">123456789</string>
         <string name="fb_app_name">myApplication</string>
     </config-file>
+
+### In case of conflict
+
+If you would face conflicts with other plugins use in your project while installing `cordova-plugin-facebook4`, you would be able to specify a specific Android SDK version while using the variable `ANDROID_SDK_VERSION`
+
+Important note: Use this option at **your own risk**
+
+$ cordova plugin add https://github.com/jeduan/cordova-plugin-facebook4 --save --variable APP_ID="123456789" --variable APP_NAME="myApplication" --variable ANDROID_SDK_VERSION="X.YY.Z"
+
+where `X.YY.Z` could be for example 4.25.0
