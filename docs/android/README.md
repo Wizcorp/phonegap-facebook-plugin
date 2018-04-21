@@ -36,6 +36,8 @@ If you would face conflicts with other plugins use in your project while install
 
 Important note: Use this option at **your own risk**
 
+```sh
 $ cordova plugin add https://github.com/jeduan/cordova-plugin-facebook4 --save --variable APP_ID="123456789" --variable APP_NAME="myApplication" --variable ANDROID_SDK_VERSION="X.YY.Z"
+```
 
 where `X.YY.Z` could be for example 4.25.0
