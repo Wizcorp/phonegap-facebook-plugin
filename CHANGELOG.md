@@ -1,3 +1,10 @@
+<a name="1.11.0"></a>
+# [1.11.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v1.11.0) (NOT RELEASED YET)
+
+## Features
+
+* **Android:** Add optional installation variable `ANDROID_SDK_VERSION` (#550)(#646)
+
 <a name="1.10.1"></a>
 # [1.10.1](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v1.10.1)
 
