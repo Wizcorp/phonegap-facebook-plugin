@@ -6,7 +6,7 @@ If you plan on rolling this out on Android, please note that you will need to [g
 
 ## Install
 
-This plugin requires [Cordova CLI](https://cordova.apache.org/docs/en/5.0.0/guide_cli_index.md.html).
+This plugin requires [Cordova CLI](https://cordova.apache.org/docs/en/5.0.0/guide_cli_index.md.html)
 
 To install the plugin in your app, execute the following (replace variables where necessary):
 ```sh
@@ -20,6 +20,14 @@ $ cordova plugin add https://github.com/jeduan/cordova-plugin-facebook4 --save -
 ```
 
 You can now use the plugin right away
+
+### Older Cordova CLI
+
+In order to be compatible with older Cordova CLI version than v7, the property `ANDROID_SDK_VERSION` has to be specified in the config.xml (because otherwise it won't pick the default value, see [#650](https://github.com/jeduan/cordova-plugin-facebook4/issues/650)).
+
+You could add the property manually or specify it when you install the plugin, see the cmd below in section "In case of conflict"
+
+Of course if you could, you could update your Cordova CLI and avoid specifying explicitly this option
 
 ### cordova-android >= 7
 
