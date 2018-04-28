@@ -1,3 +1,10 @@
+<a name="2.0.1"></a>
+# [2.0.1](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v2.0.1)
+
+## Bug fixes
+
+* **Android:** Fix null pointer exception leading to app crashing after a second login (flow example: login -> graphApi -> logout -> login -> crash) ([#568](https://github.com/jeduan/cordova-plugin-facebook4/issues/568))
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v2.0.0)
 

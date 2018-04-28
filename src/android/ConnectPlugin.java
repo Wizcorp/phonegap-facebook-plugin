@@ -21,7 +21,6 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.applinks.AppLinkData;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.share.ShareApi;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.GameRequestContent;
 import com.facebook.share.model.ShareHashtag;
@@ -634,6 +633,10 @@ public class ConnectPlugin extends CordovaPlugin {
 
     private void executeLogin(JSONArray args, CallbackContext callbackContext) throws JSONException {
         Log.d(TAG, "login FB");
+
+        // #568: Reset lastGraphContext in case it would still contains the last graphApi results of a previous session (login -> graphApi -> logout -> login)
+        lastGraphContext = null;
+
         // Get the permissions
         Set<String> permissions = new HashSet<String>(args.length());
 
