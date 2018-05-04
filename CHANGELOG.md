@@ -1,5 +1,5 @@
 <a name="2.1.0"></a>
-# [2.1.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v2.0.1) (NOT RELEASED YET)
+# [2.1.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v2.1.0)
 
 ## Features
 
