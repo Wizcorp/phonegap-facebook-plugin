@@ -1,3 +1,10 @@
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v2.0.1) (NOT RELEASED YET)
+
+## Features
+
+* **iOS:** Update of the Facebook SDK v4.33.0 for iOS 11 ([#653](https://github.com/jeduan/cordova-plugin-facebook4/issues/653))
+
 <a name="2.0.1"></a>
 # [2.0.1](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v2.0.1)
 
