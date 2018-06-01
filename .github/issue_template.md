@@ -1,4 +1,4 @@
-Please do not submit support requests or "How to" questions here. Instead, please use channels like [StackOverflow](http://stackoverflow.com/) or the [Ionic forum](https://forum.ionicframework.com).
+Please do not submit support requests or "How to" questions here. Instead, please use channels like [StackOverflow](http://stackoverflow.com/) or the [Ionic forum](https://forum.ionicframework.com)
 
 For issues or feature requests related to the code **in this repository** file a Github issue and provide as much details as possible
 
