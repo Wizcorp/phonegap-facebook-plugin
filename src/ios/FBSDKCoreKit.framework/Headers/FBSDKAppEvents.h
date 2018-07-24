@@ -18,6 +18,10 @@
 
 #import <Foundation/Foundation.h>
 
+#if !TARGET_OS_TV
+#import <WebKit/WebKit.h>
+#endif
+
 #import <FBSDKCoreKit/FBSDKGraphRequestConnection.h>
 
 #import "FBSDKMacros.h"
@@ -96,6 +100,14 @@ FBSDK_EXTERN NSString *const FBSDKAppEventNameViewedContent;
  @methodgroup Predefined event name parameters for common additional information to accompany events logged through the `logEvent` family
  of methods on `FBSDKAppEvents`.  Common event names are provided in the `FBAppEventName*` constants.
  */
+
+ /**
+  * Parameter key used to specify data for the one or more pieces of content being logged about.
+  * Data should be a JSON encoded string.
+  * Example:
+  * "[{\"id\": \"1234\", \"quantity\": 2, \"item_price\": 5.99}, {\"id\": \"5678\", \"quantity\": 1, \"item_price\": 9.99}]"
+  */
+FBSDK_EXTERN NSString *const FBSDKAppEventParameterNameContent;
 
 /** Parameter key used to specify an ID for the specific piece of content being logged about.  Could be an EAN, article identifier, etc., depending on the nature of the app. */
 FBSDK_EXTERN NSString *const FBSDKAppEventParameterNameContentID;
@@ -511,5 +523,18 @@ FBSDK_EXTERN NSString *const FBSDKAppEventParameterValueNo;
  - Parameter handler: the optional completion handler
  */
 + (void)updateUserProperties:(NSDictionary *)properties handler:(FBSDKGraphRequestHandler)handler;
+
+#if !TARGET_OS_TV
+/*
+  Intended to be used as part of a hybrid webapp.
+ If you call this method, the FB SDK will inject a new JavaScript object into your webview.
+ If the FB Pixel is used within the webview, and references the app ID of this app,
+ then it will detect the presence of this injected JavaScript object
+ and pass Pixel events back to the FB SDK for logging using the AppEvents framework.
+
+ - Parameter webView: The webview to augment with the additional JavaScript behaviour
+ */
++ (void)augmentHybridWKWebView:(WKWebView *)webView;
+#endif
 
 @end

@@ -56,12 +56,29 @@ exports.login = function login (permissions, s, f) {
     options.scope = permissions.join(',')
   }
 
+  /**
+   * Functions that resolves or rejects a Promise depending on response.
+   *
+   * Cases:
+   * 1. Resolve/Success: If authResponse exists in response, that means that login is successful.
+   *    In that case resolve (success) function will be invoked with authResponse value.
+   * 2. Reject/Failure: In any other case (no response or response.authResponse) reject (failure) is invoked.
+   *  a. response exists and response.status exists, rejected with response.status.message.
+   *  b. response exists and response.status does not exist, rejected with response.
+   *  c. response does not exist, rejected with 'no response' message.
+   */
   FB.login(function (response) {
     if (response.authResponse) {
       s(response)
-    } else {
-      f(response.status.message)
-    }
+    } else if (response) { // Previously this was just an else statement.
+      if (response.status) { // When status is undefined this would throw an error, and rejection function would never be invoked.
+        f(response.status.message)
+      } else {
+        f(response)
+      }
+    } else { // In case that no response is available (e.g. popup dismissed)
+      f('No response')
+    } 
   }, options)
 }
 
@@ -96,11 +113,6 @@ exports.logPurchase = function logPurchase (value, currency, s, f) {
   FB.AppEvents.logPurchase(value, currency);
 
   if(s) s();
-}
-
-exports.appInvite = function appInvite (options, s, f) {
-  // App Invites are not avaliable in JS.
-  if(s) s()
 }
 
 exports.logout = function logout (s, f) {

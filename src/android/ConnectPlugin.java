@@ -21,7 +21,6 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.applinks.AppLinkData;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.share.ShareApi;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.GameRequestContent;
 import com.facebook.share.model.ShareHashtag;
@@ -29,11 +28,9 @@ import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.model.ShareOpenGraphObject;
 import com.facebook.share.model.ShareOpenGraphAction;
 import com.facebook.share.model.ShareOpenGraphContent;
-import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.GameRequestDialog;
 import com.facebook.share.widget.MessageDialog;
 import com.facebook.share.widget.ShareDialog;
-import com.facebook.share.widget.AppInviteDialog;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -73,11 +70,10 @@ public class ConnectPlugin extends CordovaPlugin {
     private AppEventsLogger logger;
     private CallbackContext loginContext = null;
     private CallbackContext showDialogContext = null;
-    private CallbackContext graphContext = null;
+    private CallbackContext lastGraphContext = null;
     private String graphPath;
     private ShareDialog shareDialog;
     private GameRequestDialog gameRequestDialog;
-    private AppInviteDialog appInviteDialog;
     private MessageDialog messageDialog;
 
     @Override
@@ -100,8 +96,8 @@ public class ConnectPlugin extends CordovaPlugin {
                     @Override
                     public void onCompleted(JSONObject jsonObject, GraphResponse response) {
                         if (response.getError() != null) {
-                            if (graphContext != null) {
-                                graphContext.error(getFacebookRequestErrorResponse(response.getError()));
+                            if (lastGraphContext != null) {
+                                lastGraphContext.error(getFacebookRequestErrorResponse(response.getError()));
                             } else if (loginContext != null) {
                                 loginContext.error(getFacebookRequestErrorResponse(response.getError()));
                             }
@@ -110,8 +106,8 @@ public class ConnectPlugin extends CordovaPlugin {
 
                         // If this login comes after doing a new permission request
                         // make the outstanding graph call
-                        if (graphContext != null) {
-                            makeGraphCall();
+                        if (lastGraphContext != null) {
+                            makeGraphCall(lastGraphContext);
                             return;
                         }
 
@@ -219,40 +215,6 @@ public class ConnectPlugin extends CordovaPlugin {
                 handleError(e, showDialogContext);
             }
         });
-
-        appInviteDialog = new AppInviteDialog(cordova.getActivity());
-        appInviteDialog.registerCallback(callbackManager, new FacebookCallback<AppInviteDialog.Result>() {
-            @Override
-            public void onSuccess(AppInviteDialog.Result result) {
-                if (showDialogContext != null) {
-                    try {
-                        JSONObject json = new JSONObject();
-                        Bundle bundle = result.getData();
-                        for (String key : bundle.keySet()) {
-                            json.put(key, wrapObject(bundle.get(key)));
-                        }
-
-                        showDialogContext.success(json);
-                        showDialogContext = null;
-                    } catch (JSONException e) {
-                        showDialogContext.success();
-                        showDialogContext = null;
-                    }
-                }
-            }
-
-            @Override
-            public void onCancel() {
-                FacebookOperationCanceledException e = new FacebookOperationCanceledException();
-                handleError(e, showDialogContext);
-            }
-
-            @Override
-            public void onError(FacebookException e) {
-                Log.e("Activity", String.format("Error: %s", e.toString()));
-                handleError(e, showDialogContext);
-            }
-        });
     }
 
     @Override
@@ -316,9 +278,9 @@ public class ConnectPlugin extends CordovaPlugin {
                 callbackContext.error("Invalid arguments");
                 return true;
             }
-            int value = args.getInt(0);
+            BigDecimal value = new BigDecimal(args.getString(0));
             String currency = args.getString(1);
-            logger.logPurchase(BigDecimal.valueOf(value), Currency.getInstance(currency));
+            logger.logPurchase(value, Currency.getInstance(currency));
             callbackContext.success();
             return true;
 
@@ -328,10 +290,6 @@ public class ConnectPlugin extends CordovaPlugin {
 
         } else if (action.equals("graphApi")) {
             executeGraph(args, callbackContext);
-
-            return true;
-        } else if (action.equals("appInvite")) {
-            executeAppInvite(args, callbackContext);
 
             return true;
         } else if (action.equals("getDeferredApplink")) {
@@ -368,59 +326,6 @@ public class ConnectPlugin extends CordovaPlugin {
                         return;
                     }
                 });
-    }
-
-    private void executeAppInvite(JSONArray args, CallbackContext callbackContext) {
-        String url = null;
-        String picture = null;
-        JSONObject parameters;
-
-        try {
-            parameters = args.getJSONObject(0);
-        } catch (JSONException e) {
-            parameters = new JSONObject();
-        }
-
-        if (parameters.has("url")) {
-            try {
-                url = parameters.getString("url");
-            } catch (JSONException e) {
-                Log.e(TAG, "Non-string 'url' parameter provided to dialog");
-                callbackContext.error("Incorrect 'url' parameter");
-                return;
-            }
-        } else {
-            callbackContext.error("Missing required 'url' parameter");
-            return;
-        }
-
-        if (parameters.has("picture")) {
-            try {
-                picture = parameters.getString("picture");
-            } catch (JSONException e) {
-                Log.e(TAG, "Non-string 'picture' parameter provided to dialog");
-                callbackContext.error("Incorrect 'picture' parameter");
-                return;
-            }
-        }
-
-        if (AppInviteDialog.canShow()) {
-            AppInviteContent.Builder builder = new AppInviteContent.Builder();
-            builder.setApplinkUrl(url);
-            if (picture != null) {
-                builder.setPreviewImageUrl(picture);
-            }
-
-            showDialogContext = callbackContext;
-            PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
-            pr.setKeepCallback(true);
-            showDialogContext.sendPluginResult(pr);
-
-            cordova.setActivityResultCallback(this);
-            appInviteDialog.show(builder.build());
-        } else {
-            callbackContext.error("Unable to show dialog");
-        }
     }
 
     private void executeDialog(JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -604,7 +509,8 @@ public class ConnectPlugin extends CordovaPlugin {
     }
 
     private void executeGraph(JSONArray args, CallbackContext callbackContext) throws JSONException {
-        graphContext = callbackContext;
+        lastGraphContext = callbackContext;
+        CallbackContext graphContext  = callbackContext;
         PluginResult pr = new PluginResult(PluginResult.Status.NO_RESULT);
         pr.setKeepCallback(true);
         graphContext.sendPluginResult(pr);
@@ -618,7 +524,7 @@ public class ConnectPlugin extends CordovaPlugin {
         }
 
         if (permissions.size() == 0) {
-            makeGraphCall();
+            makeGraphCall(graphContext);
             return;
         }
 
@@ -628,7 +534,7 @@ public class ConnectPlugin extends CordovaPlugin {
 
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         if (accessToken.getPermissions().containsAll(permissions)) {
-            makeGraphCall();
+            makeGraphCall(graphContext);
             return;
         }
 
@@ -727,6 +633,10 @@ public class ConnectPlugin extends CordovaPlugin {
 
     private void executeLogin(JSONArray args, CallbackContext callbackContext) throws JSONException {
         Log.d(TAG, "login FB");
+
+        // #568: Reset lastGraphContext in case it would still contains the last graphApi results of a previous session (login -> graphApi -> logout -> login)
+        lastGraphContext = null;
+
         // Get the permissions
         Set<String> permissions = new HashSet<String>(args.length());
 
@@ -838,7 +748,7 @@ public class ConnectPlugin extends CordovaPlugin {
         }
     }
 
-    private void makeGraphCall() {
+    private void makeGraphCall(final CallbackContext graphContext ) {
         //If you're using the paging URLs they will be URLEncoded, let's decode them.
         try {
             graphPath = URLDecoder.decode(graphPath, "UTF-8");
@@ -858,7 +768,6 @@ public class ConnectPlugin extends CordovaPlugin {
                         graphContext.success(response.getJSONObject());
                     }
                     graphPath = null;
-                    graphContext = null;
                 }
             }
         });
