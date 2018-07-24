@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="cordova-plugin-facebook4-tests"
+        version="1.0.0">
+    <name>Facebook Connect Tests</name>
+    <license></license>
+
+    <js-module src="tests.js" name="tests"></js-module>
+</plugin>

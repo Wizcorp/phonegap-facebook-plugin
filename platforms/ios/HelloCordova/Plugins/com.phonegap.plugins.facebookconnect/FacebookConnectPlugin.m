@@ -22,9 +22,9 @@
 @implementation FacebookConnectPlugin
 
 
-- (CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
+- (void)pluginInitialize
+{
     NSLog(@"Init FacebookConnect Session");
-    self = (FacebookConnectPlugin *)[super initWithWebView:theWebView];
     self.userid = @"";
     
     [FBSession openActiveSessionWithReadPermissions:nil
@@ -44,7 +44,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(openURL:)
                                                  name:CDVPluginHandleOpenURLNotification object:nil];
-    return self;
 }
 
 - (void)openURL:(NSNotification *)notification {
@@ -549,8 +548,15 @@
              
              pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:response];
          } else {
-             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+             if(error.userInfo) {
+                 if([error.userInfo.allKeys containsObject:@"com.facebook.sdk:ParsedJSONResponseKey"])
+                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:error.userInfo[@"com.facebook.sdk:ParsedJSONResponseKey"]];
+                 else if([error.userInfo.allKeys containsObject:@"com.facebook.sdk:HTTPStatusCode"])
+                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:@{@"error": @"com.facebook.sdk:HTTPStatusCode", @"code": error.userInfo[@"com.facebook.sdk:HTTPStatusCode"]}];
+             } else {
+                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
                                               messageAsString:[error localizedDescription]];
+             }
          }
          [self.commandDelegate sendPluginResult:pluginResult callbackId:self.graphCallbackId];
      }];

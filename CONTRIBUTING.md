@@ -10,7 +10,7 @@ These are just guidelines, not rules, use your best judgement and feel free to p
 
 Before creating a Github issue make sure you...
 
-- Check the [Troubleshooting Guide](TROUBLESHOOTING.md) for well known issues.
+- Check the [Troubleshooting Guide](./docs/TROUBLESHOOTING.md) for well known issues.
 - Search the [issues list](https://github.com/Wizcorp/phonegap-facebook-plugin/issues) for existing closed or still open issues
 - Create a Github issue
 

@@ -112,9 +112,12 @@ public class ConnectPlugin extends CordovaPlugin {
     @Override
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
-        uiHelper.onResume();
+        // if plugin was not initialized yet we can get NPE
+        if(uiHelper != null)
+            uiHelper.onResume();
         // Developers can observe how frequently users activate their app by logging an app activation event.
-        AppEventsLogger.activateApp(cordova.getActivity());
+        if(cordova != null)
+            AppEventsLogger.activateApp(cordova.getActivity());
     }
 
     protected void onSaveInstanceState(Bundle outState) {
@@ -626,13 +629,17 @@ public class ConnectPlugin extends CordovaPlugin {
     }
 
     private void makeGraphCall() {
+        if(graphPath == null) {
+            Log.e(TAG, "Graph path is null!");
+            return;
+        }
         Session session = Session.getActiveSession();
 
         Request.Callback graphCallback = new Request.Callback() {
 
             @Override
             public void onCompleted(Response response) {
-                if (graphContext != null) {
+                if (graphContext != null && response != null) {
                     if (response.getError() != null) {
                         graphContext.error(getFacebookRequestErrorResponse(response.getError()));
                     } else {
