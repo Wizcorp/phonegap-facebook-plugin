@@ -1,3 +1,10 @@
+<a name="2.4.0"></a>
+# [2.4.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v2.4.0)
+
+## Features
+
+* **iOS:** Update Facebook iOS SDK v4.36.0 ([e5c3aba](https://github.com/jeduan/cordova-plugin-facebook4/commit/e5c3abafca2fb0fe6651ab4025cb0510735fb66b) | [Facebook changelog](https://developers.facebook.com/docs/ios/change-log-4x) | Released: 30th August 2018)
+
 <a name="2.3.0"></a>
 # [2.3.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v2.3.0)
 
