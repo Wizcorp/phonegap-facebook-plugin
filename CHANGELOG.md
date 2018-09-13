@@ -1,3 +1,10 @@
+<a name="2.5.0"></a>
+# [2.5.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v2.5.0)
+
+## Breaking change
+
+* **Android:** `ANDROID_SDK_VERSION` was renamed to `FACEBOOK_ANDROID_SDK_VERSION` to avoid misunderstood. This variable is use to set the Facebook SDK version for Android not the Android SDK version ([#706](https://github.com/jeduan/cordova-plugin-facebook4/issues/706))
+
 <a name="2.4.0"></a>
 # [2.4.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v2.4.0)
 

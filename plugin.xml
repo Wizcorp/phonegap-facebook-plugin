@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-facebook4"
-        version="2.4.0">
+        version="2.5.0">
 
     <name>Facebook Connect</name>
 
@@ -19,7 +19,7 @@
 
     <preference name="APP_ID" />
     <preference name="APP_NAME" />
-    <preference name="ANDROID_SDK_VERSION" default="4.+"/>
+    <preference name="FACEBOOK_ANDROID_SDK_VERSION" default="4.+"/>
 
     <engines>
         <!-- Requires > 3.5.0 because of the custom Framework tag for iOS [CB-6698] -->
@@ -61,7 +61,7 @@
               android:label="@string/fb_app_name" />
         </config-file>
 
-        <framework src="com.facebook.android:facebook-android-sdk:$ANDROID_SDK_VERSION"/>
+        <framework src="com.facebook.android:facebook-android-sdk:$FACEBOOK_ANDROID_SDK_VERSION"/>
 
         <!-- cordova plugin src files -->
         <source-file src="src/android/ConnectPlugin.java" target-dir="src/org/apache/cordova/facebook" />
