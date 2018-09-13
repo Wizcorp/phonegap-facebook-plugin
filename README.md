@@ -188,6 +188,11 @@ For more information see:
 - Graph Explorer - [https://developers.facebook.com/tools/explorer](https://developers.facebook.com/tools/explorer)
 - Graph API - [https://developers.facebook.com/docs/graph-api/](https://developers.facebook.com/docs/graph-api/)
 
+### Note regarding the Graph API version
+
+Please note that this plugin itself does not specify which Graph API version is used. The Graph API version is set by the Facebook SDK for iOS and Android.
+
+If you are able to reverse engineer the Facebook SDKs in order to find which Graph API version is used by which SDK or if you find any clear information about that particular subject in the Facebook documentation, don't hesitate to ping any maintainers.
 
 # Events
 
