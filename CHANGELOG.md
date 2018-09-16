@@ -1,3 +1,14 @@
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v3.0.0)
+
+## Features
+
+* **Android:** Update Facebook Android SDK reference to v4.36.0 (drop greedy v4.+ reference) ([#708](https://github.com/jeduan/cordova-plugin-facebook4/issues/708))
+
+### Dislaimer
+
+This release does not contains that much but we bumped up it to a major release because as of now, each release will always be published with a synchronized Facebook SDK version for iOS and for Android 
+
 <a name="2.5.0"></a>
 # [2.5.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v2.5.0)
 

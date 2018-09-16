@@ -38,6 +38,20 @@ The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you 
 
 - [Troubleshooting Guide | F.A.Q.](docs/TROUBLESHOOTING.md)
 
+## Facebook SDK
+
+This plugin use the SDKs provided by Facebook. More information about these in their documentation for [iOS](https://developers.facebook.com/docs/ios/) or [Android](https://developers.facebook.com/docs/android/)
+
+### Facebook SDK version
+
+As of v3.0.0, this plugin will always be released for iOS and for Android with a synchronized usage of the Facebook SDKs
+
+For example: v3.0.0 include the Facebook SDK iOS v4.36.0 and reference per default the Facebook SDK Android v4.36.0 too
+
+### Graph API version
+
+Please note that this plugin itself does not specify which Graph API version is used. The Graph API version is set by the Facebook SDK for iOS and Android (see [Facebook documentation about versioning](https://developers.facebook.com/docs/apps/versions/))
+
 ## API
 
 ### Login
@@ -187,12 +201,6 @@ For more information see:
 - Calling the Graph API - [https://developers.facebook.com/docs/ios/graph](https://developers.facebook.com/docs/ios/graph)
 - Graph Explorer - [https://developers.facebook.com/tools/explorer](https://developers.facebook.com/tools/explorer)
 - Graph API - [https://developers.facebook.com/docs/graph-api/](https://developers.facebook.com/docs/graph-api/)
-
-### Note regarding the Graph API version
-
-Please note that this plugin itself does not specify which Graph API version is used. The Graph API version is set by the Facebook SDK for iOS and Android.
-
-If you are able to reverse engineer the Facebook SDKs in order to find which Graph API version is used by which SDK or if you find any clear information about that particular subject in the Facebook documentation, don't hesitate to ping any maintainers.
 
 # Events
 

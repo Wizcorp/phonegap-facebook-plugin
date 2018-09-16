@@ -40,9 +40,7 @@ In order to install correctly this plugin for `cordova-android` v7.x.y and above
 
 ### In case of conflict
 
-If you would face version conflicts regarding the Facebook SDK with other plugins used in your project while installing `cordova-plugin-facebook4`, you would be able to specify a specific Facebook SDK version for ANDROID using the variable `FACEBOOK_ANDROID_SDK_VERSION`
-
-Important note: Use this option at **your own risk**
+If you would face version conflicts regarding the Facebook SDK with other plugins used in your project while installing `cordova-plugin-facebook4` for your ANDROID platform, you would be able to specify a specific Facebook SDK version for ANDROID using the variable `FACEBOOK_ANDROID_SDK_VERSION`
 
 ```sh
 $ cordova plugin add https://github.com/jeduan/cordova-plugin-facebook4 --save --variable APP_ID="123456789" --variable APP_NAME="myApplication" --variable FACEBOOK_ANDROID_SDK_VERSION="X.YY.Z"
