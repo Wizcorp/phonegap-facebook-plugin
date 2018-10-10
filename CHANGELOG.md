@@ -1,3 +1,11 @@
+<a name="3.1.0"></a>
+# [3.1.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v3.1.0)
+
+## Features
+
+* **iOS:** Update Facebook iOS SDK v4.37.0 ([#713](https://github.com/jeduan/cordova-plugin-facebook4/issues/713) | [Facebook iOS SDK changelog](https://developers.facebook.com/docs/ios/change-log-4x) | Released: 27th September 2018)
+* **Android:** Set per default usage of Facebook Android SDK v4.37.0 ([#713](https://github.com/jeduan/cordova-plugin-facebook4/issues/713) | [Facebook Android SDK changelog](https://developers.facebook.com/docs/android/change-log-4x) | Released: 27th September 2018)
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v3.0.0)
 
