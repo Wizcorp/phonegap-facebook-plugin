@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-facebook4"
-        version="3.1.0">
+        version="3.2.0">
 
     <name>Facebook Connect</name>
 
@@ -19,7 +19,7 @@
 
     <preference name="APP_ID" />
     <preference name="APP_NAME" />
-    <preference name="FACEBOOK_ANDROID_SDK_VERSION" default="4.37.0"/>
+    <preference name="FACEBOOK_ANDROID_SDK_VERSION" default="4.38.1"/>
 
     <engines>
         <!-- Requires > 3.5.0 because of the custom Framework tag for iOS [CB-6698] -->
