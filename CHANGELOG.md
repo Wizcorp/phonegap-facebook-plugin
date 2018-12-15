@@ -1,3 +1,23 @@
+<a name="3.3.0"></a>
+# [3.3.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v3.3.0)
+
+## Features
+
+* **Android:** Support for cordova-android >= v7 without any workaround ([#716](https://github.com/jeduan/cordova-plugin-facebook4/pull/716), [#599](https://github.com/jeduan/cordova-plugin-facebook4/issues/599))
+
+### Side note
+
+You could now remove the workaround which was needed in order to support cordova-android >= v7 from your application respectively the following piece of code could be **removed** from your `config.xml`:
+
+```
+<config-file parent="/resources" target="./res/values/strings.xml">		
+    <string name="fb_app_id">123456789</string>		
+    <string name="fb_app_name">myApplication</string>		
+</config-file>
+```
+
+Also note that this improvements is backwards compatible, if you use cordova-android < v7 you should still be able to use the plugin.
+
 <a name="3.2.0"></a>
 # [3.2.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v3.2.0)
 
@@ -21,7 +41,7 @@
 
 * **Android:** Update Facebook Android SDK reference to v4.36.0 (drop greedy v4.+ reference) ([#708](https://github.com/jeduan/cordova-plugin-facebook4/issues/708))
 
-### Dislaimer
+### Disclaimer
 
 This release does not contains that much but we bumped up it to a major release because as of now, each release will always be published with a synchronized Facebook SDK version for iOS and for Android 
 
