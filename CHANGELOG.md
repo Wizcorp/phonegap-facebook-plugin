@@ -1,13 +1,13 @@
-<a name="3.3.0"></a>
-# [3.3.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v3.3.0)
+<a name="4.0.0"></a>
+# [4.0.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v4.0.0)
 
 ## Features
 
 * **Android:** Support for cordova-android >= v7 without any workaround ([#716](https://github.com/jeduan/cordova-plugin-facebook4/pull/716), [#599](https://github.com/jeduan/cordova-plugin-facebook4/issues/599))
 
-### Side note
+## Breaking change
 
-You could now remove the workaround which was needed in order to support cordova-android >= v7 from your application respectively the following piece of code could be **removed** from your `config.xml`:
+If you already have the workaround in the `config.xml` of your application, you have to **remove** it respectively you **need** to **remove** the following piece of code of your `config.xml`:
 
 ```
 <config-file parent="/resources" target="./res/values/strings.xml">		
@@ -16,7 +16,13 @@ You could now remove the workaround which was needed in order to support cordova
 </config-file>
 ```
 
+### Side notes
+
 Also note that this improvements is backwards compatible, if you use cordova-android < v7 you should still be able to use the plugin.
+
+### Kudos
+
+Thank you [Adrian Pascu](https://github.com/adipascu) for the PR and support 
 
 <a name="3.2.0"></a>
 # [3.2.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v3.2.0)
