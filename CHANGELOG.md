@@ -1,3 +1,14 @@
+<a name="4.1.0"></a>
+# [4.1.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v4.1.0)
+
+## Features
+
+* **Facebook:** Allow hybrid apps to send AppEvents from the pixel ([#678](https://github.com/jeduan/cordova-plugin-facebook4/issues/678))
+
+### Kudos
+
+Thx [Mehmet Sencer Karadayi](https://github.com/msencer) for the PR 👍
+
 <a name="4.0.0"></a>
 # [4.0.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v4.0.0)
 
@@ -22,7 +33,7 @@ Also note that this improvements is backwards compatible, if you use cordova-and
 
 ### Kudos
 
-Thank you [Adrian Pascu](https://github.com/adipascu) for the PR and support 
+Thank you [Adrian Pascu](https://github.com/adipascu) for the PR and support 👍
 
 <a name="3.2.0"></a>
 # [3.2.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v3.2.0)
