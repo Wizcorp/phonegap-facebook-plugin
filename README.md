@@ -323,3 +323,15 @@ facebookConnectPlugin.showDialog({
   }
 );
 ```
+
+### Hybrid Mobile App Events
+
+Starting from Facebook SDK v4.34 for both iOS and Android, there is a new way of converting pixel events into mobile app events. For more information: [https://developers.facebook.com/docs/app-events/hybrid-app-events/](https://developers.facebook.com/docs/app-events/hybrid-app-events/)
+
+In order to enable this feature in your cordova app, please set the *FACEBOOK_HYBRID_APP_EVENTS* variable to "true"(default is false):
+```bash
+$ cordova plugin add cordova-plugin-facebook4 --save --variable APP_ID="123456789" --variable APP_NAME="myApplication" --variable FACEBOOK_HYBRID_APP_EVENTS="true"
+```
+Please check [this repo](https://github.com/msencer/fb_hybrid_app_events_sample) for an example app using this feature.
+
+**NOTE(iOS):** This feature only works with WKWebView so until [Cordova iOS 5 is relased](https://cordova.apache.org/news/2018/08/01/future-cordova-ios-webview.html), an additional plugin (e.g cordova-plugin-wkwebview-engine) is needed.

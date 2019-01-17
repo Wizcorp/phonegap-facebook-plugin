@@ -12,13 +12,14 @@
       The Facebook plugin for Apache Cordova allows you to use the same JavaScript code in your
       Cordova application as you use in your web application.
     </description>
-        
+
     <repo>https://github.com/jeduan/cordova-plugin-facebook4</repo>
 
     <license>Apache 2.0</license>
 
     <preference name="APP_ID" />
     <preference name="APP_NAME" />
+    <preference name="FACEBOOK_HYBRID_APP_EVENTS" default="false" />
     <preference name="FACEBOOK_ANDROID_SDK_VERSION" default="4.38.1"/>
 
     <engines>
@@ -52,11 +53,13 @@
         <config-file target="res/values/facebookconnect.xml" parent="/*">
             <string name="fb_app_id">$APP_ID</string>
             <string name="fb_app_name">$APP_NAME</string>
+            <bool name="fb_hybrid_app_events">$FACEBOOK_HYBRID_APP_EVENTS</bool>
         </config-file>
         <!-- Used for cordova-android 7 -->
         <config-file target="app/src/main/res/values/facebookconnect.xml" parent="/*">
             <string name="fb_app_id">$APP_ID</string>
             <string name="fb_app_name">$APP_NAME</string>
+            <bool name="fb_hybrid_app_events">$FACEBOOK_HYBRID_APP_EVENTS</bool>
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="application">
@@ -102,6 +105,10 @@
 
         <config-file target="*-Info.plist" parent="FacebookDisplayName">
             <string>$APP_NAME</string>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="FacebookHybridAppEvents">
+            <string>$FACEBOOK_HYBRID_APP_EVENTS</string>
         </config-file>
 
         <config-file target="*-Info.plist" parent="CFBundleURLTypes">

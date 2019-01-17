@@ -23,6 +23,7 @@
 - (NSDictionary*)parseURLParams:(NSString *)query;
 - (BOOL)isPublishPermission:(NSString*)permission;
 - (BOOL)areAllPermissionsReadPermissions:(NSArray*)permissions;
+- (void)enableHybridAppEvents;
 @end
 
 @implementation FacebookConnectPlugin
@@ -52,6 +53,7 @@
 
 - (void) applicationDidBecomeActive:(NSNotification *) notification {
     [FBSDKAppEvents activateApp];
+    [self enableHybridAppEvents];
 }
 
 #pragma mark - Cordova commands
@@ -647,6 +649,27 @@
         }
     }
     return YES;
+}
+
+/*
+ * Enable the hybrid app events for the webview.
+ * This feature only works with WKWebView so until
+ * Cordova iOS 5 is relased
+ * (https://cordova.apache.org/news/2018/08/01/future-cordova-ios-webview.html),
+ * an additional plugin (e.g cordova-plugin-wkwebview-engine) is needed.
+ */
+- (void)enableHybridAppEvents {
+    if ([self.webView isMemberOfClass:[WKWebView class]]){
+        NSString *is_enabled = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookHybridAppEvents"];
+        if([is_enabled isEqualToString:@"true"]){
+            [FBSDKAppEvents augmentHybridWKWebView:(WKWebView*)self.webView];
+            NSLog(@"Hybrid app events are enabled!");
+        } else {
+            NSLog(@"Hybrid app events are not enabled!");
+        }
+    } else {
+        NSLog(@"Hybrid app events cannot be enabled, this feature requires WKWebView");
+    }
 }
 
 # pragma mark - FBSDKSharingDelegate
