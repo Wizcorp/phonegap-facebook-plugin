@@ -663,12 +663,12 @@
         NSString *is_enabled = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookHybridAppEvents"];
         if([is_enabled isEqualToString:@"true"]){
             [FBSDKAppEvents augmentHybridWKWebView:(WKWebView*)self.webView];
-            NSLog(@"Hybrid app events are enabled!");
+            NSLog(@"FB Hybrid app events are enabled");
         } else {
-            NSLog(@"Hybrid app events are not enabled!");
+            NSLog(@"FB Hybrid app events are not enabled");
         }
     } else {
-        NSLog(@"Hybrid app events cannot be enabled, this feature requires WKWebView");
+        NSLog(@"FB Hybrid app events cannot be enabled, this feature requires WKWebView");
     }
 }
 
