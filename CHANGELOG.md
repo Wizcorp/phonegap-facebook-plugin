@@ -1,5 +1,15 @@
+<a name="4.2.1"></a>
+# [4.2.1](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v4.2.1)
+
+## Fix
+
+* **iOS**: fix iOS crash when `enableHybridAppEvents` has already been enabled ([#745](https://github.com/jeduan/cordova-plugin-facebook4/pull/746)) 
+
+### Kudos
+Thx [Regev Brody](https://github.com/regevbr) for the PR 👍
+
 <a name="4.2.0"></a>
-# [4.2.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v3.2.0)
+# [4.2.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v4.2.0)
 
 ## Features
 
