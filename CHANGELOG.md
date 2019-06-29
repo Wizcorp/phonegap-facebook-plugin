@@ -1,3 +1,14 @@
+<a name="5.0.0"></a>
+# [5.0.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v5.0.0)
+
+## Features
+
+* **iOS:** Update Facebook iOS SDK v5.0.2 ([#751](https://github.com/jeduan/cordova-plugin-facebook4/pull/751) | [Facebook iOS SDK changelog](https://github.com/facebook/facebook-objc-sdk/blob/master/CHANGELOG.md) | Released: June 5 2019)
+* **Android:** Set per default usage of Facebook Android SDK v5.0.20 ([#751](https://github.com/jeduan/cordova-plugin-facebook4/pull/751) | [Facebook Android SDK changelog](https://github.com/facebook/facebook-android-sdk/blob/master/CHANGELOG.md) | Released: June 7 2019)
+
+### Kudos
+Thx [Guy Lando](https://github.com/guylando) for your amazing work and PR 👍
+
 <a name="4.2.1"></a>
 # [4.2.1](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v4.2.1)
 
