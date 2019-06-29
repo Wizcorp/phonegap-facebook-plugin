@@ -20,7 +20,7 @@
     <preference name="APP_ID" />
     <preference name="APP_NAME" />
     <preference name="FACEBOOK_HYBRID_APP_EVENTS" default="false" />
-    <preference name="FACEBOOK_ANDROID_SDK_VERSION" default="4.40.0"/>
+    <preference name="FACEBOOK_ANDROID_SDK_VERSION" default="5.0.2"/>
 
     <engines>
         <!-- Requires > 3.5.0 because of the custom Framework tag for iOS [CB-6698] -->
@@ -159,9 +159,6 @@
             <string>fbshareextension</string>
           </array>
         </config-file>
-
-        <!-- Bolts framework -->
-        <framework src="src/ios/Bolts.framework" custom="true" />
 
         <!-- Facebook framework -->
         <framework src="src/ios/FBSDKCoreKit.framework" custom="true" />
