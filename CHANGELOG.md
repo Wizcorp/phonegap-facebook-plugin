@@ -1,9 +1,13 @@
-<a name="X.Y.Z"></a>
-# [X.Y.Z](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/vX.Y.Z)
+<a name="6.0.0"></a>
+# [6.0.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v6.0.0)
 
 ## Breaking change
 
 * **iOS:** use the [CocoaPods dependency manager](https://cocoapods.org) in order to satisfy the iOS Facebook SDK library dependencies ([#639](https://github.com/jeduan/cordova-plugin-facebook4/issues/639))
+
+### Notes
+
+See [iOS documentation](https://github.com/jeduan/cordova-plugin-facebook4/tree/master/docs/ios) for some notes about installation with Cocoapods.
 
 ## Features
 
