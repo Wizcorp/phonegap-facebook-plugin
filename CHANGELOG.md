@@ -1,3 +1,15 @@
+<a name="X.Y.Z"></a>
+# [X.Y.Z](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/vX.Y.Z)
+
+## Breaking change
+
+* **iOS:** use the [CocoaPods dependency manager](https://cocoapods.org) in order to satisfy the iOS Facebook SDK library dependencies ([#639](https://github.com/jeduan/cordova-plugin-facebook4/issues/639))
+
+## Features
+
+* **iOS:** Update Facebook iOS SDK v5.2.3 ([Facebook iOS SDK changelog](https://github.com/facebook/facebook-objc-sdk/blob/master/CHANGELOG.md) | Released: July 15 2019)
+* **Android:** Set per default usage of Facebook Android SDK v5.2.0 ([Facebook Android SDK changelog](https://github.com/facebook/facebook-android-sdk/blob/master/CHANGELOG.md) | Released: July 29 2019)
+
 <a name="5.0.0"></a>
 # [5.0.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v5.0.0)
 
