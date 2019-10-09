@@ -1,3 +1,10 @@
+<a name="6.2.0"></a>
+# [6.2.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v6.1.0)
+
+## Features
+
+* **iOS:** Update Facebook iOS SDK v5.7.0 ([Facebook iOS SDK changelog](https://github.com/facebook/facebook-objc-sdk/blob/master/CHANGELOG.md) | Released: September 30 2019)
+
 <a name="6.1.0"></a>
 # [6.1.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v6.1.0)
 
