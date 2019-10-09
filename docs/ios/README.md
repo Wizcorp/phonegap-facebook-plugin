@@ -30,8 +30,28 @@ If building your project in Xcode, you need to open `YourProject.xcworkspace` (n
 
 You can list the pod dependencies in your Cordova iOS project by installing [cocoapods-dependencies](https://github.com/segiddins/cocoapods-dependencies):
 
-```
+```bash
 sudo gem install cocoapods-dependencies
 cd platforms/ios/
 pod dependencies
  ```
+
+#### Error: pod: Command failed with exit code 31
+
+If you install the plugin and face the error `Failed to install 'cordova-plugin-facebook4': Error: pod: Command failed with exit code 31`, it probably means that your local Pod repo is not up-to-date. In order to solve the problem, prior the installation, run th following command in your platform to update your Pod repo:
+
+```bash
+pod update
+```
+
+#### 'FBSDKCoreKit/FBSDKCoreKit.h' file not found
+
+If you are using Cordova iOS < v5, you might face the error `'FBSDKCoreKit/FBSDKCoreKit.h' file not found`. To overcome this problem, edit the `plugin.xml` of the plugin in order to fetch de Facebook iOS SDK by adding the following `framework` references:
+
+```
+<framework src="FBSDKCoreKit" type="podspec" spec="X.Y.Z" />
+<framework src="FBSDKLoginKit" type="podspec" spec="X.Y.Z" />
+<framework src="FBSDKShareKit" type="podspec" spec="X.Y.Z" />
+```
+
+Replace `X.Y.Z` with the Facebook iOS SDK and remove and add your platform again.
