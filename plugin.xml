@@ -166,9 +166,9 @@
                 <source url="https://github.com/CocoaPods/Specs.git"/>
             </config>
             <pods use-frameworks="true">
-                <pod name="FBSDKCoreKit" spec="5.6.0"/>
-                <pod name="FBSDKLoginKit" spec="5.6.0"/>
-                <pod name="FBSDKShareKit" spec="5.6.0"/>
+                <pod name="FBSDKCoreKit" spec="5.7.0"/>
+                <pod name="FBSDKLoginKit" spec="5.7.0"/>
+                <pod name="FBSDKShareKit" spec="5.7.0"/>
             </pods>
         </podspec>
 
