@@ -26,7 +26,7 @@ if (cordova.platformId == "browser") {
                     f(error.message);
                 }
             }
-        },
+        }
 
         showDialog: function (options, s, f) {
 
