@@ -1,4 +1,4 @@
-Please do not submit support requests or "How to" questions here. Instead, please use channels like [StackOverflow](http://stackoverflow.com/) or the [Ionic forum](https://forum.ionicframework.com)
+Please do not submit support requests or "How to" questions here. Instead, please use channels like [StackOverflow](http://stackoverflow.com/), the [Ionic forum](https://forum.ionicframework.com) or the [Ionic slack channel](http://ionicworldwide.herokuapp.com)
 
 For issues or feature requests related to the code **in this repository** file a Github issue and provide as much details as possible
 
@@ -15,15 +15,15 @@ A clear and concise description of what the bug or feature request is
 
 A clear and concise description of what you expected to happen
 
+**Sample repo**
+
+A sample repo is needed for this issue to be fixed, please provide one in order to reproduce the problem.
+
+You could for example try to use the [cordova-plugin-facebook4-lab](https://github.com/peterpeterparker/cordova-plugin-facebook4-lab) to reproduce your issue.
+
 **Plugin version, OS, devices, etc**
 
 Please provide information about the plugin version, OS, devices etc. where you faced your issue
-
-**Sample repo**
-
-A sample repo will dramatically decrease the time needed for this issue to be fixed, if you could, please provide one in order to reproduce the problem
-
-Alternatively, provide a link to the source code of your app
 
 **Additional Context**
 
