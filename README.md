@@ -43,7 +43,7 @@ The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you 
 
 ## Sample Repo
 
-If you are looking to test the plugin, would like to reproduce a bug or build issues, there is a demo project for such purpose: [cordova-plugin-facebook4-lab](https://github.com/peterpeterparker/cordova-plugin-facebook4-lab)
+If you are looking to test the plugin, would like to reproduce a bug or build issues, there is a demo project for such purpose: [cordova-plugin-facebook4-lab](https://github.com/peterpeterparker/cordova-plugin-facebook4-lab).
 
 ## Compatibility
 
