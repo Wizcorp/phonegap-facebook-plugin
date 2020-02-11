@@ -1,5 +1,20 @@
+<a name="6.3.0"></a>
+# [6.3.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v6.3.0)
+
+## Features
+
+* **iOS:** Updating to CocoaPods CDN ([#848](https://github.com/jeduan/cordova-plugin-facebook4/pull/848))
+* **iOS:** Update Facebook iOS SDK v5.15.0 ([Facebook iOS SDK changelog](https://github.com/facebook/facebook-objc-sdk/blob/master/CHANGELOG.md) | Released: January 21 2020)
+* **Android:** Set per default usage of Facebook Android SDK v5.13.0 ([Facebook Android SDK changelog](https://github.com/facebook/facebook-android-sdk/blob/master/CHANGELOG.md) | Released: December 11 2019)
+
+Note: I have upgraded the default Facebook Android SDK to v5.13.0 and not to its last available version, v5.15.0, as this most recent version contains a bug (see [facebook-android-sdk#655](https://github.com/facebook/facebook-android-sdk/issues/665)).
+
+## Docs
+
+* **sample repo**: If you are looking to test the plugin, would like to reproduce a bug or build issues, there is now a demo project for such purpose: [cordova-plugin-facebook4-lab](https://github.com/peterpeterparker/cordova-plugin-facebook4-lab)
+
 <a name="6.2.0"></a>
-# [6.2.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v6.1.0)
+# [6.2.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v6.2.0)
 
 ## Features
 
