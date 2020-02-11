@@ -7,7 +7,6 @@
 - [Installation](#installation)
 - [Usage](#usage)
 - [Compatibility](#compatibility)
-- [Installation Guides](#installation-guides)
 - [Facebook SDK](#facebook-sdk)
 - [API](#api)
 
@@ -25,6 +24,16 @@ If you need to change your `APP_ID` after installation, it's recommended that yo
 
 IMPORTANT: This plugin works as is with cordova-ios 5 but if you use earlier version of cordova-ios then you need to add the code in the following comment to your CordovaLib/Classes/Public/CDVAppDelegate.m file which was added to your project as part of the cordova-ios ios platform template: https://github.com/apache/cordova-ios/issues/476#issuecomment-460907247
 
+### Installation Guides
+
+- [iOS Guide](docs/ios/README.md)
+
+- [Android Guide](docs/android/README.md)
+
+- [Browser Guide](docs/browser/README.md)
+
+- [Troubleshooting Guide | F.A.Q.](docs/TROUBLESHOOTING.md)
+
 ## Usage
 
 This is a fork of the [official plugin for Facebook](https://github.com/Wizcorp/phonegap-facebook-plugin/) in Apache Cordova that implements the latest Facebook SDK. Unless noted, this is a drop-in replacement. You don't have to replace your client code.
@@ -38,16 +47,6 @@ The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you 
   * cordova-ios >= 3.8
   * cordova-browser >= 3.6
   * Phonegap build (use phonegap-version >= cli-5.2.0, android-minSdkVersion>=15, and android-build-tool=gradle), see [example here](https://github.com/yoav-zibin/phonegap-tictactoe/blob/gh-pages/www/config.xml)
-
-## Installation Guides
-
-- [iOS Guide](docs/ios/README.md)
-
-- [Android Guide](docs/android/README.md)
-
-- [Browser Guide](docs/browser/README.md)
-
-- [Troubleshooting Guide | F.A.Q.](docs/TROUBLESHOOTING.md)
 
 ## Facebook SDK
 
