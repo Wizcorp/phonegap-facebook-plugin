@@ -1,3 +1,10 @@
+<a name="6.4.0"></a>
+# [6.4.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v6.4.0)
+
+## Fix
+
+* **Android:** add a check to test if the access token is expired in order to fetch a new one if that would be the case ([#853](https://github.com/jeduan/cordova-plugin-facebook4/pull/853))
+
 <a name="6.3.0"></a>
 # [6.3.0](https://github.com/jeduan/cordova-plugin-facebook4/releases/tag/v6.3.0)
 
