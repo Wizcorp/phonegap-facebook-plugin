@@ -2,6 +2,12 @@
 
 > Use Facebook SDK in Cordova projects
 
+# Important Notice
+
+This plugin is not actively maintained anymore since March 2019.
+
+If you are interested to become a maintainer or have an active fork to share, please comment [#629](https://github.com/jeduan/cordova-plugin-facebook4/issues/629). 
+
 ## Table of contents
 
 - [Installation](#installation)
