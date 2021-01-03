@@ -3,7 +3,9 @@
 
 This plugin is not actively maintained anymore since March 2019.
 
-Please check out https://github.com/cordova-plugin-facebook-connect/cordova-plugin-facebook-connect for an active fork. 
+**IT IS NOT RECEIVING SECURITY UPDATES AND YOU MIGHT BE ADDING HARMFUL CODE TO YOUR PROJECT.**
+
+Please check out [cordova-plugin-facebook-connect](https://github.com/cordova-plugin-facebook-connect/cordova-plugin-facebook-connect) for an active fork. 
 This repo is conserved for archival purposes only. 
 
 
