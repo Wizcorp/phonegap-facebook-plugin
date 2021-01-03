@@ -1,12 +1,22 @@
-# cordova-plugin-facebook4
-
-> Use Facebook SDK in Cordova projects
 
 # Important Notice
 
 This plugin is not actively maintained anymore since March 2019.
 
-If you are interested to become a maintainer or have an active fork to share, please comment [#629](https://github.com/jeduan/cordova-plugin-facebook4/issues/629). 
+Please check out https://github.com/cordova-plugin-facebook-connect/cordova-plugin-facebook-connect for an active fork. 
+This repo is conserved for archival purposes only. 
+
+
+
+
+
+
+
+
+## cordova-plugin-facebook4
+
+> Use Facebook SDK in Cordova projects
+
 
 ## Table of contents
 
